@@ -7,6 +7,76 @@ def dist(a, b):
     return math.sqrt(sum(abs(a_i - b_i)**2 for a_i, b_i in zip(a, b)))
 
 class MarkerTracker(object):
+
+    def __init__(self, ref_position, nnclient = None):
+        """The marker position must be known in the first frame"""
+        self.nnclient = nnclient
+        if self.nnclient is None:
+            self.nnclient = natnet.NatNetClient()
+
+        self._ref_position = ref_position
+        self._last_pos = None
+        self._setup()
+
+    def _update_frame(self):
+        raw_frame = self.nnclient.receive_frame()
+        self._frame = raw_frame.unpack_data()
+
+    def close(self):
+        self.natnet.close()
+
+    def _setup(self):
+        self._update_frame()
+
+        lb_markers = self._frame['lb_markers']
+        n = len(lb_markers)
+        assert n > 0
+
+        if n == 1:
+            self._m_id = lb_markers[0]['id']
+            self._pos_from_id()
+        else:
+            #print lb_markers
+            distances = [dist(self._ref_position, m['position']) for m in self._frame['lb_markers']]
+            distances_sorted = sorted(distances)
+
+            max_threshold = 0.02
+            assert distances_sorted[0] <= max_threshold, "The closest marker is {:.0f}mm away. That's too far (max : {:.0f}mm)".format(distances_sorted[0]*1000, max_threshold*1000)
+            min_second_closest = 0.04
+            if len(distances) > 1:
+                assert distances_sorted[1] >= min_second_closest, "The second closest marker is too close ({:.0f}mm) from the reference point (min : {:.0f}mm).".format(distances_sorted[1]*1000, min_second_closest*1000)
+
+            idx = distances.index(distances_sorted[0])
+            self._m_id = lb_markers[0]['id']
+            self._pos_from_id()
+
+        return self._last_pos
+
+    def _pos_from_id(self):
+        for m in self._frame['lb_markers']:
+            if m['id'] == self._m_id:
+                self._last_pos = m['position']
+                return self._last_pos
+        return None
+
+    def update(self):
+        self._update_frame()
+        if self._pos_from_id() is not None:
+            return self._last_pos
+        else:
+            if len(self._frame['lb_markers']) == 1 and self._frame['lb_markers'][0]['size'] == 0.0240:
+                self._m_id = lb_markers[0]['id']
+                return self._pos_from_id()
+
+            for marker in self._frame['lb_markers']:
+                if dist(marker['position'], self._last_pos) < 0.01:
+                    self._m_id = marker['id']
+                    return self._pos_from_id()
+            return None
+
+
+
+class MarkerTrackerRB(object):
     """Class for tracking a robustly tracking a single marker"""
 
     def __init__(self, rb_name, ref_position):
