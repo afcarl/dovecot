@@ -1,8 +1,11 @@
 import time
 import sys
 
+from toolbox import gfx
 import pydyn.dynamixel as dyn
+
 import natnet
+import tracker
 
 ctrl = dyn.create_controller(verbose = True, motor_range = [0, 6], timeout = 0.05)
 
@@ -21,47 +24,23 @@ def init_pose():
 
     time.sleep(2)
 
-ref_point = (-0.1036, 0.2461, 0.1383)
-
-def dist(a, b):
-    assert len(a) == len(b)
-    return sum(abs(a_i - b_i)**2 for a_i, b_i in zip(a, b))
-
-def tip_pos_idx():
-    frame = nnclient.receive_frame()
-    data = frame.unpack_data()
-    sets = data['markersets']
-
-    for s in sets:
-        if s[0] == 'Rigid Body 1':
-            d_ref   = [dist(ref_point, p) for p in s[1]]
-            min_ref = min(d_ref)
-            return d_ref.index(min_ref)
-
-    assert False
-
-def tip_pos(m_idx):
-    frame = nnclient.receive_frame()
-    data = frame.unpack_data()
-    sets = data['markersets']
-
-    for k, s in enumerate(sets):
-        if s[0] == 'Rigid Body 1':
-            return s[1][m_idx]
-
-
-def track():
-    pass
 
 if __name__ == "__main__":
-    #init_pose()
+    init_pose()
 
-    nnclient = natnet.NatNetClient()
+    rb_name   = 'Rigid Body 1'
+    ref_point = (-0.1096, 0.1100,-0.2106) # compliant stem
+    ref_point = (-0.1036, 0.2461, 0.1383) # init pose
+    mt = tracker.MarkerTracker(rb_name, ref_point)
 
-    m_idx = tip_pos_idx()
+    last_pos = ref_point
     while True:
-        pos = tip_pos(m_idx)
-        if pos is not None:
-            print('{}\r'.format(', '.join('{:7.4f}'.format(e) for e in pos))),
-            sys.stdout.flush()
+        pos = mt.update()
+        if pos is None:
+            color = gfx.red
+        else:
+            last_pos = pos
+            color = gfx.green
+        print('{}{}{}\r'.format(color, ', '.join('{:+5.4f}'.format(e) for e in last_pos), gfx.end)),
+        sys.stdout.flush()
         time.sleep(0.01)
