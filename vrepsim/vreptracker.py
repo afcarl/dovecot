@@ -10,7 +10,7 @@ class VRepTracker(object):
 #        self.Sfeats = tuple(range(7))
 
     def start(self):
-        self._register(self.object_name)
+        assert self._register(self.object_name)
 
     def _register(self, object_name):
         handle = self.sim.simGetObjectHandle(object_name)
@@ -18,7 +18,7 @@ class VRepTracker(object):
             return False
         else:
             self.handle = handle
-            self.sim.simStopSimulation()
+            #self.sim.simStopSimulation()
             self.sim.registerBackgroundFunction("simGetObjectPosition", [handle])
             self.sim.registerBackgroundFunction("simGetObjectOrientation", [handle])
             #self.sim.registerBackgroundFunction("simGetObjectQuaternion", [handle])
@@ -26,8 +26,8 @@ class VRepTracker(object):
             return True
 
     def close(self):
-        self.sim.unregisterBackgroundFunction("simGetObjectPosition", [handle])
-        self.sim.unregisterBackgroundFunction("simGetObjectOrientation", [handle])
+        self.sim.unregisterBackgroundFunction("simGetObjectPosition", [self.handle])
+        self.sim.unregisterBackgroundFunction("simGetObjectOrientation", [self.handle])
         #self.sim.unregisterBackgroundFunction("simGetObjectQuaternion", [handle])
 
     @property

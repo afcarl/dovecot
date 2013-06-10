@@ -20,10 +20,10 @@ from vreptracker import VRepTracker
 
 class VRepSim(object):
 
-    def __init__(self):
+    def __init__(self, objname = 'Cube'):
         dyn.enable_vrep()
         self.ctrl = dyn.create_controller(verbose = True, motor_range = [0, 6])
-        self.vt = VRepTracker(self.ctrl.io.sim, 'Cube')
+        self.vt = VRepTracker(self.ctrl.io.sim, objname)
         self.vt.start()
 
         self.mfeats  = tuple(range(-13, 0))
@@ -40,19 +40,20 @@ class VRepSim(object):
         maxspeed = order[12]
 
         self.ctrl.stop_sim()
-        time.sleep(1.0)
+        time.sleep(0.5)
         self.ctrl.start_sim()
         time.sleep(0.5)
+        pose = self.vt.pose[0:3] # crucial ! refresh the registering
         for p_i, m in zip(pose0, self.ctrl.motors):
             m.speed = maxspeed
             m.position = p_i + 150.0
 
-        time.sleep(1.0)
+        time.sleep(2.0)
 
         for p_i, m in zip(pose1, self.ctrl.motors):
             m.position = p_i + 150.0
 
-        time.sleep(1.0)
+        time.sleep(2.0)
         pose = self.vt.pose[0:3]
         return tuple(pose)
 
