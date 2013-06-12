@@ -46,9 +46,15 @@ class KinSim(robots.Robot):
                 collision = True
 
         if collision:
-            return tuple(tip) + (1.0,)
+            effect = tuple(tip) + (1.0,)
         else:
-            return tuple(object_center)+(0.0,)
+            effect = tuple(object_center)+(0.0,)
+
+        if self.cfg.verbose:
+            color = gfx.green if effect[3] == 1.0 else gfx.red
+            print('{} -> {}{}{}'.format(gfx.ppv(order, fmt='+7.2f'), color, gfx.ppv(effect, fmt='+7.4f'), gfx.end))
+
+        return effect
 
 
 if __name__ == "__main__":

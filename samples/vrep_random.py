@@ -22,9 +22,9 @@ def vrep_random(n = 1):
     for _ in range(n):
         order  = [random.uniform(-100.0, 100.0) for _ in range(12)] + [random.uniform(0.0, 100.0)]
         effect = vs.execute_order(order)
-        color = gfx.green if effect[3] == 1.0 else gfx.red
         if effect[3] == 1.0:
             collisions += 1
+        color = gfx.green if effect[3] == 1.0 else gfx.red
         print('{} -> {}{}{}'.format(gfx.ppv(order, fmt='+7.2f'), color, gfx.ppv(effect, fmt='+7.4f'), gfx.end))
 
     return float(collisions)/n

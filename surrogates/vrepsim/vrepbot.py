@@ -95,7 +95,12 @@ class VRepSim(object):
         pose = self.vt.pose[0:3]
 
         if distance(obj_init, pose) > 0.1:
-            return tuple(pose) + (1.0,)
+            effect = tuple(pose) + (1.0,)
         else:
-            return tuple(pose) + (0.0,)
+            effect = tuple(pose) + (0.0,)
 
+        if self.cfg.verbose:
+            color = gfx.green if effect[3] == 1.0 else gfx.red
+            print('{} -> {}{}{}'.format(gfx.ppv(order, fmt='+7.2f'), color, gfx.ppv(effect, fmt='+7.4f'), gfx.end))
+
+        return effect
