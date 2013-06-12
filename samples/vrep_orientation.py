@@ -1,5 +1,5 @@
 import testenv
-import vrepsim
+from surrogates import vrepsim
 
 def vrep_orientation():
     """Test the orientation of each joint of the simulation"""

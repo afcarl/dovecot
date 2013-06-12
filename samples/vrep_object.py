@@ -1,7 +1,7 @@
 import testenv
 from toolbox import gfx
 
-import vrepsim
+from surrogates import vrepsim
 
 def vrep_object():
     """Test the orientation of each joint of the simulation"""

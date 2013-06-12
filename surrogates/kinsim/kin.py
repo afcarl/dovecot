@@ -27,8 +27,9 @@ d = 65
 e = 67
 f = 63
 
+deg2rad = pi/180.0
 def forward_kin(t0, t1, t2, t3, t4, t5):
-    return _forward_kin(-t0, t1, t2, -t3, t4, t5)
+    return _forward_kin(-t0*deg2rad, t1*deg2rad, t2*deg2rad, -t3*deg2rad, t4*deg2rad, t5*deg2rad)
 
 def _forward_kin(t0, t1, t2, t3, t4, t5):
     x =(0

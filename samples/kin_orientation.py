@@ -1,7 +1,7 @@
 import testenv
 from toolbox import gfx
 
-import kinsim
+from surrogates import kinsim
 
 def kin_orientation():
     """Test the orientation of each joint of the simulation"""

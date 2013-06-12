@@ -1,2 +1,5 @@
 *.pyc
 natnet
+build/
+dist/
+surrogates.egg-info/
