@@ -78,6 +78,15 @@ class VRepSim(object):
 
         self.ctrl.start_sim()
         time.sleep(0.1)
+
+        if not all(abs(ap_i) < 1.0 for ap_i in self._arm_pos):
+            time.sleep(0.5)
+            self.ctrl.stop_sim()
+            time.sleep(0.5)
+
+            self.ctrl.start_sim()
+            time.sleep(0.5)
+
         assert all(abs(ap_i) < 1.0 for ap_i in self._arm_pos)
 
         pose = self.vt.pose[0:3] # crucial ! refresh the registering
@@ -94,13 +103,17 @@ class VRepSim(object):
         #print max(abs(m.position-p_i-150.0) for m, p_i in zip(self.ctrl.motors, pose1))
         pose = self.vt.pose[0:3]
 
-        if distance(obj_init, pose) > 0.1:
+        if distance(obj_init, pose) > 0.01:
             effect = tuple(pose) + (1.0,)
         else:
             effect = tuple(pose) + (0.0,)
 
-        if self.cfg.verbose:
+        if self.cfg.verbose or self.cfg.inner_verbose:
             color = gfx.green if effect[3] == 1.0 else gfx.red
             print('{} -> {}{}{}'.format(gfx.ppv(order, fmt='+7.2f'), color, gfx.ppv(effect, fmt='+7.4f'), gfx.end))
 
         return effect
+
+    def close(self):
+        self.ctrl.stop_sim()
+        self.vt.close()
