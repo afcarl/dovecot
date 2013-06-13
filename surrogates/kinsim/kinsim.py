@@ -1,6 +1,7 @@
 import math
 import numpy as np
 
+from toolbox import gfx
 import robots
 
 import kin
@@ -25,8 +26,9 @@ class KinSim(robots.Robot):
         self.s_bounds = ((-300.0, 200.0), (-300.0, 250.0), (-150.0, 350.0), (0.0, 1.0))
 
         self.object_radius = distance(object_center, object_edge)
+        print self.object_radius
 
-        self.res = cfg.get('interpol_res', 10) # interpolation resolution
+        self.res = cfg.get('interpol_res', 150) # interpolation resolution
 
     def forward_kin(self, order):
         assert len(order) == 6
@@ -42,7 +44,7 @@ class KinSim(robots.Robot):
         for i in range(self.res):
             pose = (pose0*(self.res-1-i) + i*pose1)/(self.res-1)
             tip = kin.forward_kin(*pose)
-            if not collision and distance(tip, object_center) < self.object_radius:
+            if not collision and distance(tip, object_center) < 4*self.object_radius:
                 collision = True
 
         if collision:
@@ -50,9 +52,9 @@ class KinSim(robots.Robot):
         else:
             effect = tuple(object_center)+(0.0,)
 
-        if self.cfg.verbose:
+        if self.cfg.verbose or self.cfg.inner_verbose:
             color = gfx.green if effect[3] == 1.0 else gfx.red
-            print('{} -> {}{}{}'.format(gfx.ppv(order, fmt='+7.2f'), color, gfx.ppv(effect, fmt='+7.4f'), gfx.end))
+            print('{} -> {}{}{}'.format(gfx.ppv(order, fmt='+7.2f'), color, gfx.ppv(effect, fmt='+8.4f'), gfx.end))
 
         return effect
 
