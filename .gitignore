@@ -3,3 +3,4 @@ natnet
 build/
 dist/
 surrogates.egg-info/
+.DS_Store
