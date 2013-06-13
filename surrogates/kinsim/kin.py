@@ -25,7 +25,7 @@ b = 82
 c = 80
 d = 65
 e = 67
-f = 63
+f = 80
 
 deg2rad = pi/180.0
 def forward_kin(t0, t1, t2, t3, t4, t5):
