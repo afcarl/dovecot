@@ -23,22 +23,26 @@ def distance(a, b):
 
 class VRepSim(object):
 
-    def __init__(self, cfg, **kwargs):
+    def __init__(self, cfg, timefactor = 1, **kwargs):
         dyn.enable_vrep()
 
         self.cfg = cfg
         self.cfg.update(defaultcfg, overwrite = False)
 
-        self.ctrl = dyn.create_controller(verbose = True, motor_range = [0, 6])
+        self.ctrl = dyn.create_controller(verbose = True, motor_range = [0, 7])
         self.vt = VRepTracker(self.ctrl.io.sim, self.cfg.objectname)
         self.vt.start()
 
-        self.m_feats  = tuple(range(-13, 0))
-        self.m_bounds = ((-100.0, 100.0),)*5 + ((-60.0, 60.0),)
+        self.dim = len(self.ctrl.motors)
+
+        self.m_feats  = tuple(range(-2*self.dim - 1, 0))
+        self.m_bounds = ((-100.0, 100.0),)*(self.dim - 1) + ((-60.0, 60.0),)
         self.m_bounds = self.m_bounds*2 + ((0.0, 300.0),)
 
         self.s_feats  = tuple(range(4))
         self.s_bounds = ((-3.0, 3.0), (-3.0, 3.0), (1.4, 1.6), (0.0, 1.0))
+
+        self.timefactor = timefactor
 
     @property
     def _arm_pos(self):
@@ -69,9 +73,9 @@ class VRepSim(object):
     def execute_order(self, order, **kwargs):
         assert len(order) == len(self.m_feats)
 
-        pose0 = order[0:6]
-        pose1 = order[6:12]
-        maxspeed = order[12]
+        pose0 = order[0:self.dim]
+        pose1 = order[self.dim:2*self.dim]
+        maxspeed = order[2*self.dim]
 
         self.ctrl.stop_sim()
         time.sleep(0.1)
@@ -94,12 +98,14 @@ class VRepSim(object):
             m.speed = maxspeed
             m.position = p_i + 150.0
 
-        self.wait(pose0, 0.5)
+        time.sleep(self.timefactor*0.25)
+#        self.wait(pose0, 0.5)
 
         for p_i, m in zip(pose1, self.ctrl.motors):
             m.position = p_i + 150.0
 
-        self.wait(pose1, 0.5)
+        time.sleep(self.timefactor*0.25)
+#        self.wait(pose1, 0.5)
         #print max(abs(m.position-p_i-150.0) for m, p_i in zip(self.ctrl.motors, pose1))
         pose = self.vt.pose[0:3]
 
