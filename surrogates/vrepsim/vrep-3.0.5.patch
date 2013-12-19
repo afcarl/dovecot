@@ -1,0 +1,167 @@
+Binary files ./v_rep_rl/.DS_Store and ./v_rep/.DS_Store differ
+diff -urN --exclude=bin --exclude=compile.sh ./v_rep_rl/sourceCode/interfaces/v_rep.cpp ./v_rep/sourceCode/interfaces/v_rep.cpp
+--- ./v_rep_rl/sourceCode/interfaces/v_rep.cpp	2013-10-24 22:34:10.000000000 +0200
++++ ./v_rep/sourceCode/interfaces/v_rep.cpp	2013-12-18 18:30:58.000000000 +0100
+@@ -151,6 +151,12 @@
+ {
+ 	return(simSetJointPosition_internal(objectHandle,position));
+ }
++/////////////////////
++VREP_DLLEXPORT simInt simSetDynamicMotorUpperLimitVelocity(simInt objectHandle,simFloat vel)
++{
++	return(simSetDynamicMotorUpperLimitVelocity_internal(objectHandle,vel));
++}
++/////////////////////
+ VREP_DLLEXPORT simInt simSetJointTargetPosition(simInt objectHandle,simFloat targetPosition)
+ {
+ 	return(simSetJointTargetPosition_internal(objectHandle,targetPosition));
+@@ -1472,6 +1478,12 @@
+ {
+ 	return(_simSetJointPosition_internal(joint,pos));
+ }
++//////////////////////////////////////
++VREP_DLLEXPORT simVoid _simSetDynamicMotorUpperLimitVelocity(const simVoid* joint,simFloat vel)
++{
++	return(_simSetDynamicMotorUpperLimitVelocity_internal(joint,vel));
++}
++//////////////////////////////////////
+ VREP_DLLEXPORT simFloat _simGetJointPosition(const simVoid* joint)
+ {
+ 	return(_simGetJointPosition_internal(joint));
+diff -urN --exclude=bin --exclude=compile.sh ./v_rep_rl/sourceCode/interfaces/v_rep.h ./v_rep/sourceCode/interfaces/v_rep.h
+--- ./v_rep_rl/sourceCode/interfaces/v_rep.h	2013-11-18 19:04:36.000000000 +0100
++++ ./v_rep/sourceCode/interfaces/v_rep.h	2013-12-18 18:32:53.000000000 +0100
+@@ -75,6 +75,9 @@
+ VREP_DLLEXPORT simInt simSetObjectOrientation(simInt objectHandle,simInt relativeToObjectHandle,const simFloat* eulerAngles);
+ VREP_DLLEXPORT simInt simGetJointPosition(simInt objectHandle,simFloat* position);
+ VREP_DLLEXPORT simInt simSetJointPosition(simInt objectHandle,simFloat position);
++///////////////////
++VREP_DLLEXPORT simInt simSetDynamicMotorUpperLimitVelocity(simInt objectHandle,simFloat vel);
++//////////////////
+ VREP_DLLEXPORT simInt simSetJointTargetPosition(simInt objectHandle,simFloat targetPosition);
+ VREP_DLLEXPORT simInt simGetJointTargetPosition(simInt objectHandle,simFloat* targetPosition);
+ VREP_DLLEXPORT simInt simSetJointForce(simInt objectHandle,simFloat forceOrTorque);
+@@ -406,6 +409,9 @@
+ VREP_DLLEXPORT simVoid _simSetShapeIsStaticAndNotRespondableButDynamicTag(const simVoid* shape,simBool tag);
+ VREP_DLLEXPORT simBool _simGetShapeIsStaticAndNotRespondableButDynamicTag(const simVoid* shape);
+ VREP_DLLEXPORT simVoid _simSetJointPosition(const simVoid* joint,simFloat pos);
++/////////////////
++VREP_DLLEXPORT simVoid _simSetDynamicMotorUpperLimitVelocity(const simVoid* joint,simFloat vel);
++//////////////////
+ VREP_DLLEXPORT simFloat _simGetJointPosition(const simVoid* joint);
+ VREP_DLLEXPORT simVoid _simSetDynamicMotorPositionControlTargetPosition(const simVoid* joint,simFloat pos);
+ VREP_DLLEXPORT simVoid _simGetInitialDynamicVelocity(const simVoid* shape,simFloat* vel);
+diff -urN --exclude=bin --exclude=compile.sh ./v_rep_rl/sourceCode/interfaces/v_rep_internal.cpp ./v_rep/sourceCode/interfaces/v_rep_internal.cpp
+--- ./v_rep_rl/sourceCode/interfaces/v_rep_internal.cpp	2013-10-24 22:34:10.000000000 +0200
++++ ./v_rep/sourceCode/interfaces/v_rep_internal.cpp	2013-12-18 20:22:15.000000000 +0100
+@@ -1102,6 +1102,34 @@
+ 	VREP_END(1);
+ }
+ 
++//////////////////////////////////////////////////////////////////////////////////////
++simInt simSetDynamicMotorUpperLimitVelocity_internal(simInt objectHandle,simFloat velocity)
++{
++	VREP_START("simSetDynamicMotorUpperLimitVelocity");
++	if (!isSimulatorInitialized(functionName.c_str())) 
++	{
++		VREP_END(-1);
++	}
++	if (!doesObjectExist(functionName.c_str(),objectHandle)) 
++	{
++		VREP_END(-1);
++	}
++	if (!isJoint(functionName.c_str(),objectHandle)) 
++	{
++		VREP_END(-1);
++	}
++	CJoint* it=ct::objCont->getJoint(objectHandle);
++	if (it->getJointType()==sim_joint_spherical_subtype)
++	{
++		CApiErrors::setLastErrorMessage(functionName.c_str(),SIM_ERROR_JOINT_SPHERICAL);
++		VREP_END(-1);
++	}
++	it->setDynamicMotorUpperLimitVelocity(velocity);
++	VREP_END(1);
++}
++//////////////////////////////////////////////////////////////////////////////////////
++
++
+ simInt simSetJointTargetPosition_internal(simInt objectHandle,simFloat targetPosition)
+ {
+ 	VREP_START("simSetJointTargetPosition");
+@@ -11472,6 +11500,14 @@
+ 	((CJoint*)joint)->setPosition(pos,false);
+ }
+ 
++///////////////////////
++simVoid _simSetDynamicMotorUpperLimitVelocity_internal(const simVoid* joint,simFloat vel)
++{
++    ((CJoint*)joint)->setDynamicMotorUpperLimitVelocity(vel);
++    std::cout << "Not sure of this code..." << std::endl;;
++}
++///////////////////////
++
+ simFloat _simGetJointPosition_internal(const simVoid* joint)
+ {
+ 	return(((CJoint*)joint)->getPosition());
+diff -urN --exclude=bin --exclude=compile.sh ./v_rep_rl/sourceCode/interfaces/v_rep_internal.h ./v_rep/sourceCode/interfaces/v_rep_internal.h
+--- ./v_rep_rl/sourceCode/interfaces/v_rep_internal.h	2013-10-24 22:34:10.000000000 +0200
++++ ./v_rep/sourceCode/interfaces/v_rep_internal.h	2013-12-18 18:56:27.000000000 +0100
+@@ -62,6 +62,9 @@
+ simInt simSetObjectOrientation_internal(simInt objectHandle,simInt relativeToObjectHandle,const simFloat* eulerAngles);
+ simInt simGetJointPosition_internal(simInt objectHandle,simFloat* position);
+ simInt simSetJointPosition_internal(simInt objectHandle,simFloat position);
++////////////////////////////////////////////////////////////////////////////////////
++simInt simSetDynamicMotorUpperLimitVelocity_internal(simInt objectHandle,simFloat velocity);
++////////////////////////////////////////////////////////////////////////////////////
+ simInt simSetJointTargetPosition_internal(simInt objectHandle,simFloat targetPosition);
+ simInt simGetJointTargetPosition_internal(simInt objectHandle,simFloat* targetPosition);
+ simInt simSetJointForce_internal(simInt objectHandle,simFloat forceOrTorque);
+@@ -393,6 +396,9 @@
+ simVoid _simSetShapeIsStaticAndNotRespondableButDynamicTag_internal(const simVoid* shape,simBool tag);
+ simBool _simGetShapeIsStaticAndNotRespondableButDynamicTag_internal(const simVoid* shape);
+ simVoid _simSetJointPosition_internal(const simVoid* joint,simFloat pos);
++///////////////////////
++simVoid _simSetDynamicMotorUpperLimitVelocity_internal(const simVoid* joint,simFloat vel);
++///////////////////////
+ simFloat _simGetJointPosition_internal(const simVoid* joint);
+ simVoid _simSetDynamicMotorPositionControlTargetPosition_internal(const simVoid* joint,simFloat pos);
+ simVoid _simGetInitialDynamicVelocity_internal(const simVoid* shape,simFloat* vel);
+diff -urN --exclude=bin --exclude=compile.sh ./v_rep_rl/sourceCode/mainStaticContainers/IloIlo.cpp ./v_rep/sourceCode/mainStaticContainers/IloIlo.cpp
+--- ./v_rep_rl/sourceCode/mainStaticContainers/IloIlo.cpp	2013-10-24 22:34:10.000000000 +0200
++++ ./v_rep/sourceCode/mainStaticContainers/IloIlo.cpp	2013-12-18 17:52:31.000000000 +0100
+@@ -236,8 +236,8 @@
+ 				VMessageBox::critical(NULL,"Video compression library","Could not find all required functions in the video compression library.",VMessageBox::OKELI);
+ 			}
+ 		}
+-		else
+-			VMessageBox::critical(NULL,"Video compression library","Could not find or correctly load the video compression library.",VMessageBox::OKELI);
++		//else
++			//VMessageBox::critical(NULL,"Video compression library","Could not find or correctly load the video compression library.",VMessageBox::OKELI);
+ //**************************************************************************************
+ 
+ 
+Binary files ./v_rep_rl/system/persistentData.dat and ./v_rep/system/persistentData.dat differ
+Binary files ./v_rep_rl/system/settings.dat and ./v_rep/system/settings.dat differ
+diff -urN --exclude=bin --exclude=compile.sh ./v_rep_rl/v_rep.pro ./v_rep/v_rep.pro
+--- ./v_rep_rl/v_rep.pro	2013-11-18 19:23:44.000000000 +0100
++++ ./v_rep/v_rep.pro	2013-12-18 14:56:16.000000000 +0100
+@@ -88,12 +88,12 @@
+ }
+ 
+ macx {
+-	INCLUDEPATH += # your boost folder if needed (but probably already in your paths) #
+-	INCLUDEPATH += # your QScintilla "Qt4" folder, e.g. "../../QScintilla-gpl-2.7.2/Qt4Qt5" #
+-	INCLUDEPATH += # your QScintilla "include" folder, e.g. "../../QScintilla-gpl-2.7.2/include" #
+-	INCLUDEPATH += # your lua5.1 "include" folder, e.g. "../../Lua/5.1/include" #
+-	LIBS += # your "liblua5.1.dylib" location, e.g. , e.g. "../../Lua/5.1/lib/liblua5.1.dylib" #
+-	LIBS += # your "libqscintilla2.dylib" location, e.g. "../../QScintilla-gpl-2.7.2/release/libqscintilla2.dylib" #
++        INCLUDEPATH += /usr/local/include
++        INCLUDEPATH += ../QScintilla-gpl-2.8/Qt4Qt5
++        INCLUDEPATH += ../QScintilla-gpl-2.8/include
++        INCLUDEPATH += /usr/local/include
++        LIBS += /usr/local/lib/liblua.dylib
++        LIBS += /Developer/Qt/5.2.0/clang_64/lib/libqscintilla2.11.dylib
+ 	DEFINES += MAC_VREP
+ 	DEFINES += QT_VREP_64BIT
+ }
