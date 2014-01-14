@@ -59,24 +59,16 @@ class VrepCom(object):
      
         if self.verbose:
             print("Getting resulting parameters.")
-    
-        #for i in range(1, 7):
-        #    self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "Joint_{}_final_pos".format(i))
-        #    self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "Joint_{}_final_vel".format(i))
-            
-        quaternions = self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "Object_Quaternions")
-        assert len(quaternions) % 4 == 0
-        quaternions = tuple(tuple(quaternions[4*i:4*i+4]) for i in range(int(len(quaternions)/4)))
 
-        positions = self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "Object_Positions")
-        assert len(positions) % 3 == 0
-        positions = tuple(tuple(positions[3*i:3*i+3]) for i in range(int(len(positions)/3)))
+        object_sensors = self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "Object_Sensors")
+        assert len(object_sensors) % (3+3+4) == 0
 
-        velocities = self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "Object_Positions")
-        assert len(velocities) % 3 == 0
-        velocities = tuple(tuple(velocities[3*i:3*i+3]) for i in range(int(len(velocities)/3)))
+        # velocities = tuple(tuple(velocities[3*i:3*i+3]) for i in range(int(len(velocities)/3)))            
+        # quaternions = tuple(tuple(quaternions[4*i:4*i+4]) for i in range(int(len(quaternions)/4)))
+        # positions = tuple(tuple(positions[3*i:3*i+3]) for i in range(int(len(positions)/3)))
 
-        assert len(positions) == len(quaternions) == len(velocities)
+
+        # assert len(positions) == len(quaternions) == len(velocities)
         
         self.vrep.simStopSimulation()
 

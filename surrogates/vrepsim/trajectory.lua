@@ -13,11 +13,7 @@ if (simGetScriptExecutionCount() == 0) then
 	simAddStatusbarMessage("Getting scripts parameters...")
 	
 	Trajectory = simUnpackFloats(simGetScriptSimulationParameter(sim_handle_self, "Trajectory"))
-
 	motors_sim_steps = math.floor((#Trajectory-1)/12)
-	-- simAddStatusbarMessage("-- motors_sim_steps set to " .. motors_sim_steps)
-	-- for i = 1, #Trajectory do  simAddStatusbarMessage("-- Trajectory[" .. i .. "] = " .. Trajectory[i]) end
-
 	if(Trajectory == nil) then
 		simAddStatusbarMessage("-- motors_sim_steps set to 0")
 		motors_sim_steps = 0
@@ -34,15 +30,10 @@ if (simGetScriptExecutionCount() == 0) then
 	sim_step = simGetScriptExecutionCount()
 
 	-- will be return
-	object_positions_step_by_step = {}
-	object_quaternions_step_by_step = {}
-	object_velocities_step_by_step = {}
-	joint_positions_step_by_step = {}
-	joint_velocities_step_by_step = {}
-	for i = 1, #handles do
-		table.insert(joint_positions_step_by_step, {})
-		table.insert(joint_velocities_step_by_step, {})
-	end
+	object_sensors = {}
+	joint_sensors  = {}
+
+
 end
 
 -- during the simulation
@@ -50,20 +41,20 @@ if (simGetScriptExecutionCount() > 0) then
 	simHandleChildScript(sim_handle_all_except_explicit) -- make sure children are executed !
 	
 	pc = simGetObjectPosition(cube, -1)
-	for i = 1, 3 do table.insert(object_positions_step_by_step, pc[i]) end
+	for i = 1, 3 do table.insert(object_sensors, pc[i]) end
 
 	qc = simGetObjectQuaternion(cube, -1)
-	for i = 1, 4 do table.insert(object_quaternions_step_by_step, qc[i]) end
+	for i = 1, 4 do table.insert(object_sensors, qc[i]) end
 	
 	lvc, avc = simGetObjectVelocity(cube)
-	for i = 1, 3 do table.insert(object_velocities_step_by_step, lvc[i]) end
-	for i = 1, 3 do table.insert(object_velocities_step_by_step, avc[i]) end
+	for i = 1, 3 do table.insert(object_sensors, lvc[i]) end
+	for i = 1, 3 do table.insert(object_sensors, avc[i]) end
 
 	sim_step = simGetScriptExecutionCount()
 
 	function ReadMotorsPosVel(_index)
-		table.insert(joint_positions_step_by_step[_index], simGetJointTargetPosition(handles[_index]))
-		table.insert(joint_velocities_step_by_step[_index], simGetObjectFloatParameter(handles[_index], 2012))
+		joint_sensors[2 * (_index-1) * motors_sim_steps + sim_step] = simGetJointTargetPosition(handles[_index])
+		joint_sensors[(2 * (_index-1) + 1) * motors_sim_steps + sim_step] = simGetObjectFloatParameter(handles[_index], 2012)
 	end
 	for i = 1, #handles do
 		ReadMotorsPosVel(i)
@@ -80,20 +71,10 @@ if (simGetScriptExecutionCount() > 0) then
 	end
 
 	if(sim_step > max_sim_steps) then
-		simSetScriptSimulationParameter(sim_handle_self,"Object_Positions",simPackFloats(object_positions_step_by_step))
-		simSetScriptSimulationParameter(sim_handle_self,"Object_Quaternions",simPackFloats(object_quaternions_step_by_step))
-		simSetScriptSimulationParameter(sim_handle_self,"Object_Velocities",simPackFloats(object_velocities_step_by_step))
-		
-		function WriteMotorsResults(_index)
-			simSetScriptSimulationParameter(sim_handle_self,"Joint_" .. tostring(_index) .. "_final_pos",simPackFloats(joint_positions_step_by_step[_index]))
-			simSetScriptSimulationParameter(sim_handle_self,"Joint_" .. tostring(_index) .. "_final_vel",simPackFloats(joint_positions_step_by_step[_index]))
-		end
-		for i = 1, #handles do
-			WriteMotorsResults(i)
-		end
+		simSetScriptSimulationParameter(sim_handle_self, "Object_Sensors", simPackFloats(object_sensors))
+		simSetScriptSimulationParameter(sim_handle_self, "Joint_Sensors",  simPackFloats(joint_sensors))
 		simPauseSimulation()
 	end
-	
 end
 
 -- Recommended in documentation : see doc
