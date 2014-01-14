@@ -12,45 +12,26 @@ if (simGetScriptExecutionCount() == 0) then
 
 	simAddStatusbarMessage("Getting scripts parameters...")
 	
-	Joint_pos = {}
-	for i = 1, 6 do
-		jp = simUnpackFloats(simGetScriptSimulationParameter(sim_handle_self,"Joint_" .. tostring(i) .. "_pos"))
-		if(jp == nil) then
-			jp = {}
-		end
-		table.insert(Joint_pos, jp)
-	end
+	Trajectory = simUnpackFloats(simGetScriptSimulationParameter(sim_handle_self, "Trajectory"))
 
-	Joint_vel = {}
-	for i = 1, 6 do
-		jv = simUnpackFloats(simGetScriptSimulationParameter(sim_handle_self,"Joint_" .. tostring(i) .. "_vel"))
-		if(jv == nil) then
-			jv = {}
-		end
-		table.insert(Joint_vel, jv)
-	end
+	motors_sim_steps = math.floor((#Trajectory-1)/12)
+	-- simAddStatusbarMessage("-- motors_sim_steps set to " .. motors_sim_steps)
+	-- for i = 1, #Trajectory do  simAddStatusbarMessage("-- Trajectory[" .. i .. "] = " .. Trajectory[i]) end
 
-	mss = simUnpackFloats(simGetScriptSimulationParameter(sim_handle_self,"Max_Sim_Steps"))
-	if(mss == nil) then
-		mss = {0}
-	end
-	max_sim_steps = mss[1] -- be carefull
-	
-	simAddStatusbarMessage("Getting scripts parameters... done.")
-
-	sim_step = simGetScriptExecutionCount()
-	motors_sim_steps = #Joint_pos[1]
-
-	
-	if(Joint_pos[1] == nil) then
+	if(Trajectory == nil) then
 		simAddStatusbarMessage("-- motors_sim_steps set to 0")
 		motors_sim_steps = 0
 	end
 
+	max_sim_steps = math.floor(Trajectory[12*motors_sim_steps+1]) 
 	if(max_sim_steps == nil) then
 		simAddStatusbarMessage("-- max_sim_steps set to motors_sim_steps * 2")
 		max_sim_steps = motors_sim_steps * 2
 	end
+
+	simAddStatusbarMessage("Getting scripts parameters... done.")
+
+	sim_step = simGetScriptExecutionCount()
 
 	-- will be return
 	object_positions_step_by_step = {}
@@ -90,8 +71,8 @@ if (simGetScriptExecutionCount() > 0) then
 
 	if(sim_step <= motors_sim_steps) then
 		function WriteMotorsPosVel(_index)
-			simSetJointTargetPosition(handles[_index], Joint_pos[_index][sim_step])
-			simSetObjectFloatParameter(handles[_index], 2017, Joint_vel[_index][sim_step])
+			simSetJointTargetPosition(handles[_index], Trajectory[2 * (_index-1) * motors_sim_steps + sim_step])
+			simSetObjectFloatParameter(handles[_index], 2017, Trajectory[(2 * (_index-1) + 1) * motors_sim_steps + sim_step])
 		end
 		for i = 1, #handles do
 			WriteMotorsPosVel(i)

@@ -38,13 +38,12 @@ class VrepCom(object):
         if self.verbose:
             print("Setting parameters...")
 
+        traj = []
         for i, (pos_v, vel_v) in enumerate(trajectory):
-            assert len(pos_v) == len(vel_v)
-            assert len(vel_v) <= max_steps
-            self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Joint_{}_pos".format(i+1), list(pos_v))
-            self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Joint_{}_vel".format(i+1), list(vel_v))
-
-        self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Max_Sim_Steps", [max_steps])
+            traj += pos_v + vel_v
+        traj += [float(max_steps)]        
+        
+        self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Trajectory", traj)
         self.vrep.simSetSimulationPassesPerRenderingPass(self.ppf)
 
         self.vrep.simStartSimulation()
