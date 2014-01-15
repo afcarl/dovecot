@@ -21,4 +21,5 @@ setup(
                             'surrogates.vrepsim',
                             'surrogates.triosim'],
     classifiers=[],
+    package_data={'surrogates.vrepsim': ['surrogate.ttt']},
 )
