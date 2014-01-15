@@ -2,9 +2,9 @@ import os
 import pyvrep
 import time
 
-class VrepCom(object):
+class VRepCom(object):
 
-    def __init__(self, port=1984, load=True, verbose=False, ppf = 10):
+    def __init__(self, port=1984, load=True, verbose=False, ppf=10):
         self.connected = False
         self.verbose = verbose
         self.port = port
@@ -61,12 +61,6 @@ class VrepCom(object):
             print("Getting resulting parameters.")
 
         object_sensors = self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "Object_Sensors")
-        assert len(object_sensors) % (3+3+4) == 0
-
-        # velocities = tuple(tuple(velocities[3*i:3*i+3]) for i in range(int(len(velocities)/3)))            
-        # quaternions = tuple(tuple(quaternions[4*i:4*i+4]) for i in range(int(len(quaternions)/4)))
-        # positions = tuple(tuple(positions[3*i:3*i+3]) for i in range(int(len(positions)/3)))
-
 
         # assert len(positions) == len(quaternions) == len(velocities)
         
@@ -74,3 +68,6 @@ class VrepCom(object):
 
         if self.verbose:
             print("End of simulation.")
+
+        joint_sensors = None
+        return (object_sensors, joint_sensors)

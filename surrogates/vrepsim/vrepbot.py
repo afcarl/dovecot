@@ -1,125 +1,69 @@
-import time
-import random
-import math
+from .. import prims
+from . import vrepcom
 
-import treedict
+class VRepBot(object):
 
-from toolbox import gfx
-import pydyn.dynamixel as dyn
-
-from vreptracker import VRepTracker
-
-
-defaultcfg = treedict.TreeDict()
-
-defaultcfg.objectname = 'cube'
-defaultcfg.objectname_desc = 'Name of object to be tracked in the simulation'
-
-obj_init = (+0.0045, +0.0820, +1.4798)
-
-def distance(a, b):
-    return math.sqrt(sum((a_i-b_i)*(a_i-b_i) for a_i, b_i in zip(a, b)))
-
-
-class VRepSim(object):
-
-    def __init__(self, cfg, timefactor = 1, **kwargs):
-        dyn.enable_vrep()
-
-        self.cfg = cfg
-        self.cfg.update(defaultcfg, overwrite = False)
-
-        self.ctrl = dyn.create_controller(verbose = True, motor_range = [0, 7])
-        self.vt = VRepTracker(self.ctrl.io.sim, self.cfg.objectname)
-        self.vt.start()
-
-        self.dim = len(self.ctrl.motors)
-
-        self.m_feats  = tuple(range(-2*self.dim - 1, 0))
-        self.m_bounds = ((-100.0, 100.0),)*(self.dim - 1) + ((-60.0, 60.0),)
-        self.m_bounds = self.m_bounds*2 + ((0.0, 300.0),)
-
-        self.s_feats  = tuple(range(4))
-        self.s_bounds = ((-3.0, 3.0), (-3.0, 3.0), (1.4, 1.6), (0.0, 1.0))
-
-        self.timefactor = timefactor
+    def __init__(self, cfg):
+        self.s_prims = [prims.create_sprim(sprim_name, cfg) for sprim_name in cfg.sprims.names]
+        self.m_prim = prims.create_mprim(cfg.mprim.name, cfg)
+        self.context = {'x_bounds': (-3.0, 3.0), 
+                        'y_bounds': (-3.0, 3.0), 
+                        'z_bounds': ( 1.4, 3.3)}
+        self.process_context()
+        self.vrepcom = vrepcom.VRepCom(ppf=cfg.vrep.ppf)
 
     @property
-    def _arm_pos(self):
-        return (m.position-150.0 for m in self.ctrl.motors)
+    def m_feats(self):
+        return self.m_prim.m_feats
 
-    def wait(self, target_pose, dur):
-        start = time.time()
-        stability = 0
-        last_pose = target_pose
-        while time.time() - start < dur-0.1:
-            pose = self._arm_pos
-            if all(abs(ap_i - p_i) < 0.5 for ap_i, p_i in zip(pose, target_pose)):
-                time.sleep(0.05)
-                return True
-            # else:
-            #     if all(abs(p1_i - p2_i) < 0.001 and p1_i != p2_i for ap_i, p_i in zip(pose, last_pose)):
-            #         stability += 1
-            #     else:
-            #         stability = 0
-            #         last_pose = pose
-            # if stability > 5:
-            #     return False
-            time.sleep(0.01)
+    @property
+    def m_bounds(self):
+        return self.m_prim.m_bounds
 
-        time.sleep(0.05)
-        return False
+    def process_context(self):
+        for sp in self.s_prims:
+            sp.process_context(self.context)
 
-    def execute_order(self, order, **kwargs):
-        assert len(order) == len(self.m_feats)
+        self.s_feats  = tuple()
+        self.s_bounds = tuple()
+        self.s_fixed  = tuple()
+        self.s_units  = tuple()
+        self.real_s_bounds = tuple()
+        for sp in self.s_prims:
+            self.s_feats  += sp.s_feats
+            self.s_bounds += sp.s_bounds
+            self.s_fixed  += sp.s_fixed
+            self.s_units  += sp.s_units
+            self.real_s_bounds += sp.real_s_bounds
 
-        pose0 = order[0:self.dim]
-        pose1 = order[self.dim:2*self.dim]
-        maxspeed = order[2*self.dim]
+    def process_sensors(self, object_sensors, joint_sensors):
+        
+        # Construct sensors channels
+        assert len(object_sensors) % (3+3+3+4) == 0
+        n = int(len(object_sensors)/13)
+        positions   = tuple(tuple(object_sensors[13*i  :13*i+ 3]) for i in range(n))
+        velocities  = tuple(tuple(object_sensors[13*i+3:13*i+ 6]) for i in range(n))
+        velocities  = tuple(tuple(object_sensors[13*i+6:13*i+ 9]) for i in range(n))
+        quaternions = tuple(tuple(object_sensors[13*i+9:13*i+13]) for i in range(n))
 
-        self.ctrl.stop_sim()
-        time.sleep(0.1)
+        channels = {}
+        channels['object_pos'] = positions
+        channels['object_vel'] = velocities
+        channels['object_ori'] = quaternions
 
-        self.ctrl.start_sim()
-        time.sleep(0.1)
+        # Compute sensory primitives
+        vals  = {}
+        for sp in self.s_prims:
+            feats  = sp.s_feats
+            effect = sp.process_sensors(channels)
+            for f_i, e_i in zip(feats, effect):
+                assert f_i not in vals
+                vals[f_i] = e_i
 
-        if not all(abs(ap_i) < 1.0 for ap_i in self._arm_pos):
-            time.sleep(0.5)
-            self.ctrl.stop_sim()
-            time.sleep(0.5)
+        return tuple(vals[f_i] for f_i in self.s_feats)
 
-            self.ctrl.start_sim()
-            time.sleep(0.5)
-
-        assert all(abs(ap_i) < 1.0 for ap_i in self._arm_pos)
-
-        pose = self.vt.pose[0:3] # crucial ! refresh the registering
-        for p_i, m in zip(pose0, self.ctrl.motors):
-            m.speed = maxspeed
-            m.position = p_i + 150.0
-
-        time.sleep(self.timefactor*0.25)
-#        self.wait(pose0, 0.5)
-
-        for p_i, m in zip(pose1, self.ctrl.motors):
-            m.position = p_i + 150.0
-
-        time.sleep(self.timefactor*0.25)
-#        self.wait(pose1, 0.5)
-        #print max(abs(m.position-p_i-150.0) for m, p_i in zip(self.ctrl.motors, pose1))
-        pose = self.vt.pose[0:3]
-
-        if distance(obj_init, pose) > 0.01:
-            effect = tuple(pose) + (1.0,)
-        else:
-            effect = tuple(pose) + (0.0,)
-
-        if self.cfg.verbose or self.cfg.inner_verbose:
-            color = gfx.green if effect[3] == 1.0 else gfx.red
-            print('{} -> {}{}{}'.format(gfx.ppv(order, fmt='+7.2f'), color, gfx.ppv(effect, fmt='+7.4f'), gfx.end))
-
-        return effect
-
-    def close(self):
-        self.ctrl.stop_sim()
-        self.vt.close()
+    def execute_order(self, order):
+        print(order)
+        motor_traj, max_steps = self.m_prim.process_order(order)
+        sensors_data = self.vrepcom.run_simulation(motor_traj, max_steps)
+        return self.process_sensors(*sensors_data)

@@ -11,7 +11,7 @@ max_steps = 1000
 trajectory = [[pos, speed]]*6
 
 try:
-    vcom = vrepcom.VrepCom(ppf=2000)
+    vcom = vrepcom.VRepCom(ppf=200)
     for _ in range(10):
         vcom.run_simulation(trajectory, max_steps)
 
