@@ -1,8 +1,8 @@
 import env
 import numpy as np
-from surrogates import dmp as pydmp
+from surrogates.prims import dmp as pydmp
 
-res = 20
+res = 5
 
 x_max = float('-inf')
 x_min = float('inf')
@@ -30,5 +30,5 @@ for slope in np.linspace(-400.0, 400.0, num=res):
 print('max  x: {:5.2f}'.format(x_max))
 print('min  x: {:5.2f}'.format(x_min))
 
-print('max xd: {:5.2f}'.format(xds_max))
-print('min xd: {:5.2f}'.format(xds_min))
+print('max xd: {:5.2f}'.format(xd_max))
+print('min xd: {:5.2f}'.format(xd_min))
