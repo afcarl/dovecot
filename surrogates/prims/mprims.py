@@ -76,7 +76,7 @@ class DmpG(MotorPrimitive):
         assert len(self.cfg.mprim.init_states) == len(self.cfg.mprim.target_states) == self.size
         for init_state, target_state in zip(self.cfg.mprim.init_states, self.cfg.mprim.target_states):
             d = dmp.DMP()
-            d.dmp.set_timesteps(int(self.motor_steps/2), 0.0, 2.0)
+            d.dmp.set_timesteps(self.motor_steps, 0.0, self.cfg.mprim.end_time)
             d.lwr_meta_params(self.n_basis)
             d.dmp.set_initial_state([deg2dmp(init_state)])
             d.dmp.set_attractor_state([deg2dmp(target_state)])
@@ -105,7 +105,7 @@ class DmpG(MotorPrimitive):
             ts, ys, yds = d.trajectory()
             ys = 150.0/8.0 * (math.pi/180.0) * np.array(ys) 
             #print('{}: {:6.2f}/{:6.2f}'.format(i, 180.0/math.pi*np.min(ys), 180.0/math.pi*np.max(ys)))
-            yds = [0.25]*len(ys)
+            yds = [self.cfg.mprim.max_speed]*len(ys)
             traj.append((tuple(ys), tuple(yds)))
 
         return tuple(traj), self.max_steps
@@ -130,7 +130,7 @@ class Dmp1G(MotorPrimitive):
         assert len(self.cfg.mprim.init_states) == len(self.cfg.mprim.target_states) == self.size
         for init_state, target_state in zip(self.cfg.mprim.init_states, self.cfg.mprim.target_states):
             d = dmp.DMP()
-            d.dmp.set_timesteps(int(self.motor_steps/2), 0.0, 1.5)
+            d.dmp.set_timesteps(int(self.motor_steps/2), 0.0, 1.25)
             d.lwr_meta_params(1)
             d.dmp.set_initial_state([deg2dmp(init_state)])
             d.dmp.set_attractor_state([deg2dmp(target_state)])
@@ -150,7 +150,7 @@ class Dmp1G(MotorPrimitive):
             ts, ys, yds = d.trajectory()
             ys = 150.0/8.0 * (math.pi/180.0) * np.array(ys) 
             #print('{}: {:6.2f}/{:6.2f}'.format(i, 180.0/math.pi*np.min(ys), 180.0/math.pi*np.max(ys)))
-            yds = [0.25]*len(ys)
+            yds = [self.cfg.mprim.max_speed]*len(ys)
             traj.append((tuple(ys), tuple(yds)))
 
         #print('')
