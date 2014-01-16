@@ -49,6 +49,13 @@ class Uniformize(MotorPrimitive):
         sim_order = self._uni2sim(order)
         return self.motor_prim.process_order(sim_order)
 
+dmp_limit = 3.5
+
+def dmp2rad(v):
+    return 150.0/dmp_limit * (math.pi/180.0) * v
+
+def deg2dmp(v):
+    return dmp_limit/150.0*v
 
 class Dmp1G(MotorPrimitive):
 
@@ -63,12 +70,13 @@ class Dmp1G(MotorPrimitive):
         self.max_steps   = cfg.mprim.max_steps
 
         self.dmps = []
-        for j in range(self.size):
+        assert len(self.cfg.mprim.init_states) == len(self.cfg.mprim.target_states) == self.size
+        for init_state, target_state in zip(self.cfg.mprim.init_states, self.cfg.mprim.target_states):
             d = dmp.DMP()
             d.dmp.set_timesteps(int(self.motor_steps/2), 0.0, 2.0)
             d.lwr_meta_params(1)
-            d.dmp.set_initial_state([0.0])
-            d.dmp.set_attractor_state([0.0])
+            d.dmp.set_initial_state([deg2dmp(init_state)])
+            d.dmp.set_attractor_state([deg2dmp(target_state)])
 
             self.dmps.append(d)
 
@@ -82,16 +90,13 @@ class Dmp1G(MotorPrimitive):
         for i, d in enumerate(self.dmps):
             slope, offset, center, width = order[4*i:4*i+4]
             d.lwr_model_params([center], [width], [slope], [offset])
-            #d.lwr_model_params([center], [width], [slope], [offset])
-            #d.lwr_model_params([center], [width], [slope], [offset])
             ts, ys, yds = d.trajectory()
-            print(np.array(ys))
             ys = 150.0/8.0 * (math.pi/180.0) * np.array(ys) 
-            print(ys)
-            # yds = np.absolute(yds)
-            # yds = math.pi/25.0 * np.array(yds)
+            #print('{}: {:6.2f}/{:6.2f}'.format(i, 180.0/math.pi*np.min(ys), 180.0/math.pi*np.max(ys)))
             yds = [0.25]*len(ys)
             traj.append((tuple(ys), tuple(yds)))
+
+        #print('')
 
         return tuple(traj), self.max_steps
 

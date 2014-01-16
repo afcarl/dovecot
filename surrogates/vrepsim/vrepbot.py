@@ -63,7 +63,7 @@ class VRepBot(object):
         return tuple(vals[f_i] for f_i in self.s_feats)
 
     def execute_order(self, order):
-        print(order)
+        #print(order)
         motor_traj, max_steps = self.m_prim.process_order(order)
         sensors_data = self.vrepcom.run_simulation(motor_traj, max_steps)
         return self.process_sensors(*sensors_data)

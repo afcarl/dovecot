@@ -58,6 +58,7 @@ class Uniformize(SensoryPrimitive):
         self.s_fixed  = self.sensory_prim.s_fixed # FIXME uniformize
 
     def _sim2uni(self, effect):
+        assert len(effect) == len(self.s_feats)
         return tuple((e_i - s_min)/(s_max - s_min) for e_i, (s_min, s_max) in zip(effect, self.sensory_prim.s_bounds))
 
     def process_sensors(self, sensors_data):
@@ -67,31 +68,31 @@ class Uniformize(SensoryPrimitive):
     def units(self):
         return self.sensory_prim.units()
 
-class Push(SensoryPrimitive):
+# class Push(SensoryPrimitive):
 
-    def __init__(self, cfg):
-        self.object_name = 'object'
+#     def __init__(self, cfg):
+#         self.object_name = 'object'
 
-    def required_channels(self):
-        return (self.object_name + '_pos',)
+#     def required_channels(self):
+#         return (self.object_name + '_pos',)
 
-    def process_context(self, context):
-        self.s_feats = (0, 1, 2,)
-        self.s_bounds = (context['x_bounds'],) + (context['y_bounds'],) + ((0.0, 1.0),)
-        self.real_s_bounds = self.s_bounds
-        self.s_fixed = (None, None, 1.0)
+#     def process_context(self, context):
+#         self.s_feats = (0, 1, 2,)
+#         self.s_bounds = (context['x_bounds'],) + (context['y_bounds'],) + ((0.0, 1.0),)
+#         self.real_s_bounds = self.s_bounds
+#         self.s_fixed = (None, None, 1.0)
 
-    def process_sensors(self, sensors_data):
-        pos_array = sensors_data['object_pos']
-        pos_a = pos_array[0]
-        pos_b = pos_array[-1]
-        collision = 0.0 if pos_a == pos_b else 1.0
+#     def process_sensors(self, sensors_data):
+#         pos_array = sensors_data['object_pos']
+#         pos_a = pos_array[0]
+#         pos_b = pos_array[-1]
+#         collision = 0.0 if pos_a == pos_b else 1.0
 
-        return tuple(pos_b) + (collision,)
+#         return tuple(pos_b) + (collision,)
 
-    @property
-    def s_units(self):
-        return ('mm', 'mm', None)
+#     @property
+#     def s_units(self):
+#         return ('mm', 'mm', None)
 
-sprims['push'] = Push
+# sprims['push'] = Push
 

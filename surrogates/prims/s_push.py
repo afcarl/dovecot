@@ -1,3 +1,5 @@
+import numpy as np
+
 import sprims
 
 class Push(sprims.SensoryPrimitive):
@@ -9,20 +11,22 @@ class Push(sprims.SensoryPrimitive):
         self.s_fixed  = (None, None, 1.0)
 
     def required_channels(self):
-        return (,)
+        return (self.object_name + '_pos',) 
 
     def process_context(self, context):
         self.s_bounds = tuple(context['x_bounds']) + tuple(context['y_bounds']) + ((0.0, 1.0),)
+        self.real_s_bounds = self.s_bounds
 
     def process_sensors(self, sensors_data):
         pos_array = sensors_data[self.object_name + '_pos']
         pos_a = pos_array[0]
         pos_b = pos_array[-1]
-        collision = 0.0 if pos_a == pos_b else 1.0
+        collision = 0.0 if pos_a[:2] == pos_b[:2] else 1.0
 
-        return tuple(pos_b) + (collision,)
+        return (pos_b[0]-pos_a[0], pos_b[1]-pos_a[1]) + (collision,)
 
-    def units(self):
+    @property
+    def s_units(self):
         return ('m', 'm', None)
 
-sprims['push'] = Push
+sprims.sprims['push'] = Push
