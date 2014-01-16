@@ -10,15 +10,16 @@ import env
 from surrogates.vrepsim import vrepbot
 
 cfg = treedict.TreeDict()
-cfg.vrep.ppf = 200
+cfg.vrep.ppf = 10
 
 cfg.sprims.names = ['push']
 cfg.sprims.uniformze = False
 
-cfg.mprim.name = 'dmp1g'
-cfg.mprim.motor_steps = 500 
-cfg.mprim.max_steps = 1000
-cfg.mprim.uniformze = False
+cfg.mprim.name = 'dmpg'
+cfg.mprim.motor_steps = 1500 
+cfg.mprim.max_steps   = 1500
+cfg.mprim.uniformze   = False
+cfg.mprim.n_basis = 2
 
 cfg.mprim.init_states   = [-30.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 cfg.mprim.target_states = [ 30.0, 0.0, 0.0, 0.0, 0.0, 0.0]
@@ -26,7 +27,7 @@ cfg.mprim.target_states = [ 30.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
 vrepb = vrepbot.VRepBot(cfg)
 
-total = 11000
+total = 300
 cols = 0
 col_orders = []
 
@@ -37,7 +38,7 @@ for i in range(total):
     if effect != (0.0, 0.0, 0.0):
         cols += 1
         col_orders.append(order)
-    print('{}/{}'.format(i+1, total), end='\r')
+    print('{}({})/{}'.format(i+1, cols, total), end='\r')
     sys.stdout.flush()
     #print(' '.join('{:5.2f}'.format(e) for e in effect))
 
@@ -46,5 +47,4 @@ print('\nran for {}s ({:4.2f}s per order)'.format(int(dur), dur/total))
 print('collisions : {}/{} ({:5.2f}%)'.format(cols, total, 100.0*cols/total))
 
 print('\ncolliding order:')
-for order in col_orders:
-    print(order)
+print(col_orders)

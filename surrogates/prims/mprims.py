@@ -57,6 +57,61 @@ def dmp2rad(v):
 def deg2dmp(v):
     return dmp_limit/150.0*v
 
+
+
+class DmpG(MotorPrimitive):
+
+    def __init__(self, cfg):
+        self.cfg = cfg
+        self.size = 6
+        self.m_feats = tuple(range(-1, -4*self.size-1, -1))
+        self.max_steps     = cfg.mprim.max_steps
+        self.n_basis       = cfg.mprim.n_basis
+        assert self.n_basis > 1
+        self.m_bounds = self.size*self.n_basis*((-400.0, 400.0), (-400.0, 400.0), (0.05, 1.0))
+        self.real_m_bounds = self.m_bounds
+        self.motor_steps   = cfg.mprim.motor_steps - (cfg.mprim.motor_steps % 2) 
+
+        self.dmps = []
+        assert len(self.cfg.mprim.init_states) == len(self.cfg.mprim.target_states) == self.size
+        for init_state, target_state in zip(self.cfg.mprim.init_states, self.cfg.mprim.target_states):
+            d = dmp.DMP()
+            d.dmp.set_timesteps(int(self.motor_steps/2), 0.0, 2.0)
+            d.lwr_meta_params(self.n_basis)
+            d.dmp.set_initial_state([deg2dmp(init_state)])
+            d.dmp.set_attractor_state([deg2dmp(target_state)])
+
+            self.dmps.append(d)
+
+    def process_context(self, context):
+        pass
+
+    def process_order(self, order):
+        assert len(order) == 3*self.n_basis*self.size
+
+        traj = []
+        centers = tuple(np.linspace(0.0, 1.0, num=self.n_basis+2)[1:-1])
+
+        for i, d in enumerate(self.dmps):
+            slopes, offsets, widths = [], [], []
+            for j in range(self.n_basis):
+                cursor = 3 * (self.n_basis * i + j)
+                slope, offset, width = order[cursor:cursor + 3]
+                slopes.append(slope)
+                offsets.append(offset)
+                widths.append(width)
+
+            d.lwr_model_params(centers, widths, slopes, offsets)
+            ts, ys, yds = d.trajectory()
+            ys = 150.0/8.0 * (math.pi/180.0) * np.array(ys) 
+            #print('{}: {:6.2f}/{:6.2f}'.format(i, 180.0/math.pi*np.min(ys), 180.0/math.pi*np.max(ys)))
+            yds = [0.25]*len(ys)
+            traj.append((tuple(ys), tuple(yds)))
+
+        return tuple(traj), self.max_steps
+
+mprims['dmpg'] = DmpG
+
 class Dmp1G(MotorPrimitive):
 
     def __init__(self, cfg):
@@ -64,16 +119,18 @@ class Dmp1G(MotorPrimitive):
         self.size = 6
         self.m_feats = tuple(range(-1, -4*self.size-1, -1))
         self.m_bounds = self.size*((-400.0, 400.0), (-400.0, 400.0),
-                                   (0.0, 1.0), (0.0, 1.0))
+                                   (0.0, 1.0), (0.05, 1.0))
         self.real_m_bounds = self.m_bounds
         self.motor_steps = cfg.mprim.motor_steps - (cfg.mprim.motor_steps % 2) 
         self.max_steps   = cfg.mprim.max_steps
+        self.n_basis       = cfg.mprim.n_basis
+        assert self.n_basis == 1
 
         self.dmps = []
         assert len(self.cfg.mprim.init_states) == len(self.cfg.mprim.target_states) == self.size
         for init_state, target_state in zip(self.cfg.mprim.init_states, self.cfg.mprim.target_states):
             d = dmp.DMP()
-            d.dmp.set_timesteps(int(self.motor_steps/2), 0.0, 2.0)
+            d.dmp.set_timesteps(int(self.motor_steps/2), 0.0, 1.5)
             d.lwr_meta_params(1)
             d.dmp.set_initial_state([deg2dmp(init_state)])
             d.dmp.set_attractor_state([deg2dmp(target_state)])
