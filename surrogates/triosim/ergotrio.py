@@ -12,6 +12,12 @@ import tracker
 
 # init pose
 
+class ErgoTrio(object):
+
+    def __init__(self, cfg):
+        self.cfg = cfg
+
+
 
 class RandomExplore(object):
 

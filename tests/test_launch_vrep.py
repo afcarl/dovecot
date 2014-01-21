@@ -12,9 +12,9 @@ cfg.vrep.ppf         = 200
 if os.uname()[0] == 'Darwin':
     cfg.vrep.vrep_folder = '/Applications/V-REP/v_rep/bin'
 else:
-    cfg.vrep.vrep_folder = '/home/fbenurea/external/vrep/3.1.0/'
+    cfg.vrep.vrep_folder = '/home/fbenurea/external/vrep/3.0.5/'
 cfg.vrep.load            = True
-cfg.vrep.headless        = True
+cfg.vrep.headless        = False
 
 cfg.sprims.names = ['push']
 cfg.sprims.uniformze = False

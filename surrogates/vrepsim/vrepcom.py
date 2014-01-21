@@ -5,6 +5,7 @@ import time
 import signal
 import subprocess
 import random
+import string
 
 import pyvrep
 
@@ -30,15 +31,18 @@ class VRepCom(object):
     def launch_sim(self):
         """Launch a subprocess of V-Rep"""
 
-        port = random.randint(0, 1000000000)
-        while os.path.exists('/tmp/vrep{}'.format(port)):
-            port = random.randint(0, 1000000000)
+        # port = random.randint(0, 1000000000)
+        # while os.path.exists('/tmp/vrep{}'.format(port)):
+        #     port = random.randint(0, 1000000000)
+        port = 1984
+        lognumber = random.randint(0, 1000000000)
+        logname = '/tmp/vreplog{}'.format(lognumber)
 
         headless_flag = '-h' if self.headless else ''
         if os.uname()[0] == "Linux":
-            cmd = "cd {}; xvfb-run ./vrep.sh {} -g{}".format(self.vrep_folder, headless_flag, port)
+            cmd = "cd {}; xvfb-run ./vrep.sh {} -g{} >> {}".format(self.vrep_folder, headless_flag, logname)
         elif os.uname()[0] == "Darwin":
-            cmd = "cd {}; ./vrep {} -g{}".format(self.vrep_folder, headless_flag, port)
+            cmd = "cd {}; ./vrep {} -g{} >> {}".format(self.vrep_folder, headless_flag, port, logname)
         else:
             raise OSError
         self.vrep_proc = subprocess.Popen(cmd, stdout=None, stderr=None,
@@ -46,6 +50,15 @@ class VRepCom(object):
         # self.vrep_proc = subprocess.Popen(cmd, stdout=open(os.devnull, 'wb'), stderr=None,
         #                         shell=True, preexec_fn=os.setsid)
         time.sleep(10)
+
+        with open(logname, 'r') as f:
+            output = f.read()
+
+        prefix = 'INFO : network use endPoint ipc:///tmp/vrep'
+        for line in output.split('\n'):
+            if string.find(line, prefix) == 0:
+                port = int(line[len(prefix):])
+        print("found port {}".format(port))
 
         self.port = port
         return port
