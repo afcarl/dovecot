@@ -1,5 +1,5 @@
 import numpy as np
-
+from toolbox import dist
 import sprims
 
 class Push(sprims.SensoryPrimitive):
@@ -21,7 +21,7 @@ class Push(sprims.SensoryPrimitive):
         pos_array = sensors_data[self.object_name + '_pos']
         pos_a = pos_array[0]
         pos_b = pos_array[-1]
-        collision = 0.0 if pos_a[:2] == pos_b[:2] else 1.0
+        collision = 0.0 if dist(pos_a[:2], pos_b[:2]) < 1.0e-8 else 1.0
 
         return (pos_b[0]-pos_a[0], pos_b[1]-pos_a[1]) + (collision,)
 

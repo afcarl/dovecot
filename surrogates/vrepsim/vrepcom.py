@@ -1,21 +1,63 @@
+from __future__ import print_function
+
 import os
-import pyvrep
 import time
+import signal
+import subprocess
+import random
+
+import pyvrep
 
 class VRepCom(object):
 
-    def __init__(self, port=1984, load=True, verbose=False, ppf=10):
+    def __init__(self, port=1984, load=True, verbose=False, headless=False, vrep_folder=None, ppf=200):
         self.connected = False
         self.verbose = verbose
-        self.port = port
-        self.vrep = pyvrep.PyVrep()
+        self.headless = headless
         self.ppf  = ppf
+        self.port = port
+
+        self.vrep_proc = None
+        if vrep_folder is not None:
+            self.vrep_folder = vrep_folder
+            port = self.launch_sim()
+        
+        self.vrep = pyvrep.PyVrep()
+        
         if load:
             self.load()
 
+    def launch_sim(self):
+        """Launch a subprocess of V-Rep"""
+
+        port = random.randint(0, 1000000000)
+        while os.path.exists('/tmp/vrep{}'.format(port)):
+            port = random.randint(0, 1000000000)
+
+        headless_flag = '-h' if self.headless else ''
+        if os.uname()[0] == "Linux":
+            cmd = "cd {}; xvfb-run ./vrep.sh {} -g{}".format(self.vrep_folder, headless_flag, port)
+        elif os.uname()[0] == "Darwin":
+            cmd = "cd {}; ./vrep {} -g{}".format(self.vrep_folder, headless_flag, port)
+        else:
+            raise OSError
+        self.vrep_proc = subprocess.Popen(cmd, stdout=None, stderr=None,
+                                shell=True, preexec_fn=os.setsid)
+        # self.vrep_proc = subprocess.Popen(cmd, stdout=open(os.devnull, 'wb'), stderr=None,
+        #                         shell=True, preexec_fn=os.setsid)
+        time.sleep(10)
+
+        self.port = port
+        return port
+
+    def flush_proc(self):
+        if self.vrep_proc is not None:
+            self.vrep_proc.stdout.read()
+            self.vrep_proc.stderr.read()
+
     def load(self):
         if not self.connected:
-            self.vrep.connect(1984)
+            self.vrep.connect(self.port)
             self.connected = True
 
         scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'surrogate.ttt'))
@@ -27,6 +69,7 @@ class VRepCom(object):
     def close(self):
         if self.connected:
             self.vrep.disconnect()
+        os.kill(self.vrep_proc.pid, signal.SIGKILL)
 
     def run_simulation(self, trajectory, max_steps):
         """
@@ -38,10 +81,9 @@ class VRepCom(object):
         if self.verbose:
             print("Setting parameters...")
 
-        traj = []
-        for i, (pos_v, vel_v) in enumerate(trajectory):
-            traj += pos_v + vel_v
-        traj += [float(max_steps)]        
+        traj = [float(len(trajectory[0][0])), float(max_steps), trajectory[0][1]] # motors_steps, max_steps, max_speed
+        for i, (pos_v, max_speed) in enumerate(trajectory):
+            traj += pos_v
         
         self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Trajectory", traj)
         self.vrep.simSetSimulationPassesPerRenderingPass(self.ppf)

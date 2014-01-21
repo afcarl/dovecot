@@ -4,13 +4,12 @@ from . import vrepcom
 class VRepBot(object):
 
     def __init__(self, cfg):
-        self.s_prims = [prims.create_sprim(sprim_name, cfg) for sprim_name in cfg.sprims.names]
-        self.m_prim = prims.create_mprim(cfg.mprim.name, cfg)
-        self.context = {'x_bounds': (-3.0, 3.0), 
-                        'y_bounds': (-3.0, 3.0), 
-                        'z_bounds': ( 1.4, 3.3)}
-        self.process_context()
-        self.vrepcom = vrepcom.VRepCom(ppf=cfg.vrep.ppf)
+        self.cfg = cfg
+        self.setup_prims()
+        self.vrepcom = vrepcom.VRepCom(ppf        =cfg.vrep.ppf, 
+                                       vrep_folder=cfg.vrep.vrep_folder,
+                                       load       =cfg.vrep.load,
+                                       headless   =cfg.vrep.headless)
 
     @property
     def m_feats(self):
@@ -19,6 +18,14 @@ class VRepBot(object):
     @property
     def m_bounds(self):
         return self.m_prim.m_bounds
+
+    def setup_prims(self):
+        self.s_prims = [prims.create_sprim(sprim_name, self.cfg) for sprim_name in self.cfg.sprims.names]
+        self.m_prim = prims.create_mprim(self.cfg.mprim.name, self.cfg)
+        self.context = {'x_bounds': (-3.0, 3.0), 
+                        'y_bounds': (-3.0, 3.0), 
+                        'z_bounds': ( 1.4, 3.3)}
+        self.process_context()
 
     def process_context(self):
         for sp in self.s_prims:
@@ -67,3 +74,6 @@ class VRepBot(object):
         motor_traj, max_steps = self.m_prim.process_order(order)
         sensors_data = self.vrepcom.run_simulation(motor_traj, max_steps)
         return self.process_sensors(*sensors_data)
+
+    def close(self):
+        self.vrepcom.close()

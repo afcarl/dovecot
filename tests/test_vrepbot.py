@@ -10,7 +10,7 @@ import env
 from surrogates.vrepsim import vrepbot
 
 cfg = treedict.TreeDict()
-cfg.vrep.ppf = 10
+cfg.vrep.ppf = 200
 
 cfg.sprims.names = ['push']
 cfg.sprims.uniformze = False
@@ -27,26 +27,29 @@ cfg.mprim.init_states   = [-30.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 cfg.mprim.target_states = [ 30.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
 
-vrepb = vrepbot.VRepBot(cfg)
+if __name__ == "__main__":
+    vrepb = vrepbot.VRepBot(cfg)
 
-total = 300
-cols = 0
-col_orders = []
+    total = 10
+    cols = 0
+    col_orders = []
 
-start = time.time()
-for i in range(total):
-    order = tuple(random.uniform(a, b) for a, b in vrepb.m_bounds)
-    effect = vrepb.execute_order(order)
-    if effect != (0.0, 0.0, 0.0):
-        cols += 1
-        col_orders.append(order)
-    print('{}({})/{}'.format(i+1, cols, total), end='\r')
-    sys.stdout.flush()
-    #print(' '.join('{:5.2f}'.format(e) for e in effect))
+    start = time.time()
+    for i in range(total):
+        order = tuple(random.uniform(a, b) for a, b in vrepb.m_bounds)
+        effect = vrepb.execute_order(order)
+        print(effect)
+        if effect[2] != 0.0:
+            print(effect)
+            cols += 1
+            col_orders.append(order)
+        print('{}({})/{}'.format(i+1, cols, total), end='\r')
+        sys.stdout.flush()
+        #print(' '.join('{:5.2f}'.format(e) for e in effect))
 
-dur = time.time()-start
-print('\nran for {}s ({:4.2f}s per order)'.format(int(dur), dur/total))
-print('collisions : {}/{} ({:5.2f}%)'.format(cols, total, 100.0*cols/total))
+    dur = time.time()-start
+    print('\nran for {}s ({:4.2f}s per order)'.format(int(dur), dur/total))
+    print('collisions : {}/{} ({:5.2f}%)'.format(cols, total, 100.0*cols/total))
 
-print('\ncolliding order:')
-print(col_orders)
+    print('\ncolliding order:')
+    print(col_orders)
