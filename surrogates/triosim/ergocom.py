@@ -19,9 +19,11 @@ class ErgoCom(object):
         pass
 
     def _current_pos(self):
-        return [m.position for m in self.motors]
+        self._pos = (m.position for m in self.motors)
+        return self._pos
 
-    def predict_collisions
+    def predict_collisions(self):
+        return []
 
     def run_trial(self, trajectory):
         """
@@ -37,9 +39,34 @@ class ErgoCom(object):
                 4. Run the motion while receiving optitrack data (for collisions).
                 5. Return joint sensors data.
         """
-        
         # Predict collisions
+        # Not supported yet
 
+        # Motor temp
+        # Not supported yet
 
+        # Setup position
+        target = [t_i[0] for t_i in trajectory]
+        for m, tg in zip(self.motors, target):
+            m.position = tg
+
+        while max(abs(m.position - tg) for m, tg in zip(self.motors, target)) < 3:
+            time.sleep(0.1)
+        # FIXME: if too long, make resting and compliant and retry.
+
+        # start trajectory.
+        # FIXME: record time or signal optitrack
+        start = time.time()
+        frame = 0
+        total_frame = len(trajectory[0])
+
+        while frame < total_frame:
+            now = time.time()
+            c_frame = int(math.ceil(now-start/dt))
+            for i, m in enumerate(self.motors):
+                m.position = trajectory[i][c_frame]
+            time.sleep(0.001)
+
+        
 
         return (joint_sensors)
