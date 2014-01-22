@@ -20,8 +20,8 @@ cfg.sprims.names = ['push']
 cfg.sprims.uniformze = False
 
 cfg.mprim.name = 'dmpg'
-cfg.mprim.motor_steps = 2000 
-cfg.mprim.max_steps   = 2000
+cfg.mprim.motor_steps = 500 
+cfg.mprim.max_steps   = 500
 cfg.mprim.uniformze   = False
 cfg.mprim.n_basis     = 2
 cfg.mprim.max_speed   = 1.0
