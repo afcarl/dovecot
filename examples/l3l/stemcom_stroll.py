@@ -9,8 +9,10 @@ cfg = treedict.TreeDict()
 cfg.stem.dt = 0.01
 cfg.stem.verbose_com = True
 cfg.stem.verbose_dyn = True
+cfg.stem.motor_range = [11, 16]
 
 sc = stemcom.StemCom(cfg)
+sc.range_bounds = ((140, 160),)*6
 
 start = time.time()
 sc.setup([150.0]*6)

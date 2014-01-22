@@ -8,7 +8,7 @@ class StemCom(MotorSet):
 
     def __init__(self, cfg):
         self.cfg = cfg
-        MotorSet.__init__(self, motor_range=[0, 6], verbose=self.cfg.stem.verbose_dyn)
+        MotorSet.__init__(self, motor_range=self.cfg.stem.motor_range, verbose=self.cfg.stem.verbose_dyn)
         assert len(self.motors) == 6
 
 
@@ -27,8 +27,8 @@ class StemCom(MotorSet):
 
     def rest(self):
         self.max_speed = 100
-        rest_pose = np.array([173.3, 51.0, 98.2, 173.0, 201.8, 149.6])
-        
+        rest_pose = np.array([173.3, 52.0, 98.2, 173.0, 201.8, 149.6])
+
         speeds = [100, 100, 100, 100, 50, 20]
         poses = [self.pose + float(i)/(len(speeds)-1)*(rest_pose - self.pose) for i, _ in enumerate(speeds)]
 
@@ -38,11 +38,11 @@ class StemCom(MotorSet):
         self.pose = rest_pose
         while max(abs(p - tg) for p, tg in zip(self.pose, rest_pose)) > 20:
             time.sleep(0.05)
-        self.max_speed = 20            
+        self.max_speed = 20
         self.max_torque = 5
         while max(abs(p - tg) for p, tg in zip(self.pose, rest_pose)) > 1.5:
             time.sleep(0.05)
-        
+
         self.compliant = True
         time.sleep(0.3)
 
@@ -58,7 +58,7 @@ class StemCom(MotorSet):
         i = 0
         while ts[i] < now-start_time:
             i += 1
-        self.pose = pose[i] 
+        self.pose = pose[i]
 
 
 
@@ -107,6 +107,6 @@ class StemCom(MotorSet):
     #             m.position = trajectory[i][c_frame]
     #         time.sleep(0.001)
 
-        
+
 
     #     return (joint_sensors)
