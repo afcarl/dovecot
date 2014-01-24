@@ -8,6 +8,8 @@ cfg = treedict.TreeDict()
 cfg.stem.dt = 0.01
 cfg.stem.verbose_com = True
 cfg.stem.verbose_dyn = True
+cfg.stem.motor_range = [01, 06]
+
 
 sc = stemcom.StemCom(cfg)
 

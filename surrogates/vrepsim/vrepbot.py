@@ -6,7 +6,8 @@ class VRepBot(object):
     def __init__(self, cfg):
         self.cfg = cfg
         self.setup_prims()
-        self.vrepcom = vrepcom.VRepCom(ppf        =cfg.vrep.ppf,
+        self.vrepcom = vrepcom.VRepCom(cfg,
+                                       ppf        =cfg.vrep.ppf,
                                        vrep_folder=cfg.vrep.vrep_folder,
                                        load       =cfg.vrep.load,
                                        headless   =cfg.vrep.headless)
@@ -43,7 +44,7 @@ class VRepBot(object):
             self.s_units  += sp.s_units
             self.real_s_bounds += sp.real_s_bounds
 
-    def process_sensors(self, object_sensors, joint_sensors):
+    def process_sensors(self, object_sensors, joint_sensors, tip_sensors):
 
         # Construct sensors channels
         # assert len(object_sensors) % (3+3+3+4) == 0
@@ -64,19 +65,20 @@ class VRepBot(object):
         positions    = tuple(tuple(object_sensors[7*i   :7*i+ 3]) for i in range(n))
         quaternions  = tuple(tuple(object_sensors[7*i+ 3:7*i+ 7]) for i in range(n))
 
-        channels = {}
-        channels['object_pos']   = positions
-        channels['object_vel_t'] = velocities_t
-        channels['object_vel_a'] = velocities_a
-        channels['object_ori']   = quaternions
+        self.channels = {}
+        self.channels['object_pos']   = positions
+        self.channels['object_ori']   = quaternions
 
-
+        if self.cfg.sensors.tip:
+            n = int(len(tip_sensors)/3)
+            tip_pos = tuple(tuple(tip_sensors[3*i:3*i+ 3]) for i in range(n))
+            self.channels['tip_pos'] = tip_pos
 
         # Compute sensory primitives
         vals  = {}
         for sp in self.s_prims:
             feats  = sp.s_feats
-            effect = sp.process_sensors(channels)
+            effect = sp.process_sensors(self.channels)
             for f_i, e_i in zip(feats, effect):
                 assert f_i not in vals
                 vals[f_i] = e_i

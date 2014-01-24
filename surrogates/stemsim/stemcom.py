@@ -7,8 +7,8 @@ from pydyn.msets import MotorSet
 
 
 defcfg = treedict.TreeDict()
-defcfg.cfg.stem.motor_range = (0, 253)
-defcfg.cfg.stem.verbose_dyn = True
+defcfg.stem.motor_range = (0, 253)
+defcfg.stem.verbose_dyn = True
 
 class StemCom(MotorSet):
 
@@ -25,7 +25,7 @@ class StemCom(MotorSet):
         """Setup the stem at the correct position"""
         if self.compliant:
             self.compliant = False
-        self.range_bounds = [(-70, 70)]*6
+        self.range_bounds = [(-100, 100)]*6
 
         self.max_speed  = 100
         self.max_torque = 100

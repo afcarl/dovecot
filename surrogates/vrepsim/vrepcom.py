@@ -11,7 +11,8 @@ import pyvrep
 
 class VRepCom(object):
 
-    def __init__(self, port=1984, load=True, verbose=False, headless=False, vrep_folder=None, ppf=200):
+    def __init__(self, cfg, port=1984, load=True, verbose=False, headless=False, vrep_folder=None, ppf=200):
+        self.cfg = cfg
         self.connected = False
         self.verbose = verbose
         self.headless = headless
@@ -22,9 +23,9 @@ class VRepCom(object):
         if vrep_folder is not None:
             self.vrep_folder = vrep_folder
             port = self.launch_sim()
-        
+
         self.vrep = pyvrep.PyVrep()
-        
+
         if load:
             self.load()
 
@@ -91,13 +92,14 @@ class VRepCom(object):
                 1. The first vector is the position of the motor in rad.
                 2. The second vector is the max velocity of the motor in rad/s.
         """
+
         if self.verbose:
             print("Setting parameters...")
 
         traj = [float(len(trajectory[0][0])), float(max_steps), trajectory[0][1]] # motors_steps, max_steps, max_speed
         for i, (pos_v, max_speed) in enumerate(trajectory):
             traj += pos_v
-        
+
         self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Trajectory", traj)
         self.vrep.simSetSimulationPassesPerRenderingPass(self.ppf)
 
@@ -105,24 +107,32 @@ class VRepCom(object):
 
         if self.verbose:
             print("Simulation started.")
-    
+
         wait = True
         while wait:
             time.sleep(0.0001) # probably useless; let's be defensive.
             if self.vrep.simGetSimulationState() == pyvrep.constants.sim_simulation_paused:
                 wait = False
-     
+
+        object_sensors = None
+        joint_sensors = None
+        tip_sensors = None
+
         if self.verbose:
             print("Getting resulting parameters.")
 
         object_sensors = self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "Object_Sensors")
 
+
+        if self.cfg.sensors.tip:
+            tip_sensors = self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "Tip_Sensors")
+
         # assert len(positions) == len(quaternions) == len(velocities)
-        
+
         self.vrep.simStopSimulation()
 
         if self.verbose:
             print("End of simulation.")
 
         joint_sensors = None
-        return (object_sensors, joint_sensors)
+        return (object_sensors, joint_sensors, tip_sensors)

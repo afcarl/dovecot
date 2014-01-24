@@ -38,7 +38,6 @@ class StemBot(object):
         print motor_traj[0]
         print motor_traj[-1]
 
-        self.stemcom.range_bounds = ((140.0, 160.0),) + ((80, 200),)*5
         self.max_speed = 70
         self.max_torque = 40
 
