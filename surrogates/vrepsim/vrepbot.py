@@ -46,18 +46,31 @@ class VRepBot(object):
     def process_sensors(self, object_sensors, joint_sensors):
 
         # Construct sensors channels
-        assert len(object_sensors) % (3+3+3+4) == 0
-        n = int(len(object_sensors)/13)
-        positions    = tuple(tuple(object_sensors[13*i   :13*i+ 3]) for i in range(n))
-        quaternions  = tuple(tuple(object_sensors[13*i+ 3:13*i+ 7]) for i in range(n))
-        velocities_t = tuple(tuple(object_sensors[13*i+ 7:13*i+10]) for i in range(n))
-        velocities_a = tuple(tuple(object_sensors[13*i+10:13*i+13]) for i in range(n))
+        # assert len(object_sensors) % (3+3+3+4) == 0
+        # n = int(len(object_sensors)/13)
+        # positions    = tuple(tuple(object_sensors[13*i   :13*i+ 3]) for i in range(n))
+        # quaternions  = tuple(tuple(object_sensors[13*i+ 3:13*i+ 7]) for i in range(n))
+        # velocities_t = tuple(tuple(object_sensors[13*i+ 7:13*i+10]) for i in range(n))
+        # velocities_a = tuple(tuple(object_sensors[13*i+10:13*i+13]) for i in range(n))
+
+        # channels = {}
+        # channels['object_pos']   = positions
+        # channels['object_vel_t'] = velocities_t
+        # channels['object_vel_a'] = velocities_a
+        # channels['object_ori']   = quaternions
+
+        assert len(object_sensors) % (3+4) == 0
+        n = int(len(object_sensors)/7)
+        positions    = tuple(tuple(object_sensors[7*i   :7*i+ 3]) for i in range(n))
+        quaternions  = tuple(tuple(object_sensors[7*i+ 3:7*i+ 7]) for i in range(n))
 
         channels = {}
         channels['object_pos']   = positions
         channels['object_vel_t'] = velocities_t
         channels['object_vel_a'] = velocities_a
         channels['object_ori']   = quaternions
+
+
 
         # Compute sensory primitives
         vals  = {}

@@ -11,9 +11,9 @@ if (simGetScriptExecutionCount() == 0) then
 	simAddStatusbarMessage("Getting handles... done.")
 
 	simAddStatusbarMessage("Getting scripts parameters...")
-	
+
 	Trajectory = simUnpackFloats(simGetScriptSimulationParameter(sim_handle_self, "Trajectory"))
-	
+
 	motors_sim_steps = math.floor(Trajectory[1])
 	max_sim_steps    = math.floor(Trajectory[2])
 	max_speed        = Trajectory[3]
@@ -35,16 +35,16 @@ end
 -- during the simulation
 if (simGetScriptExecutionCount() > 0) then
 	simHandleChildScript(sim_handle_all_except_explicit) -- make sure children are executed !
-	
+
 	pc = simGetObjectPosition(cube, -1)
 	for i = 1, 3 do table.insert(object_sensors, pc[i]) end
 
 	qc = simGetObjectQuaternion(cube, -1)
 	for i = 1, 4 do table.insert(object_sensors, qc[i]) end
-	
-	lvc, avc = simGetObjectVelocity(cube)
-	for i = 1, 3 do table.insert(object_sensors, lvc[i]) end
-	for i = 1, 3 do table.insert(object_sensors, avc[i]) end
+
+	--lvc, avc = simGetObjectVelocity(cube)
+	--for i = 1, 3 do table.insert(object_sensors, lvc[i]) end
+	--for i = 1, 3 do table.insert(object_sensors, avc[i]) end
 
 	sim_step = simGetScriptExecutionCount()
 
