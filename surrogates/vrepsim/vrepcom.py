@@ -40,7 +40,7 @@ class VRepCom(object):
 
         headless_flag = '-h' if self.headless else ''
         if os.uname()[0] == "Linux":
-            cmd = "cd {}; xvfb-run ./vrep.sh {} -g{} >> {}".format(self.vrep_folder, headless_flag, logname)
+            cmd = "cd {}; xvfb-run ./vrep.sh {} -g{} >> {}".format(self.vrep_folder, headless_flag, port, logname)
         elif os.uname()[0] == "Darwin":
             cmd = "cd {}; ./vrep {} -g{} >> {}".format(self.vrep_folder, headless_flag, port, logname)
         else:

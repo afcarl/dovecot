@@ -17,7 +17,8 @@ class StemCom(MotorSet):
         if self.compliant:
             self.compliant = False
 
-        self.max_speed = 100
+        self.max_speed  = 100
+        self.max_torque = 50
         self.pose = pose
 
         while max(abs(p - tg) for p, tg in zip(self.pose, pose)) > 3:
@@ -27,6 +28,8 @@ class StemCom(MotorSet):
 
     def rest(self):
         self.max_speed = 100
+        self.range_bounds = ((50, 240),)*6
+
         rest_pose = np.array([173.3, 52.0, 98.2, 173.0, 201.8, 149.6])
 
         speeds = [100, 100, 100, 100, 50, 20]
@@ -40,7 +43,7 @@ class StemCom(MotorSet):
             time.sleep(0.05)
         self.max_speed = 20
         self.max_torque = 5
-        while max(abs(p - tg) for p, tg in zip(self.pose, rest_pose)) > 1.5:
+        while max(abs(p - tg) for p, tg in zip(self.pose, rest_pose)) > 2.0:
             time.sleep(0.05)
 
         self.compliant = True
@@ -58,7 +61,8 @@ class StemCom(MotorSet):
         i = 0
         while ts[i] < now-start_time:
             i += 1
-        self.pose = pose[i]
+        #print(poses[i])
+        self.pose = poses[i]
 
 
 
