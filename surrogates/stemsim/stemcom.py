@@ -1,14 +1,23 @@
 import os
 import time
 import numpy as np
+import treedict
 
 from pydyn.msets import MotorSet
+
+
+defcfg = treedict.TreeDict()
+defcfg.cfg.stem.motor_range = (0, 253)
+defcfg.cfg.stem.verbose_dyn = True
 
 class StemCom(MotorSet):
 
     def __init__(self, cfg):
         self.cfg = cfg
+        self.cfg.update(defcfg, overwrite=False)
         MotorSet.__init__(self, motor_range=self.cfg.stem.motor_range, verbose=self.cfg.stem.verbose_dyn)
+
+        self.zero_pose = np.array((172.7, 150.0, 150.0, 172.7, 150.0, 150.0))
         assert len(self.motors) == 6
 
 
@@ -16,21 +25,22 @@ class StemCom(MotorSet):
         """Setup the stem at the correct position"""
         if self.compliant:
             self.compliant = False
+        self.range_bounds = [(-70, 70)]*6
 
         self.max_speed  = 100
-        self.max_torque = 50
+        self.max_torque = 100
         self.pose = pose
 
         while max(abs(p - tg) for p, tg in zip(self.pose, pose)) > 3:
             time.sleep(0.1)
         print("rest pose error: {}".format(max(abs(p - tg) for p, tg in zip(self.pose, pose))))
 
-
     def rest(self):
         self.max_speed = 100
-        self.range_bounds = ((50, 240),)*6
 
-        rest_pose = np.array([173.3, 52.0, 98.2, 173.0, 201.8, 149.6])
+        rest_pose = np.array([0.0, -98.0, -54.0, 0.0, 58.0, 0.0])
+        self.range_bounds = [(min(p, rp), max(p, rp)) for p, rp in zip(self.pose, rest_pose)]
+
 
         speeds = [100, 100, 100, 100, 50, 20]
         poses = [self.pose + float(i)/(len(speeds)-1)*(rest_pose - self.pose) for i, _ in enumerate(speeds)]
@@ -43,9 +53,11 @@ class StemCom(MotorSet):
             time.sleep(0.05)
         self.max_speed = 20
         self.max_torque = 5
-        while max(abs(p - tg) for p, tg in zip(self.pose, rest_pose)) > 2.0:
+        start_time = time.time()
+        while max(abs(p - tg) for p, tg in zip(self.pose, rest_pose)) > 2.0 and time.time()-start_time < 1.0:
             time.sleep(0.05)
 
+        self.range_bounds = [(p-5, p+5) for p in self.pose]
         self.compliant = True
         time.sleep(0.3)
 

@@ -27,7 +27,7 @@ class StemBot(object):
         return self.m_prim.m_bounds
 
     def execute_order(self, order):
-        self.stemcom.setup([150.0]*6)
+        self.stemcom.setup([0.0]*6)
 
         motor_traj, max_steps = self.m_prim.process_order(order)
         ts = [0.01*i for i in range(len(motor_traj[0][0]))]

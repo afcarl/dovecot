@@ -14,7 +14,7 @@ cfg.stem.motor_range = [01, 06]
 sc = stemcom.StemCom(cfg)
 
 start = time.time()
-sc.setup([150.0]*6)
+sc.setup([0.0]*6)
 dur = time.time() - start
 
 print("took {:.1f}s".format(dur))
