@@ -19,7 +19,8 @@ setup(
     url = "flowers.inria.fr",
     packages=['surrogates', 'surrogates.kinsim',
                             'surrogates.vrepsim',
-                            'surrogates.triosim'],
+                            'surrogates.stemsim'],
     classifiers=[],
-    package_data={'surrogates.vrepsim': ['surrogate.ttt']},
+    package_data={'surrogates.vrepsim': ['surrogate.ttt'],
+                  'surrogates.stemsim': ['ar.ttt']},
 )
