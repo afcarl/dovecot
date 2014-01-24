@@ -6,7 +6,7 @@ class VRepBot(object):
     def __init__(self, cfg):
         self.cfg = cfg
         self.setup_prims()
-        self.vrepcom = vrepcom.VRepCom(ppf        =cfg.vrep.ppf, 
+        self.vrepcom = vrepcom.VRepCom(ppf        =cfg.vrep.ppf,
                                        vrep_folder=cfg.vrep.vrep_folder,
                                        load       =cfg.vrep.load,
                                        headless   =cfg.vrep.headless)
@@ -22,8 +22,8 @@ class VRepBot(object):
     def setup_prims(self):
         self.s_prims = [prims.create_sprim(sprim_name, self.cfg) for sprim_name in self.cfg.sprims.names]
         self.m_prim = prims.create_mprim(self.cfg.mprim.name, self.cfg)
-        self.context = {'x_bounds': (-3.0, 3.0), 
-                        'y_bounds': (-3.0, 3.0), 
+        self.context = {'x_bounds': (-3.0, 3.0),
+                        'y_bounds': (-3.0, 3.0),
                         'z_bounds': ( 1.4, 3.3)}
         self.process_context()
 
@@ -44,19 +44,20 @@ class VRepBot(object):
             self.real_s_bounds += sp.real_s_bounds
 
     def process_sensors(self, object_sensors, joint_sensors):
-        
+
         # Construct sensors channels
         assert len(object_sensors) % (3+3+3+4) == 0
         n = int(len(object_sensors)/13)
-        positions   = tuple(tuple(object_sensors[13*i  :13*i+ 3]) for i in range(n))
-        velocities  = tuple(tuple(object_sensors[13*i+3:13*i+ 6]) for i in range(n))
-        velocities  = tuple(tuple(object_sensors[13*i+6:13*i+ 9]) for i in range(n))
-        quaternions = tuple(tuple(object_sensors[13*i+9:13*i+13]) for i in range(n))
+        positions    = tuple(tuple(object_sensors[13*i   :13*i+ 3]) for i in range(n))
+        quaternions  = tuple(tuple(object_sensors[13*i+ 3:13*i+ 7]) for i in range(n))
+        velocities_t = tuple(tuple(object_sensors[13*i+ 7:13*i+10]) for i in range(n))
+        velocities_a = tuple(tuple(object_sensors[13*i+10:13*i+13]) for i in range(n))
 
         channels = {}
-        channels['object_pos'] = positions
-        channels['object_vel'] = velocities
-        channels['object_ori'] = quaternions
+        channels['object_pos']   = positions
+        channels['object_vel_t'] = velocities_t
+        channels['object_vel_a'] = velocities_a
+        channels['object_ori']   = quaternions
 
         # Compute sensory primitives
         vals  = {}
