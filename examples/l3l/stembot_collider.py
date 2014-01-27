@@ -27,7 +27,19 @@ cfg.mprim.target_states = [ 30.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
 sb = stembot.StemBot(cfg)
 
-order = tuple(random.uniform(lb, hb) for lb, hb in sb.m_bounds)
-sb.execute_order(order)
+total   = 10
+rejects = 0
+start = time.time()
 
-sb.close()
+for i in range(total):
+    order = tuple(random.uniform(lb, hb) for lb, hb in sb.m_bounds)
+    try:
+        sb.create_trajectory(order)
+    except stembot.CollisionError:
+        rejects += 1
+
+dur = time.time() - start
+sb.close(rest=False)
+
+print("{}/{} reject, computed in {:.2f}s ({:.2f}s per executable order)".format(
+        rejects, total, dur, dur/max(1, (total-rejects))))

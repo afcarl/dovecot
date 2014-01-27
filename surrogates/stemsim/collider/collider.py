@@ -15,9 +15,10 @@ for body in bt.bodies():
 def collide(angles):
 
     orientation = [  1,  -1,  -1,   1,   1,   1]
-    baseline    = [172, 150, 150, 172, 150, 150]
-    angles = [o_i*(p_i-b_i) for p_i, b_i, o_i in zip(stem.pose, baseline, orientation)]
-    r_angles = [math.radians(a) for a in angles]
+    baseline    = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    # baseline    = [172, 150, 150, 172, 150, 150]
+    u_angles = [o_i*(p_i-b_i) for p_i, b_i, o_i in zip(angles, baseline, orientation)]
+    r_angles = [math.radians(a) for a in u_angles]
 
     bt.update(r_angles)
 
