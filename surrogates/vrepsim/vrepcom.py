@@ -69,16 +69,16 @@ class VRepCom(object):
             self.vrep_proc.stdout.read()
             self.vrep_proc.stderr.read()
 
-    def load(self):
+    def load(self, scene="surrogate.ttt", script="Flower"):
         if not self.connected:
             self.vrep.connect(self.port)
             self.connected = True
 
-        scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'surrogate.ttt'))
+        scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), scene))
         if self.verbose:
             print("Loading v-rep scene {}".format(scene_file))
         self.vrep.simLoadScene(scene_file)
-        self.handle_script = self.vrep.simGetScriptHandle("Flower");
+        self.handle_script = self.vrep.simGetScriptHandle(script);
 
     def close(self):
         if self.connected:
@@ -136,3 +136,64 @@ class VRepCom(object):
 
         joint_sensors = None
         return (object_sensors, joint_sensors, tip_sensors)
+
+
+class OptiVrepCom(VRepCom):
+    
+    def _filter_trajectory(self, trajectory):
+        assert len(trajectory) > 0
+        
+        ts_ref = trajectory[0][0]
+        new_traj = []
+        new_traj.append(trajectory[0])
+        ts_ref = ts_ref + 0.01 # 10 ms
+        for i in range (1, len(trajectory)):
+            if(trajectory[i][0] > ts_ref):
+                new_traj.append(trajectory[i])
+                ts_ref = ts_ref + 0.01
+        return new_traj
+        
+    def run_trajectory(self, trajectory):
+        """
+            
+        """
+        if self.verbose:
+            print("Setting parameters...")
+        
+        new_trajectory = self._filter_trajectory(trajectory)
+
+        ts, pos_raw = zip(*new_trajectory)
+        traj_x, traj_y, traj_z = zip(*pos_raw)
+        timstamps = ts
+
+        self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Traj_X", list(traj_x))
+        self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Traj_Y", list(traj_y))
+        self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Traj_Z", list(traj_z))
+        
+        self.vrep.simSetSimulationPassesPerRenderingPass(self.ppf)
+
+        self.vrep.simStartSimulation()
+
+        if self.verbose:
+            print("Simulation started.")
+
+        wait = True
+        while wait:
+            time.sleep(0.0001) # probably useless; let's be defensive.
+            if self.vrep.simGetSimulationState() == pyvrep.constants.sim_simulation_paused:
+                wait = False
+
+        object_sensors = None
+
+        if self.verbose:
+            print("Getting resulting parameters.")
+
+        object_sensors = self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "Object_Sensors")
+
+        self.vrep.simStopSimulation()
+
+        if self.verbose:
+            print("End of simulation.")
+
+        return (object_sensors)
+
