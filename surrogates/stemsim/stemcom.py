@@ -38,15 +38,10 @@ class StemCom(MotorSet):
     def rest(self):
         self.max_speed = 100
 
-        rest_pose = np.array([0.0, -98.0, -54.0, 0.0, 58.0, 0.0])
+        rest_pose = np.array([5.3, 96.3, -97.8, 0.6, -46.5, -18.9])
+        #rest_pose = np.array([0.0, -98.0, -54.0, 0.0, 58.0, 0.0])
         self.range_bounds = [(min(p, rp), max(p, rp)) for p, rp in zip(self.pose, rest_pose)]
 
-
-        speeds = [100, 100, 100, 100, 50, 20]
-        poses = [self.pose + float(i)/(len(speeds)-1)*(rest_pose - self.pose) for i, _ in enumerate(speeds)]
-
-        # while max(abs(p - tg) for p, tg in zip(self.pose, pose)) > 10:
-        #         time.sleep(0.05)
 
         self.pose = rest_pose
         while max(abs(p - tg) for p, tg in zip(self.pose, rest_pose)) > 20:
