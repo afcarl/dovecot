@@ -57,7 +57,7 @@ for tg in target_states:
     sb.execute_order(order)
     print(np.mean([sb.channels['tip_pos'][-50:]], axis=1))
 
-sb.c,lose()
+sb.close()
 
 
 # R,esult
