@@ -1,8 +1,9 @@
 from __future__ import print_function, division
+import os
 
 from dynamics.fwdkin import bodytree, smodel
 
-sm = smodel.SymbolicModel.from_file('stem.smodel')
+sm = smodel.SymbolicModel.from_file(os.path.abspath(os.path.join(__file__, '..')) + '/' + 'stem.smodel')
 bt = bodytree.BodyTree(sm)
 
 

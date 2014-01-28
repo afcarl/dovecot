@@ -23,8 +23,8 @@ class StemCom(MotorSet):
 
     def setup(self, pose):
         """Setup the stem at the correct position"""
-        if self.compliant:
-            self.compliant = False
+#        if any(self.compliant):
+        self.compliant = False
         self.range_bounds = [(-100, 100)]*6
 
         self.max_speed  = 100

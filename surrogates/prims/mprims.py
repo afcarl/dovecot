@@ -49,7 +49,7 @@ class Uniformize(MotorPrimitive):
         sim_order = self._uni2sim(order)
         return self.motor_prim.process_order(sim_order)
 
-dmp_limit = 8.0
+dmp_limit = 4.0
 
 def dmp2rad(v):
     return 150.0/dmp_limit * (math.pi/180.0) * v
@@ -70,7 +70,7 @@ class DmpG(MotorPrimitive):
         assert self.n_basis > 1
         self.m_bounds = self.size*self.n_basis*((-400.0, 400.0), (-400.0, 400.0), (0.05, 1.0))
         self.real_m_bounds = self.m_bounds
-        self.motor_steps   = cfg.mprim.motor_steps - (cfg.mprim.motor_steps % 2) 
+        self.motor_steps   = cfg.mprim.motor_steps - (cfg.mprim.motor_steps % 2)
 
         self.dmps = []
         assert len(self.cfg.mprim.init_states) == len(self.cfg.mprim.target_states) == self.size
@@ -103,7 +103,7 @@ class DmpG(MotorPrimitive):
 
             d.lwr_model_params(centers, widths, slopes, offsets)
             ts, ys, yds = d.trajectory()
-            ys = dmp2rad(np.array(ys)) 
+            ys = dmp2rad(np.array(ys))
             #print('{}: {:6.2f}/{:6.2f}'.format(i, 180.0/math.pi*np.min(ys), 180.0/math.pi*np.max(ys)))
 
             traj.append((tuple(ys), self.cfg.mprim.max_speed))
@@ -121,7 +121,7 @@ class Dmp1G(MotorPrimitive):
         self.m_bounds = self.size*((-400.0, 400.0), (-400.0, 400.0),
                                    (0.0, 1.0), (0.05, 1.0))
         self.real_m_bounds = self.m_bounds
-        self.motor_steps = cfg.mprim.motor_steps - (cfg.mprim.motor_steps % 2) 
+        self.motor_steps = cfg.mprim.motor_steps - (cfg.mprim.motor_steps % 2)
         self.max_steps   = cfg.mprim.max_steps
         self.n_basis       = cfg.mprim.n_basis
         assert self.n_basis == 1
@@ -148,7 +148,7 @@ class Dmp1G(MotorPrimitive):
             slope, offset, center, width = order[4*i:4*i+4]
             d.lwr_model_params([center], [width], [slope], [offset])
             ts, ys, yds = d.trajectory()
-            ys = 150.0/8.0 * (math.pi/180.0) * np.array(ys) 
+            ys = 150.0/8.0 * (math.pi/180.0) * np.array(ys)
             #print('{}: {:6.2f}/{:6.2f}'.format(i, 180.0/math.pi*np.min(ys), 180.0/math.pi*np.max(ys)))
             yds = [self.cfg.mprim.max_speed]*len(ys)
             traj.append((tuple(ys), tuple(yds)))

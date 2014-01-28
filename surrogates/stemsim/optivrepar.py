@@ -12,13 +12,12 @@ class OptiVrepAR(object):
         self.verbose = verbose
         self.scene = scene
         self.script = script
-        self.opivcom = None
         cfg = treedict.TreeDict()
-        cfg.senser.tip = False
-        self.opivcom = vrepcom.OptiVrepCom(cfg, self.port, False, self.verbose, True, None, self.ppf)
+        cfg.sensors.tip = False
+        self.opivcom = vrepcom.OptiVrepCom(cfg, load=False, verbose=self.verbose, headless=False, vrep_folder=None, ppf=self.ppf)
         if not self.opivcom.connected:
             self.opivcom.load(self.scene, self.script)
-            
+
     def execute(self, trackdata):
         return self.opivcom.run_trajectory(trackdata)
 

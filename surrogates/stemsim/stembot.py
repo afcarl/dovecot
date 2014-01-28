@@ -4,6 +4,10 @@ import numpy as np
 
 from .. import prims
 from . import stemcom
+from . import collider
+
+class CollisionError(Exception):
+    pass
 
 class StemBot(object):
 
@@ -26,17 +30,32 @@ class StemBot(object):
     def m_bounds(self):
         return self.m_prim.m_bounds
 
-    def execute_order(self, order):
-        self.stemcom.setup([0.0]*6)
-
+    def create_trajectory(self, order):
         motor_traj, max_steps = self.m_prim.process_order(order)
+
         ts = [0.01*i for i in range(len(motor_traj[0][0]))]
+
         motor_traj = list(zip(*tuple(t_i[0] for t_i in motor_traj)))
         for i, mt_i in enumerate(motor_traj):
-            motor_traj[i] = np.degrees(mt_i) + 150.0
+            motor_traj[i] = np.degrees(mt_i)
 
-        print motor_traj[0]
-        print motor_traj[-1]
+        # check for collisions beforehand
+        for i, pose in enumerate(motor_traj):
+            if len(collider.collide(pose)) > 0:
+                raise CollisionError
+            #print('{}/{}'.format(i+1, len(pose)), end'\r')
+            #sys.stdout.flush()
+
+        # print motor_traj[0]
+        # print motor_traj[-1]
+
+        return ts, motor_traj
+
+    def execute_order(self, order):
+        ts, motor_traj = self.create_trajectory(order)
+
+        self.stemcom.setup([0.0]*6)
+        time.sleep(1.0)
 
         self.max_speed = 70
         self.max_torque = 40
@@ -44,9 +63,13 @@ class StemBot(object):
         start_time = time.time()
         while time.time()-start_time < ts[-1]:
             self.stemcom.step((ts, motor_traj), start_time)
+        end_time = time.time()
 
-        time.sleep(2.0)
+        time.sleep(1.0)
 
-    def close(self):
-        self.stemcom.rest()
+        return start_time, end_time
+
+    def close(self, rest=True):
+        if rest:
+            self.stemcom.rest()
         self.stemcom.close()
