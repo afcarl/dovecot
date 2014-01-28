@@ -22,19 +22,23 @@ cfg.mprim.n_basis     = 2
 cfg.mprim.max_speed   = 1.0
 cfg.mprim.end_time    = 1.25
 
-cfg.mprim.init_states   = [-30.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-cfg.mprim.target_states = [ 30.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+cfg.mprim.init_states   = [ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+cfg.mprim.target_states = [ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
 sb = stembot.StemBot(cfg)
 
+total = 1
 count = 0
 
-while count == 0:
+start = time.time()
+while count < 10:
     try:
         order = tuple(random.uniform(lb, hb) for lb, hb in sb.m_bounds)
         sb.execute_order(order)
         count += 1
     except stembot.CollisionError:
         pass
-
+dur = time.time() - start
 sb.close()
+
+print("{} movements, {:.1f}s ({:.1f}s per movements)".format(total, dur, dur/total))
