@@ -20,9 +20,8 @@ class VRepCom(object):
         self.port = port
 
         self.vrep_proc = None
-        if vrep_folder is not None:
-            self.vrep_folder = vrep_folder
-            port = self.launch_sim()
+        self.vrep_folder = vrep_folder
+        port = self.launch_sim()
 
         self.vrep = pyvrep.PyVrep()
 
@@ -41,11 +40,13 @@ class VRepCom(object):
 
         headless_flag = '-h' if self.headless else ''
         if os.uname()[0] == "Linux":
-            cmd = "cd {}; xvfb-run ./vrep.sh {} -g{} >> {}".format(self.vrep_folder, headless_flag, port, logname)
+
+            cmd = "xvfb-run vrep >> {}".format(logname)
         elif os.uname()[0] == "Darwin":
             cmd = "cd {}; ./vrep {} -g{} >> {}".format(self.vrep_folder, headless_flag, port, logname)
         else:
             raise OSError
+        print(cmd)
         self.vrep_proc = subprocess.Popen(cmd, stdout=None, stderr=None,
                                 shell=True, preexec_fn=os.setsid)
         # self.vrep_proc = subprocess.Popen(cmd, stdout=open(os.devnull, 'wb'), stderr=None,
@@ -139,10 +140,10 @@ class VRepCom(object):
 
 
 class OptiVrepCom(VRepCom):
-    
+
     def _filter_trajectory(self, trajectory):
         assert len(trajectory) > 0
-        
+
         ts_ref = trajectory[0][0]
         new_traj = []
         new_traj.append(trajectory[0])
@@ -152,14 +153,14 @@ class OptiVrepCom(VRepCom):
                 new_traj.append(trajectory[i])
                 ts_ref = ts_ref + 0.01
         return new_traj
-        
+
     def run_trajectory(self, trajectory):
         """
-            
+
         """
         if self.verbose:
             print("Setting parameters...")
-        
+
         new_trajectory = self._filter_trajectory(trajectory)
 
         ts, pos_raw = zip(*new_trajectory)
@@ -169,7 +170,7 @@ class OptiVrepCom(VRepCom):
         self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Traj_X", list(traj_x))
         self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Traj_Y", list(traj_y))
         self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Traj_Z", list(traj_z))
-        
+
         self.vrep.simSetSimulationPassesPerRenderingPass(self.ppf)
 
         self.vrep.simStartSimulation()
@@ -195,5 +196,5 @@ class OptiVrepCom(VRepCom):
         if self.verbose:
             print("End of simulation.")
 
-        return (object_sensors)
+        return (object_sensors, None, None)
 
