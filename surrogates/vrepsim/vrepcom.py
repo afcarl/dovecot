@@ -78,7 +78,9 @@ class VRepCom(object):
         scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), scene))
         if self.verbose:
             print("Loading v-rep scene {}".format(scene_file))
-        self.vrep.simLoadScene(scene_file)
+        ret = self.vrep.simLoadScene(scene_file)
+        if ret != 1:
+            raise IOError
         self.handle_script = self.vrep.simGetScriptHandle(script);
 
     def close(self):
