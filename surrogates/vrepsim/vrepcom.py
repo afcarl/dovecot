@@ -79,7 +79,7 @@ class VRepCom(object):
         if self.verbose:
             print("Loading v-rep scene {}".format(scene_file))
         ret = self.vrep.simLoadScene(scene_file)
-        if ret != 1:
+        if ret == -1:
             raise IOError
         self.handle_script = self.vrep.simGetScriptHandle(script);
 
