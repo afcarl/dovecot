@@ -70,6 +70,7 @@ class VRepBot(object):
         self.channels['object_ori']   = quaternions
 
         if self.cfg.sensors.tip:
+            assert tip_sensors is not None
             n = int(len(tip_sensors)/3)
             tip_pos = tuple(tuple(tip_sensors[3*i:3*i+ 3]) for i in range(n))
             self.channels['tip_pos'] = tip_pos
