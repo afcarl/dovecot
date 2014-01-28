@@ -6,7 +6,7 @@ from natnet import FrameBuffer
 import treedict
 
 class OptiVrepAR(object):
-    def __init__(self, port=1984, verbose=True, ppf=200, scene="ar.ttt", script="marker"):
+    def __init__(self, port=1984, verbose=True, ppf=200, scene="../stemsim/ar.ttt", script="marker"):
         self.ppf = ppf
         self.port = 1984
         self.verbose = verbose
