@@ -86,7 +86,7 @@ try:
             # produce sensory feedback
             effect = vs.process_sensors(object_sensors, joint_sensors, tip_sensors)
             if effect[2] == 1.0:
-                success = success +1
+                succes = succes +1
             #print("{}order:{} {}".format(gfx.purple, gfx.end, gfx.ppv(order)))
             print("{}effect:{} {}".format(gfx.cyan, gfx.end, gfx.ppv(effect)))
             print("{}succes:{} {}".format(gfx.green, gfx.end, succes))
