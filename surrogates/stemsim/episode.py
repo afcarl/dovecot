@@ -92,7 +92,10 @@ class Episode(object):
 
         except MarkerError:
             if tries == 0:
-                self.execute_order(order, tries=1)
+                print('{}caught marker error...                   {}'.format(gfx.red, gfx.end))
+                time.sleep(0.1)
+                self.fb = FrameBuffer(40.0, addr=self.stem.optitrack_addr)
+                return self.execute_order(order, tries=1)
             else:
                 raise OrderNotExecutableError
 

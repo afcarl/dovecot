@@ -89,7 +89,7 @@ class VRepCom(object):
         pid = self.vrep.speGetVrepPid()
         if self.connected:
             self.vrep.disconnect()
-        os.kill(pid, signal.SIGKILL)
+        #os.kill(pid, signal.SIGKILL)
 
     def run_simulation(self, trajectory, max_steps):
         """

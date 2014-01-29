@@ -31,5 +31,5 @@ for _ in range(episodes_count):
 ep.close()
 dur = time.time() - start_time
 
-print("{} movements, {} collisions ({:1.f}%), {:.1f}s ({:.1f}s per movements)".format(
-    episodes_count, collisions, 100.0*collision/episodes_count, dur, dur/episodes_cound))
+print("{} movements, {} collisions ({:.1f}%), {:.1f}s ({:.1f}s per movements)".format(
+    episodes_count, collisions, 100.0*collisions/episodes_count, dur, dur/episodes_count))
