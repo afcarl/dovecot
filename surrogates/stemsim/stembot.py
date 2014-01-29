@@ -55,7 +55,7 @@ class StemBot(object):
         ts, motor_traj = self.create_trajectory(order)
 
         self.stemcom.setup([0.0]*6)
-        time.sleep(0.5)
+        time.sleep(0.1)
 
         self.max_speed    = 70
         self.torque_limit = 50
