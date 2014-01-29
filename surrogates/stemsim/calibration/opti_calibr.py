@@ -104,8 +104,6 @@ def vrep_capture(poses):
     return vrep_res
 
 def opti_capture(poses, stemcfg, fb=None):
-    if fb is None:
-        fb = natnet.FrameBuffer(10.0*len(poses))
     cfg = treedict.TreeDict()
     cfg.stem.uid = stemcfg.uid
     stem_com = stemcom.StemCom(cfg)
@@ -114,30 +112,31 @@ def opti_capture(poses, stemcfg, fb=None):
     stem_com.torque_limit = stemcfg.max_torque
 
     time.sleep(0.1)
-    assert fb.fps > 100.0
 
     stem_com.setup(poses[0])
 
     reached = []
-    fb.track(stemcfg.optitrack_side)
-    timestamps = []
+    mean_p  = []
     for pose in poses:
         err_array = stem_com.go_to(pose, margin=1.0, timeout=4.0)
         reached.append(np.array(pose)+np.array(err_array))
-        #err = np.avg(err_array)
         print("err: {}".format(gfx.ppv(err_array)))
+
+        fb = natnet.FrameBuffer(4.0, addr=stemcfg.optitrack_addr)
+        time.sleep(0.1)
+        assert fb.fps > 100.0
+        fb.track(stemcfg.optitrack_side)
         start = time.time()
-        time.sleep(1.0)
+        time.sleep(2.0)
         end   = time.time()
-        timestamps.append((start, end))
-    fb.stop_tracking()
+        fb.stop_tracking()
+        pdata = fb.tracking_slice(start, end)
+        fb.stop()
+        fb.join()
+        mean_p.append(np.mean([p[1] for p in pdata], axis=0))
+
 
     stem_com.rest()
-
-    mean_p = []
-    for start, end in timestamps:
-        pdata = fb.tracking_slice(start, end)
-        mean_p.append(np.mean([p[1] for p in pdata], axis=0))
 
     return reached, mean_p
 
