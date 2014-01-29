@@ -62,7 +62,7 @@ def transform_3D(A, B, scaling=True):
 
     return Trans(centroid_B.T)*Rot(R)*Scale(1.0/scaling_AB)*Trans(-centroid_A.T)
 
-def vrep_calibration(poses):
+def vrep_capture(poses):
 
     cfg = treedict.TreeDict()
     cfg.vrep.ppf         = 10
@@ -104,27 +104,27 @@ def vrep_calibration(poses):
     sb.close()
     return vrep_res
 
-
-def opti_calibration(poses, vrep_res, fb=None, stem_com=None):
+def opti_capture(poses, stemcfg, fb=None):
     if fb is None:
-        fb = natnet.FrameBuffer(50.0)
-    if stem_com is None:
-        cfg = treedict.TreeDict()
-        cfg.stem.motor_range = (0, 50)
-        stem_com = stemcom.StemCom(cfg)
+        fb = natnet.FrameBuffer(10.0*len(poses))
+    cfg = treedict.TreeDict()
+    cfg.stem.uid = stemcfg.uid
+    stem_com = stemcom.StemCom(cfg)
 
-    stem_com.max_speed  = 150
-    stem_com.max_torque = 100
+    stem_com.max_speed    = 100
+    stem_com.torque_limit = stemcfg.max_torque
 
     time.sleep(0.1)
     assert fb.fps > 100.0
 
     stem_com.setup(poses[0])
 
-    fb.track_only()
+    reached = []
+    fb.track(stemcfg.optitrack_side)
     timestamps = []
     for pose in poses:
         err_array = stem_com.go_to(pose, margin=1.0, timeout=4.0)
+        reached.append(np.array(pose)+np.array(err_array))
         #err = np.avg(err_array)
         print("err: {}".format(gfx.ppv(err_array)))
         start = time.time()
@@ -134,20 +134,23 @@ def opti_calibration(poses, vrep_res, fb=None, stem_com=None):
     fb.stop_tracking()
 
     stem_com.rest()
-    stem_com.range_bounds = [(-110, 110)]*6
 
     mean_p = []
     for start, end in timestamps:
-        pdata = fb.tracking_period(start, end)
+        pdata = fb.tracking_slice(start, end)
         mean_p.append(np.mean([p[1] for p in pdata], axis=0))
 
-    assert len(mean_p) == len(vrep_res)
-    n = len(mean_p)
-    print(np.mat(mean_p))
-    print(np.mat(vrep_res))
-    Mtrans = transform_3D(np.mat(mean_p), np.mat(vrep_res))
+    return reached, mean_p
 
-    Mtrio = np.hstack((np.matrix(mean_p), np.ones(shape=(n, 1))))
+def compute_calibration(opti_res, vrep_res):
+
+    assert len(opti_res) == len(vrep_res)
+    n = len(opti_res)
+    print(np.mat(opti_res))
+    print(np.mat(vrep_res))
+    Mtrans = transform_3D(np.mat(opti_res), np.mat(vrep_res))
+
+    Mtrio = np.hstack((np.matrix(opti_res), np.ones(shape=(n, 1))))
     Mvrep = np.hstack((np.matrix(vrep_res), np.ones(shape=(n, 1))))
 
     Mvrep2 = (Mtrans*Mtrio.T).T

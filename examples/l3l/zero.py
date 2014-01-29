@@ -6,7 +6,7 @@ from pydyn import MotorSet
 import env
 from surrogates.stemsim import stemcfg
 
-uid = 0 if len(sys.argv) == 1 else int(sys.argv[1])
+uid = None if len(sys.argv) == 1 else int(sys.argv[1])
 
 stem = stemcfg.stems[uid]
 stem.cycle_usb()
@@ -15,9 +15,15 @@ ms = MotorSet(serial_id=stem.serial_id, motor_range=stem.motorid_range, verbose=
 ms.zero_pose = stem.zero_pose
 
 ms.compliant = False
-time.sleep(0.1)
+time.sleep(1.0)
+while not all(m.torque_limit==100 for m in ms.motors):
+    for m in ms.motors:
+        m.max_torque = 100
+        m.torque_limit = 100
+    time.sleep(1.0)
+
 ms.max_speed  = 100
-ms.max_torque = 50
+ms.torque_limit = 100
 ms.pose = (0.0,)*6
 
 time.sleep(3.0)

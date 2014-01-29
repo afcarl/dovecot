@@ -26,7 +26,14 @@ def fill_gaps(trajectory):
         for i, j in enumerate(range(start, end+1)):
             trajectory[j] = (just_before*(size-i) + i*just_after)/size
 
+    assert all(t is not None for t in trajectory)
     return trajectory
 
-def opti2vrep(trajectory):
-    pass
+def opti2vrep(opti_traj, M):
+    vrep_traj = []
+    for ts, opti_v in opti_traj:
+        opti_u = np.matrix([list(opti_v)+[1]]).T
+        vrep_u = M*opti_u
+        vrep_v = (vrep_u[0, 0], vrep_u[1, 0], vrep_u[2, 0])
+        vrep_traj.append((ts, vrep_v))
+    return vrep_traj

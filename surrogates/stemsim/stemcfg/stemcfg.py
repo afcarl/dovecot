@@ -30,22 +30,27 @@ class StemCfg(object):
                        optitrack_addr=None,
                        optitrack_side=None,
                        motorid_range=None,
-                       calib_file=None,
                        model_file=None,
                        zero_pose=None,
-                       angle_limits=None):
+                       angle_ranges=None,
+                       max_torque=None):
+        assert uid is not None
+
         self.uid = uid
         self.serial_id = serial_id
 
         self.optitrack_addr = optitrack_addr
         self.optitrack_side = optitrack_side
 
-        self.motorid_range = motorid_range or (0, 253)
-        self.calib_file = calib_file
+        self.calib_file = 'calib{}.data'.format(uid)
+        self.vrep_capture_file = 'vrep_capture{}.data'.format(uid)
+        self.opti_capture_file = 'opti_capture{}.data'.format(uid)
         self.model_file = model_file
 
+        self.motorid_range = motorid_range or (0, 253)
         self.zero_pose = zero_pose
-        self.angle_limits = angle_limits
+        self.angle_ranges = angle_ranges
+        self.max_torque = max_torque
 
     def cycle_usb(self):
         if os.uname()[0] == 'Linux':
@@ -56,15 +61,22 @@ class StemCfg(object):
         else:
             raise OSError("cycle_usb is not supported yet on your platform !")
 
+    @property
+    def angle_limits(self):
+        return tuple((zp+ar_low, zp+ar_high) for zp, (ar_low, ar_high) in zip(self.zero_pose, self.angle_ranges))
+
+angle_ranges = ((100, 100),)*6
+
 stem0 = StemCfg(uid=0,
                 serial_id='A8006BPa',
                 hostname='optistem',
                 optitrack_addr='239.255.42.99',
                 optitrack_side='left',
                 motorid_range=(1, 6),
-                calib_file='calib0.data',
                 model_file='stem.smodel',
-                zero_pose=(172, 150, 150, 172, 150, 150))
+                zero_pose=(172, 150, 150, 172, 150, 150),
+                angle_ranges=angle_ranges,
+                max_torque=100)
 
 stem1 = StemCfg(uid=1,
                 serial_id='A4008aCD',
@@ -72,9 +84,10 @@ stem1 = StemCfg(uid=1,
                 optitrack_addr='239.255.42.99',
                 optitrack_side='right',
                 motorid_range=(41, 46),
-                calib_file='calib1.data',
                 model_file='stem.smodel',
-                zero_pose=(172, 150, 150, 172, 150, 150))
+                zero_pose=(172, 150, 150, 172, 150, 150),
+                angle_ranges=angle_ranges,
+                max_torque=100)
 
 stem2 = StemCfg(uid=2,
                 serial_id='A4008apX',
@@ -82,18 +95,20 @@ stem2 = StemCfg(uid=2,
                 optitrack_addr='239.255.42.98',
                 optitrack_side='left',
                 motorid_range=(11, 16),
-                calib_file='calib1.data',
                 model_file='stem.smodel',
-                zero_pose=(172, 150, 150, 172, 150, 150))
+                zero_pose=(173.0, 149.0, 149.0, 176.0, 149.6, 129.9),
+                angle_ranges=angle_ranges,
+                max_torque=100)
 
 stem3 = StemCfg(uid=3,
-                serial_id='A9005MWF',
+                serial_id='A4008bke',
                 hostname='latistem',
                 optitrack_addr='239.255.42.98',
                 optitrack_side='right',
-                motorid_range=(50, 56),
-                calib_file='calib1.data',
+                motorid_range=(51, 56),
                 model_file='stem.smodel',
-                zero_pose=(172, 150, 150, 172, 150, 150))
+                zero_pose=(172, 150, 150, 172, 150, 150),
+                angle_ranges=angle_ranges,
+                max_torque=100)
 
 stems = [stem0, stem1, stem2, stem3]

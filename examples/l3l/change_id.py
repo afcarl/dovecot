@@ -11,10 +11,12 @@ uid = None if len(sys.argv) == 1 else int(sys.argv[1])
 stem = stemcfg.stems[uid]
 stem.cycle_usb()
 
-ms = MotorSet(serial_id=stem.serial_id, motor_range=stem.motorid_range, verbose=True)
+ms = MotorSet(serial_id=stem.serial_id, motor_range=(0, 253), verbose=True)
 
-for m in ms.motors:
-    m.status_return_level = 1
-    time.sleep(0.1)
-ms.compliant = True
-time.sleep(0.1)
+def change(id_change):
+    for m in ms.motors:
+        if m.id == id_change[0]:
+            m.id = id_change[1]
+    time.sleep(1.0)
+
+#change((96, 16))

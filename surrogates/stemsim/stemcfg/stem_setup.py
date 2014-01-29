@@ -43,8 +43,19 @@ def set_compliance_slopes(ms, v):
         m.compliance_slopes = (v, v)
     time.sleep(0.1) # change are taking effect
 
+def set_max_torque(ms, v):
+    for m in ms.motors:
+        m.max_torque = v
+    time.sleep(0.1) # change are taking effect
+
+def set_status_return_level(ms, v):
+    for m in ms.motors:
+        m.status_return_level = 1
+    time.sleep(0.1)
+
 
 def complete_setup(ms, angle_limits):
     set_angle_limits(ms)
     set_compliance_margins(1.0)
     set_compliance_slopes(16)
+    set_max_torque(100)

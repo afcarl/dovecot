@@ -13,7 +13,7 @@ def observe_max_angles():
     print(max_angles)
 
 def set_angle_limits():
-    angle_limits = [(50.9, 249.0), (50.9, 249.0), (50.9, 249.0), (50.9, 249.0), (50.9, 249.0), (50.9, 249.0)]
+    angle_limits = [(50.9, 249.3), (50.9, 249.3), (50.9, 249.3), (50.9, 249.3), (50.9, 249.3), (50.9, 249.3)]
 
     for m, al in zip(ms.motors, angle_limits):
         if al is not None:

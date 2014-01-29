@@ -5,7 +5,7 @@ import os
 from toolbox import gfx
 from . import opti_calibr
 
-def calibrate(cached=False):
+def calibrate(stemcfg, cached_opti=False, cached_vrep=False):
     poses = [[  0.0,   0.0,   0.0,   0.0,   0.0,   0.0],
              [ 57.2,  11.6, -10.7,  14.1,   6.0, -17.7],
              [ -4.1,  -9.8,   9.8, -34.9,   5.7, -19.2],
@@ -19,38 +19,33 @@ def calibrate(cached=False):
              [0.0,   -97.5,  43.8,  -1.4,  51.2,   5.1],
             ]
 
-
-    if cached:
-        with open(os.path.abspath(os.path.join(__file__, '..'))+'vrep_pos.data', 'r') as f:
-            vrep_res = cPickle.read(f)
-
-        # vrep_res =  [[ 0.01100481,  0.6823279 ,  2.45170567],
-        #              [ 1.51487219,  2.00143284,  2.44584283],
-        #              [-1.10360631,  0.93663345,  2.40484004],
-        #              [-0.10239414,  1.52747809,  1.3957642 ],
-        #              [-0.01479483,  1.66135542,  3.49237228],
-        #              [ 1.79438766,  0.19681993,  0.46468991],
-        #              [ 0.03955708,  4.13104251,  3.17516741],
-        #              [-1.3426378 , -0.06030752,  1.14177692],
-        #              [-0.03712337, -0.01571427, -0.32883829],
-        #              [ 0.00571253,  1.94265702, -1.36885245],
-        #              [-0.02132425, -0.49028205,  0.64462687]]
+    if cached_opti:
+        with open(os.path.abspath(os.path.join(__file__, '..'))+ '/' + stemcfg.opti_capture_file, 'r') as f:
+            reached_poses, opti_res = cPickle.load(f)
     else:
-        vrep_res = opti_calibr.vrep_calibration(poses)
+        reached_poses, opti_res = opti_calibr.opti_capture(poses, stemcfg)
+        with open(os.path.abspath(os.path.join(__file__, '..')) + '/' + stemcfg.opti_capture_file, 'w') as f:
+            cPickle.dump((reached_poses, opti_res), f)
+
+
+    if cached_vrep:
+        with open(os.path.abspath(os.path.join(__file__, '..'))+ '/' + stemcfg.vrep_capture_file, 'r') as f:
+            vrep_res = cPickle.load(f)
+    else:
+        vrep_res = opti_calibr.vrep_capture(reached_poses)
         vrep_res = [list(v[0]) for v in vrep_res]
-        with open(os.path.abspath(os.path.join(__file__, '..')) + '/' + 'vrep_pos.data', 'w') as f:
+        with open(os.path.abspath(os.path.join(__file__, '..')) + '/' + stemcfg.vrep_capture_file, 'w') as f:
             cPickle.dump([list(v) for v in vrep_res], f)
-        # print('[{}]'.format(',\n'.join(gfx.ppv(list(v[0]), fmt='+7.4f') for v in vrep_res)))
 
-    m = opti_calibr.opti_calibration(poses, vrep_res)
+    m = opti_calibr.compute_calibration(opti_res, vrep_res)
 
-    with open(os.path.abspath(os.path.join(__file__, '..')) + '/' + 'calib.data', 'w') as f:
+    with open(os.path.abspath(os.path.join(__file__, '..')) + '/' + stemcfg.calib_file, 'w') as f:
         cPickle.dump(m, f)
 
     return m
 
-def load_calibration():
-    with open(os.path.abspath(os.path.join(__file__, '..')) + '/' + 'calib.data', 'r') as f:
+def load_calibration(stemcfg):
+    with open(os.path.abspath(os.path.join(__file__, '..')) + '/' + stemcfg.calib_file, 'r') as f:
         m = cPickle.load(f)
 
     return m
