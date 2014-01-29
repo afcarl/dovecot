@@ -6,15 +6,15 @@ from natnet import FrameBuffer
 import treedict
 
 class OptiVrepAR(object):
-    def __init__(self, port=1984, verbose=True, ppf=200, scene="../stemsim/ar.ttt", script="marker"):
+    def __init__(self, cfg, port=1984, verbose=True, ppf=200, scene="../stemsim/ar.ttt", script="marker"):
         self.ppf = ppf
         self.port = 1984
         self.verbose = verbose
         self.scene = scene
         self.script = script
-        cfg = treedict.TreeDict()
-        cfg.sprims.tip = False
-        self.opivcom = vrepcom.OptiVrepCom(cfg, load=False, verbose=self.verbose, headless=False, vrep_folder=None, ppf=self.ppf)
+        cfg2 = cfg.copy(deep=True)
+        cfg2.sprims.tip = False
+        self.opivcom = vrepcom.OptiVrepCom(cfg2, load=False, verbose=self.verbose, headless=False, vrep_folder=None, ppf=self.ppf)
         if not self.opivcom.connected:
             self.opivcom.load(self.scene, self.script)
 
