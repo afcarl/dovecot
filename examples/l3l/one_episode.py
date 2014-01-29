@@ -21,6 +21,7 @@ cfg.stem.dt = 0.01
 cfg.stem.uid = int(sys.argv[1])
 cfg.stem.verbose_com = True
 cfg.stem.verbose_dyn = True
+cfg.show_vrep = True
 
 cfg.sprims.names     = ['push']
 cfg.sprim.tip        = False
