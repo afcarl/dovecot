@@ -21,7 +21,7 @@ cfg.stem.dt = 0.01
 cfg.stem.uid = int(sys.argv[1])
 cfg.stem.verbose_com = True
 cfg.stem.verbose_dyn = True
-cfg.show_vrep = True
+cfg.hide_vrep = True
 
 cfg.sprims.names     = ['push']
 cfg.sprim.tip        = False
@@ -44,9 +44,9 @@ print("{}launching serial... {}".format(gfx.purple, gfx.end))
 sb = stembot.StemBot(cfg)
 vs = stemsensors.VrepSensors(cfg)
 
-fb = FrameBuffer(40.0)
+fb = FrameBuffer(40.0, addr=stem.optitrack_addr)
 print("{}launching vrep... {}".format(gfx.cyan, gfx.end))
-ovar = optivrepar.OptiVrepAR(verbose=False)
+ovar = optivrepar.OptiVrepAR(cfg,verbose=False)
 
 total = 1 if len(sys.argv) <= 2 else int(sys.argv[2])
 count = 0
