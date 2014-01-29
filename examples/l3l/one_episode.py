@@ -19,6 +19,10 @@ cfg.stem.uid = int(sys.argv[1])
 cfg.stem.verbose_com = True
 cfg.stem.verbose_dyn = True
 
+cfg.sprims.names     = ['push']
+cfg.sprim.tip        = False
+cfg.sprims.uniformze = False
+
 cfg.mprim.name = 'dmpg'
 cfg.mprim.motor_steps = 500
 cfg.mprim.max_steps   = 500

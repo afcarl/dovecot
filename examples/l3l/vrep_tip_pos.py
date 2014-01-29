@@ -22,8 +22,7 @@ cfg.vrep.headless        = False
 
 cfg.sprims.names = ['push']
 cfg.sprims.uniformze = False
-
-cfg.sensors.tip = True
+cfg.sprims.tip = True
 
 cfg.mprim.name = 'dmpg'
 cfg.mprim.motor_steps = 1000

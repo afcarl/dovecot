@@ -1,4 +1,4 @@
-class StemSensors(object):
+class VrepSensors(object):
 
     def setup_prims(self):
         self.s_prims = [prims.create_sprim(sprim_name, self.cfg) for sprim_name in self.cfg.sprims.names]
@@ -49,7 +49,7 @@ class StemSensors(object):
         self.channels['object_pos']   = positions
         self.channels['object_ori']   = quaternions
 
-        if self.cfg.sensors.tip:
+        if self.cfg.sprims.tip:
             assert tip_sensors is not None
             n = int(len(tip_sensors)/3)
             tip_pos = tuple(tuple(tip_sensors[3*i:3*i+ 3]) for i in range(n))

@@ -13,7 +13,7 @@ class OptiVrepAR(object):
         self.scene = scene
         self.script = script
         cfg = treedict.TreeDict()
-        cfg.sensors.tip = False
+        cfg.sprims.tip = False
         self.opivcom = vrepcom.OptiVrepCom(cfg, load=False, verbose=self.verbose, headless=False, vrep_folder=None, ppf=self.ppf)
         if not self.opivcom.connected:
             self.opivcom.load(self.scene, self.script)
