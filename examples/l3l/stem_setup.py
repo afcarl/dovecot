@@ -1,8 +1,18 @@
 from __future__ import print_function, division
 import time
+import sys
+
+from toolbox import gfx
 from pydyn import MotorSet
 
-ms = MotorSet()
+import env
+from surrogates.stemsim import stemcfg
+
+uid = int(sys.argv[1])
+stem = stemcfg.stems[uid]
+stem.cycle_usb()
+ms = MotorSet(serial_id=stem.serial_id, motor_range=stem.motorid_range, verbose=True)
+ms.zero_pose = stem.zero_pose
 
 def observe_max_angles():
     max_angles = [[float('inf'), float('-inf')] for _ in ms.motors]
@@ -10,7 +20,7 @@ def observe_max_angles():
     while time.time()-start < 60.0:
         max_angles = [[min(lb, p), max(hb, p)] for (lb, hb), p in zip(max_angles, ms.pose)]
 
-    print(max_angles)
+    print(', '.join(gfx.ppv(ma) for ma in max_angles))
 
 def set_angle_limits():
     angle_limits = [(50.9, 249.3), (50.9, 249.3), (50.9, 249.3), (50.9, 249.3), (50.9, 249.3), (50.9, 249.3)]
@@ -45,10 +55,12 @@ def set_compliance_slopes(v):
     time.sleep(0.1) # change are taking effect
 
 
-set_angle_limits()
-print_angle_limits()
+observe_max_angles()
 
-set_compliance_margins(1.0)
-#set_compliance_slopes(16)
-print_compliance_margins()
-#print_compliance_slopes()
+# set_angle_limits()
+# print_angle_limits()
+
+# set_compliance_margins(1.0)
+# #set_compliance_slopes(16)
+# print_compliance_margins()
+# #print_compliance_slopes()

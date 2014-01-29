@@ -23,8 +23,9 @@ class StemCom(MotorSet):
         MotorSet.__init__(self, serial_id=self.stemcfg.serial_id, motor_range=self.stemcfg.motorid_range, verbose=self.cfg.stem.verbose_dyn)
         assert len(self.motors) == 6
 
-        self.zero_pose = self.stemcfg.zero_pose
-        self.max_torque = self.stemcfg.max_torque
+        self.zero_pose    = self.stemcfg.zero_pose
+        self.angle_ranges = self.stemcfg.angle_ranges
+        self.max_torque   = self.stemcfg.max_torque
         self.angle_limits = self.stemcfg.angle_limits
 
     def make_non_compliant(self):
@@ -42,11 +43,11 @@ class StemCom(MotorSet):
 #        if any(self.compliant):
         self.make_non_compliant()
 
-        self.range_bounds = [(-100, 100)]*6
+        # self.angle_ranges = [(-100, 100)]*6
 
         self.max_speed    = 70
         self.torque_limit = 50
-        self.pose = pose
+        self.pose         = pose
 
         while max(abs(p - tg) for p, tg in zip(self.pose, pose)) > 3:
             time.sleep(0.1)
@@ -57,19 +58,19 @@ class StemCom(MotorSet):
 
         rest_pose = np.array([0.0, 96.3, -97.8, 0.0, -46.5, -18.9])
         #rest_pose = np.array([0.0, -98.0, -54.0, 0.0, 58.0, 0.0])
-        self.range_bounds = [(min(p, rp), max(p, rp)) for p, rp in zip(self.pose, rest_pose)]
+        # self.angle_ranges  = [(min(p, rp), max(p, rp)) for p, rp in zip(self.pose, rest_pose)]
 
 
         self.pose = rest_pose
         while max(abs(p - tg) for p, tg in zip(self.pose, rest_pose)) > 20:
             time.sleep(0.05)
-        self.max_speed = 20
+        self.max_speed    = 20
         self.torque_limit = 20
         start_time = time.time()
         while max(abs(p - tg) for p, tg in zip(self.pose, rest_pose)) > 2.0 and time.time()-start_time < 1.0:
             time.sleep(0.05)
 
-        self.range_bounds = [(p-5, p+5) for p in self.pose]
+        self.angle_ranges = [(p-5, p+5) for p in self.pose]
         self.compliant = True
         time.sleep(0.3)
 
@@ -88,5 +89,11 @@ class StemCom(MotorSet):
                 i += 1
         except IndexError:
             i = len(ts)-1
-        #print(poses[i])
-        self.pose = poses[i]
+        try:
+            self.pose = poses[i]
+        except ValueError as e:
+            print(self.pose)
+            print(poses[i])
+            import traceback
+            traceback.print_exc()
+            raise e

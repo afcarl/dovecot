@@ -63,9 +63,9 @@ class StemCfg(object):
 
     @property
     def angle_limits(self):
-        return tuple((zp+ar_low, zp+ar_high) for zp, (ar_low, ar_high) in zip(self.zero_pose, self.angle_ranges))
+        return tuple((zp-ar_low-3.0, zp+ar_high+3.0) for zp, (ar_low, ar_high) in zip(self.zero_pose, self.angle_ranges))
 
-angle_ranges = ((100, 100),)*6
+angle_ranges = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0, 120.0), (99.0, 99.0), (99.0, 99.0))
 
 stem0 = StemCfg(uid=0,
                 serial_id='A8006BPa',

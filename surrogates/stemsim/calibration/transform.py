@@ -2,11 +2,11 @@ from __future__ import division, print_function
 import numpy as np
 
 def _detect_gaps(trajectory):
-    assert trajectory[0] is not None
+    assert trajectory[0][1] is not None
     gaps = []
     in_gap = False
-    for i, t in enumerate(trajectory):
-        if t is None:
+    for i, (ts, pos) in enumerate(trajectory):
+        if pos is None:
             if not in_gap:
                 gaps.append([i, None])
                 in_gap = True
@@ -19,14 +19,18 @@ def _detect_gaps(trajectory):
 
 def fill_gaps(trajectory):
     gaps = _detect_gaps(trajectory)
+    if len(gaps) > 0 and trajectory[-1][1] is None:
+        trajectory = trajectory[:gaps[-1][0]]
+        gaps = gaps[:-1]
+
     for start, end in gaps:
         size = end-start+1
-        just_before = np.array(trajectory[start-1])
-        just_after  = np.array(trajectory[end+1])
+        just_before = np.array(trajectory[start-1][1])
+        just_after  = np.array(trajectory[end+1][1])
         for i, j in enumerate(range(start, end+1)):
-            trajectory[j] = (just_before*(size-i) + i*just_after)/size
+            trajectory[j] = (trajectory[j][0],  (just_before*(size-i) + i*just_after)/size)
 
-    assert all(t is not None for t in trajectory)
+    assert all(pos is not None for ts, pos in trajectory)
     return trajectory
 
 def opti2vrep(opti_traj, M):
