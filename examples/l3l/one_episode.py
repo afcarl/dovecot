@@ -50,6 +50,7 @@ ovar = optivrepar.OptiVrepAR(cfg,verbose=False)
 
 total = 1 if len(sys.argv) <= 2 else int(sys.argv[2])
 count = 0
+succes = 0
 start_time = time.time()
 
 print('')
@@ -84,8 +85,11 @@ try:
 
             # produce sensory feedback
             effect = vs.process_sensors(object_sensors, joint_sensors, tip_sensors)
+            if effect[2] == 1.0:
+                success = success +1
             #print("{}order:{} {}".format(gfx.purple, gfx.end, gfx.ppv(order)))
             print("{}effect:{} {}".format(gfx.cyan, gfx.end, gfx.ppv(effect)))
+            print("{}succes:{} {}".format(gfx.green, gfx.end, succes))
 
         except stembot.CollisionError:
             fb.stop_tracking()
