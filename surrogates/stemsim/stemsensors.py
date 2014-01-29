@@ -1,5 +1,8 @@
 class VrepSensors(object):
 
+    def __init__(self, cfg):
+        self.cfg = cfg
+
     def setup_prims(self):
         self.s_prims = [prims.create_sprim(sprim_name, self.cfg) for sprim_name in self.cfg.sprims.names]
         self.m_prim = prims.create_mprim(self.cfg.mprim.name, self.cfg)

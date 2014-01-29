@@ -5,12 +5,14 @@ import sys
 
 import treedict
 
+from natnet import FrameBuffer
+
 import env
+from surrogates.stemsim import calibration
+from surrogates.stemsim import stemsensors
 from surrogates.stemsim import stembot
-import surrogates.stemsim.calibration as calibration
 from surrogates.stemsim import optivrepar
 from surrogates.stemsim import stemcfg
-from natnet import FrameBuffer
 
 cfg = treedict.TreeDict()
 
@@ -42,7 +44,7 @@ fb = FrameBuffer(40.0)
 print("Launching V-REP (~5s)... ")
 ovar = optivrepar.OptiVrepAR()
 
-total = 1
+total = 1 if len(sys.argv) <= 2 else int(sys.argv[2])
 count = 0
 start = time.time()
 
