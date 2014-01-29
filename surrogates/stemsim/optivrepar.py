@@ -22,5 +22,4 @@ class OptiVrepAR(object):
         return self.opivcom.run_trajectory(trackdata)
 
     def close(self):
-        # KILL VREP !!!! RHHAAAAAAA !!!!!
-        pass # but I don't know how yet
+        self.opivcom.close()
