@@ -67,7 +67,7 @@ class DmpG(MotorPrimitive):
         self.m_feats = tuple(range(-1, -6*self.size-1, -1))
         self.max_steps     = cfg.mprim.max_steps
         self.n_basis       = cfg.mprim.n_basis
-        assert self.n_basis > 1
+
         self.m_bounds = self.size*self.n_basis*((-400.0, 400.0), (-400.0, 400.0), (0.05, 1.0))
         self.real_m_bounds = self.m_bounds
         self.motor_steps   = cfg.mprim.motor_steps - (cfg.mprim.motor_steps % 2)
@@ -111,50 +111,3 @@ class DmpG(MotorPrimitive):
         return tuple(traj), self.max_steps
 
 mprims['dmpg'] = DmpG
-
-class Dmp1G(MotorPrimitive):
-
-    def __init__(self, cfg):
-        self.cfg = cfg
-        self.size = 6
-        self.m_feats = tuple(range(-1, -4*self.size-1, -1))
-        self.m_bounds = self.size*((-400.0, 400.0), (-400.0, 400.0),
-                                   (0.0, 1.0), (0.05, 1.0))
-        self.real_m_bounds = self.m_bounds
-        self.motor_steps = cfg.mprim.motor_steps - (cfg.mprim.motor_steps % 2)
-        self.max_steps   = cfg.mprim.max_steps
-        self.n_basis       = cfg.mprim.n_basis
-        assert self.n_basis == 1
-
-        self.dmps = []
-        assert len(self.cfg.mprim.init_states) == len(self.cfg.mprim.target_states) == self.size
-        for init_state, target_state in zip(self.cfg.mprim.init_states, self.cfg.mprim.target_states):
-            d = dmp.DMP()
-            d.dmp.set_timesteps(int(self.motor_steps/2), 0.0, 1.25)
-            d.lwr_meta_params(1)
-            d.dmp.set_initial_state([deg2dmp(init_state)])
-            d.dmp.set_attractor_state([deg2dmp(target_state)])
-
-            self.dmps.append(d)
-
-    def process_context(self, context):
-        pass
-
-    def process_order(self, order):
-        assert len(order) == 4*self.size
-
-        traj = []
-        for i, d in enumerate(self.dmps):
-            slope, offset, center, width = order[4*i:4*i+4]
-            d.lwr_model_params([center], [width], [slope], [offset])
-            ts, ys, yds = d.trajectory()
-            ys = 150.0/8.0 * (math.pi/180.0) * np.array(ys)
-            #print('{}: {:6.2f}/{:6.2f}'.format(i, 180.0/math.pi*np.min(ys), 180.0/math.pi*np.max(ys)))
-            yds = [self.cfg.mprim.max_speed]*len(ys)
-            traj.append((tuple(ys), tuple(yds)))
-
-        #print('')
-
-        return tuple(traj), self.max_steps
-
-mprims['dmp1g'] = Dmp1G
