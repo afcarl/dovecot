@@ -40,8 +40,8 @@ class VRepCom(object):
 
         headless_flag = '-h' if self.headless else ''
         if os.uname()[0] == "Linux":
-            if not self.cfg.hide_vrep:
-                cmd = "DISPLAY=:0 vrep >> {}".format(logname)
+            if False and not self.cfg.hide_vrep:
+                cmd = "xvfb_run vrep >> {}".format(logname)
             else:
                 cmd = "xvfb-run vrep >> {}".format(logname)
         elif os.uname()[0] == "Darwin":

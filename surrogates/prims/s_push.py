@@ -6,15 +6,15 @@ class Push(sprims.SensoryPrimitive):
 
     def __init__(self, cfg):
         #self.object_name = cfg.sprimitive.push.object_name
-        self.object_name = 'object'        
+        self.object_name = 'object'
         self.s_feats  = (10, 11, 12,)
         self.s_fixed  = (None, None, 1.0)
 
     def required_channels(self):
-        return (self.object_name + '_pos',) 
+        return (self.object_name + '_pos',)
 
     def process_context(self, context):
-        self.s_bounds = tuple(context['x_bounds']) + tuple(context['y_bounds']) + ((0.0, 1.0),)
+        self.s_bounds = (tuple(context['x_bounds']), tuple(context['y_bounds']), (0.0, 1.0))
         self.real_s_bounds = self.s_bounds
 
     def process_sensors(self, sensors_data):

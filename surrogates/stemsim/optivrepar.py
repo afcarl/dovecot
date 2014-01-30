@@ -1,9 +1,12 @@
 import time
+
 import numpy as np
-from surrogates.vrepsim import vrepcom
-import env
-from natnet import FrameBuffer
 import treedict
+
+from natnet import FrameBuffer
+
+from ..vrepsim import vrepcom
+
 
 class OptiVrepAR(object):
     def __init__(self, cfg, port=1984, verbose=True, ppf=200, scene="../stemsim/ar.ttt", script="marker"):

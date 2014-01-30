@@ -17,10 +17,10 @@ class StemBot(object):
         low, and solving any hardware problem that may happen.
     """
 
-    def __init__(self, cfg):
+    def __init__(self, cfg, **kwargs):
         self.cfg = cfg
         self.m_prim = prims.create_mprim(self.cfg.mprim.name, self.cfg)
-        self.stemcom = stemcom.StemCom(cfg)
+        self.stemcom = stemcom.StemCom(cfg, **kwargs)
 
     @property
     def m_feats(self):

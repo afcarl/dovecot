@@ -64,7 +64,7 @@ class DmpG(MotorPrimitive):
     def __init__(self, cfg):
         self.cfg = cfg
         self.size = 6
-        self.m_feats = tuple(range(-1, -4*self.size-1, -1))
+        self.m_feats = tuple(range(-1, -6*self.size-1, -1))
         self.max_steps     = cfg.mprim.max_steps
         self.n_basis       = cfg.mprim.n_basis
         assert self.n_basis > 1

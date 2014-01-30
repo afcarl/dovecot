@@ -22,7 +22,7 @@ class Episode(object):
         self.cfg = cfg
 
         self.stem = stemcfg.stems[self.cfg.stem.uid]
-        self.M_trans = calibration.load_calibration(self.stem)
+        self.M_trans = calibration.calibr.load_calibration(self.stem)
         self.vs = stemsensors.VrepSensors(self.cfg)
         self.verbose = verbose
 
@@ -39,6 +39,8 @@ class Episode(object):
         self.ovar = optivrepar.OptiVrepAR(cfg, verbose=False)
 
         self.exhibit_prims()
+
+        self.OrderNotExecutableError = OrderNotExecutableError
 
     def exhibit_prims(self):
         self.s_feats  = self.vs.s_feats

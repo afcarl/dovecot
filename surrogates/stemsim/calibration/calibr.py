@@ -45,7 +45,7 @@ def calibrate(stemcfg, cached_opti=False, cached_vrep=False):
     return m
 
 def load_calibration(stemcfg):
-    with open(os.path.abspath(os.path.join(__file__, '..')) + '/' + stemcfg.calib_file, 'r') as f:
+    with open(os.path.abspath(os.path.join(__file__, '..')) + '/../calibration/' + stemcfg.calib_file, 'r') as f:
         m = cPickle.load(f)
 
     return m
