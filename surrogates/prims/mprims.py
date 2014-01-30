@@ -111,3 +111,57 @@ class DmpG(MotorPrimitive):
         return tuple(traj), self.max_steps
 
 mprims['dmpg'] = DmpG
+
+class DmpG25(MotorPrimitive):
+
+    def __init__(self, cfg):
+        self.cfg = cfg
+        self.size = 6
+        self.m_feats = tuple(range(-1, -2*2*self.size-2, -1))
+        self.max_steps = cfg.mprim.max_steps
+        self.n_basis   = cfg.mprim.n_basis
+
+        self.m_bounds = self.size*self.n_basis*((-400.0, 400.0), (-400.0, 400.0)) + ((0.05, 1.0),)
+        self.real_m_bounds = self.m_bounds
+        self.motor_steps   = cfg.mprim.motor_steps - (cfg.mprim.motor_steps % 2)
+
+        self.dmps = []
+        assert len(self.cfg.mprim.init_states) == len(self.cfg.mprim.target_states) == self.size
+        for init_state, target_state in zip(self.cfg.mprim.init_states, self.cfg.mprim.target_states):
+            d = dmp.DMP()
+            d.dmp.set_timesteps(self.motor_steps, 0.0, self.cfg.mprim.end_time)
+            d.lwr_meta_params(self.n_basis)
+            d.dmp.set_initial_state([deg2dmp(init_state)])
+            d.dmp.set_attractor_state([deg2dmp(target_state)])
+
+            self.dmps.append(d)
+
+    def process_context(self, context):
+        pass
+
+    def process_order(self, order):
+        assert len(order) == 2*self.n_basis*self.size+1
+
+        traj = []
+
+        widths = (order[-1],)*self.n_basis
+        centers = tuple(np.linspace(0.0, 1.0, num=self.n_basis+2)[1:-1])
+
+        for i, d in enumerate(self.dmps):
+            slopes, offsets = [], []
+            for j in range(self.n_basis):
+                cursor = 2 * (self.n_basis * i + j)
+                slope, offset = order[cursor:cursor + 2]
+                slopes.append(slope)
+                offsets.append(offset)
+
+            d.lwr_model_params(centers, widths, slopes, offsets)
+            ts, ys, yds = d.trajectory()
+            ys = dmp2rad(np.array(ys))
+
+            traj.append((tuple(ys), self.cfg.mprim.max_speed))
+
+        return tuple(traj), self.max_steps
+
+mprims['dmpg25'] = DmpG25
+

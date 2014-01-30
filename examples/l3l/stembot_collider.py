@@ -15,11 +15,11 @@ cfg.stem.verbose_com = True
 cfg.stem.verbose_dyn = True
 cfg.stem.motor_range = [01, 06]
 
-cfg.mprim.name = 'dmpg'
+cfg.mprim.name = 'dmpg25'
 cfg.mprim.motor_steps = 500
 cfg.mprim.max_steps   = 500
 cfg.mprim.uniformze   = False
-cfg.mprim.n_basis     = 1
+cfg.mprim.n_basis     = 2
 cfg.mprim.max_speed   = 1.0
 cfg.mprim.end_time    = 1.25
 
@@ -28,7 +28,7 @@ cfg.mprim.target_states = [ 30.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
 sb = stembot.StemBot(cfg)
 
-total   = 10
+total   = 30
 rejects = 0
 start = time.time()
 
@@ -42,5 +42,6 @@ for i in range(total):
 dur = time.time() - start
 sb.close(rest=False)
 
+print((cfg.mprim.name, cfg.mprim.n_basis))
 print("{}/{} reject, computed in {:.2f}s ({:.2f}s per executable order)".format(
         rejects, total, dur, dur/max(1, (total-rejects))))
