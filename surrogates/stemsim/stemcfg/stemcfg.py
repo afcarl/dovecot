@@ -111,4 +111,16 @@ stem3 = StemCfg(uid=3,
                 angle_ranges=angle_ranges,
                 max_torque=100)
 
-stems = [stem0, stem1, stem2, stem3]
+# test stem
+stem4 = StemCfg(uid=4,
+                serial_id='A9005MWF',
+                hostname='latistem',
+                optitrack_addr='239.255.42.98',
+                optitrack_side='right',
+                motorid_range=(90, 96),
+                model_file='stem.smodel',
+                zero_pose=(172, 150, 150, 172, 150, 150),
+                angle_ranges=angle_ranges,
+                max_torque=100)
+
+stems = [stem0, stem1, stem2, stem3, stem4]

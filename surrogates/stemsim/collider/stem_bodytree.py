@@ -24,9 +24,11 @@ tip_group   = 7
 
 
 # Ref0
-attach(0, (1000.001, 1000,  50), (      -490,          0,        - 50), meta='table', groups=[world_group])
-attach(0, (  55.002,   75, 165), (22/2,  75/2 + 30, -165/2 + 25), meta='clawL', groups=[world_group])
-attach(0, (  55.003,   75, 165), (22/2, -75/2 - 30, -165/2 + 25), meta='clawR', groups=[world_group])
+attach(0, (50, 1000,  50), (0, 0, -25), meta='table', groups=[world_group])
+#attach(0, (  55.002,   75, 165), (22/2,  75/2 + 30, -165/2 + 25), meta='clawL', groups=[world_group])
+#attach(0, (  55.003,   75, 165), (22/2, -75/2 - 30, -165/2 + 25), meta='clawR', groups=[world_group])
+attach(0, (  20,  20, 15), (0,  70, 7), meta='boltL', groups=[world_group])
+attach(0, (  20,  20, 15), (0, -70, 7), meta='boltR', groups=[world_group])
 attach(0, (  40.004,   60,  45), (          0, 0, 22), meta='motor0_bind', groups=[world_group])
 
 # Ref1
@@ -51,7 +53,7 @@ attach(6, ( 80.010, 40, 50), (-80/2+12, 0, 0), meta='motorhorn4', groups=[ref6_g
 attach(7, ( 60.011, 40, 50), (-67, 0, 0), meta='motor5', groups=[ref6_group, tip_group])
 
 # Tip
-#attach(7, (40.012,  5,  5), (-20, 0, 0), meta='marker_stem', groups=[tip_group])
+attach(7, (40.012,  5,  5), (-20, 0, 0), meta='marker_stem', groups=[tip_group])
 attach(7, (11.013, 11, 11), (  0, 0, 0), meta='marker', groups=[tip_group])
 
 bt.update((0.0, 0.0, 0.0, 0.0, 0.0, 0.0))

@@ -5,13 +5,17 @@ import pydyn
 
 import env
 from surrogates.stemsim import collider
+from surrogates.stemsim import stemcfg
 
-stem = pydyn.MotorSet(verbose=True)
+scfg = stemcfg.stems[int(sys.argv[1])]
+stem = pydyn.MotorSet(serial_id=scfg.serial_id, motor_range=scfg.motorid_range, verbose=True)
+stem.zero_pose = scfg.zero_pose
 
 while True:
     if len(collider.collide(stem.pose)) > 0:
+        sys.stdout.write('\a')
         print('collision !  ', end='\r')
     else:
         print('no collision.', end='\r')
-    time.sleep(0.01)
     sys.stdout.flush()
+    time.sleep(0.01)

@@ -13,7 +13,7 @@ cfg = treedict.TreeDict()
 cfg.stem.dt = 0.01
 cfg.stem.verbose_com = True
 cfg.stem.verbose_dyn = True
-cfg.stem.uid = 0 if len(sys.argv) == 1 else int(sys.argv[1])
+cfg.stem.uid = int(sys.argv[1])
 
 cfg.mprim.name = 'dmpg'
 cfg.mprim.motor_steps = 500

@@ -18,13 +18,14 @@ class OrderNotExecutableError(Exception):
 
 class Episode(object):
 
-    def __init__(self, cfg, verbose=True):
+    def __init__(self, cfg, verbose=True, optitrack=True):
         self.cfg = cfg
+        self.verbose = verbose
+        self.optitrack = optitrack
 
         self.stem = stemcfg.stems[self.cfg.stem.uid]
         self.M_trans = calibration.calibr.load_calibration(self.stem)
         self.vs = stemsensors.VrepSensors(self.cfg)
-        self.verbose = verbose
 
         atexit.register(self.close)
 

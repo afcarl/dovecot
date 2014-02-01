@@ -18,7 +18,8 @@ class StemCom(MotorSet):
         self.cfg.update(defcfg, overwrite=False)
 
         self.stemcfg = stemcfg.stems[cfg.stem.uid]
-        self.stemcfg.cycle_usb()
+        if os.uname()[0] == 'Linux':
+            self.stemcfg.cycle_usb()
 
         MotorSet.__init__(self, serial_id=self.stemcfg.serial_id, motor_range=self.stemcfg.motorid_range, verbose=self.cfg.stem.verbose_dyn)
         assert len(self.motors) == 6
