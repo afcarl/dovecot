@@ -57,8 +57,8 @@ class StemBot(object):
         self.stemcom.setup([0.0]*6)
         time.sleep(0.1)
 
-        self.max_speed    = 70
-        self.torque_limit = 50
+        self.max_speed    = 100
+        self.torque_limit = 70
 
         start_time = time.time()
         while time.time()-start_time < ts[-1]:
@@ -66,6 +66,7 @@ class StemBot(object):
         end_time = time.time()
 
         time.sleep(0.05)
+        self.stemcom.setup([0.0]*6, blocking=False)
 
         return start_time, end_time
 

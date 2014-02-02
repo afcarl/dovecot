@@ -59,32 +59,42 @@ class Episode(object):
                 print("{}executing movement on stem...{}".format(gfx.purple, gfx.end), end='\r')
             sys.stdout.flush()
 
-            # execute movement on stem
+            start_stem = time.time()
+             # execute movement on stem
             self.fb.track(self.stem.optitrack_side)
             start, end = self.sb.execute_order(order)
             self.fb.stop_tracking()
             if self.verbose:
                 print('')
             time.sleep(0.01)
+            stem_time = time.time() - start_stem
+            print('time slice: {:.1f}'.format(end-start))
 
+            start_vrep = time.time()
             # get optitrack trajectory
             opti_traj = self.fb.tracking_slice(start, end)
 
             # fill gaps
-            opti_traj = calibration.transform.fill_gaps(opti_traj)
+            try:
+                opti_traj = calibration.transform.fill_gaps(opti_traj)
+            except AssertionError:
+                raise MarkerError
+
             vrep_traj = calibration.transform.opti2vrep(opti_traj, self.M_trans)
 
             if self.verbose:
                 print("{}executing movement in vrep...{}".format(gfx.cyan, gfx.end))
+
 
             # execute in vrep
             object_sensors, joint_sensors, tip_sensors = self.ovar.execute(vrep_traj)
 
             # produce sensory feedback
             effect = self.vs.process_sensors(object_sensors, joint_sensors, tip_sensors)
+            vrep_time = time.time() - start_vrep
             #print("{}order:{} {}".format(gfx.purple, gfx.end, gfx.ppv(order)))
             if self.verbose:
-                print("{}effect:{} {}".format(gfx.cyan, gfx.end, gfx.ppv(effect)))
+                print("{}effect:{} {} (stem: {:.1f}, vrep: {:.1f})".format(gfx.cyan, gfx.end, gfx.ppv(effect), stem_time, vrep_time))
 
             return effect
 

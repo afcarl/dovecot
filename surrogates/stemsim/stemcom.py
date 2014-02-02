@@ -39,20 +39,19 @@ class StemCom(MotorSet):
         if any(self.compliant):
             raise IOError("impossible to set all motor non-compliant ({})".format(self.compliant))
 
-    def setup(self, pose):
-        """Setup the stem at the correct position"""
-#        if any(self.compliant):
-        self.make_non_compliant()
 
-        # self.angle_ranges = [(-100, 100)]*6
+    def setup(self, pose, blocking=True):
+        """Setup the stem at the correct position"""
+        self.compliant = False
+        #self.make_non_compliant()
 
         self.max_speed    = 70
         self.torque_limit = 50
         self.pose         = pose
 
-        while max(abs(p - tg) for p, tg in zip(self.pose, pose)) > 3:
-            time.sleep(0.1)
-        #print("rest pose error: {}".format(max(abs(p - tg) for p, tg in zip(self.pose, pose))))
+        if blocking:
+            while max(abs(p - tg) for p, tg in zip(self.pose, pose)) > 3:
+                time.sleep(0.1)
 
     def rest(self):
         self.max_speed = 100
