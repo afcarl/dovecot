@@ -86,7 +86,7 @@ class VRepCom(object):
         self.handle_script = self.vrep.simGetScriptHandle(script);
 
     def close(self):
-        pid = self.vrep.speGetVrepPid()
+        #pid = self.vrep.speGetVrepPid()
         if self.connected:
             self.vrep.disconnect()
         #os.kill(pid, signal.SIGKILL)
