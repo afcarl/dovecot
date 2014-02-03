@@ -9,11 +9,12 @@ from ..vrepsim import vrepcom
 
 
 class OptiVrepAR(object):
-    def __init__(self, cfg, port=1984, verbose=True, ppf=200, scene="../stemsim/ar.ttt", script="marker"):
+    def __init__(self, cfg, port=1984, verbose=True, ppf=200, script="marker"):
         self.ppf = ppf
         self.port = 1984
         self.verbose = verbose
-        self.scene = scene
+        print(cfg.makeReport())
+        self.scene = '../stemsim/' + cfg.sprims.scene
         self.script = script
         cfg2 = cfg.copy(deep=True)
         cfg2.sprims.tip = False

@@ -54,7 +54,7 @@ class StemBot(object):
     def execute_order(self, order):
         ts, motor_traj = self.create_trajectory(order)
 
-        self.stemcom.setup([0.0]*6)
+        self.stemcom.setup(self.cfg.mprim.init_states)
         time.sleep(0.1)
 
         self.max_speed    = 100
@@ -66,7 +66,7 @@ class StemBot(object):
         end_time = time.time()
 
         time.sleep(0.05)
-        self.stemcom.setup([0.0]*6, blocking=False)
+        self.stemcom.setup(self.cfg.mprim.init_states, blocking=False)
 
         return start_time, end_time
 

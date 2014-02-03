@@ -27,7 +27,7 @@ setup(
                                                   ],
     classifiers=[],
     package_data={'surrogates.vrepsim': ['surrogate.ttt'],
-                  'surrogates.stemsim': ['ar.ttt'],
+                  'surrogates.stemsim': ['ar.ttt', 'ar_center.ttt'],
                   'surrogates.stemsim.collider'  : ['stem.smodel'],
                   'surrogates.stemsim.calibration' : ['calib0.data', 'calib1.data', 'calib2.data', 'calib3.data']},
 )
