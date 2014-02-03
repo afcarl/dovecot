@@ -79,7 +79,7 @@ stem0 = StemCfg(uid=0,
                 zero_pose=(172, 150, 150, 172, 150, 150),
                 angle_ranges=angle_ranges,
                 max_torque=100,
-                powerswitch=1)
+                powerswitch=0)
 
 stem1 = StemCfg(uid=1,
                 serial_id='A4008aCD',
@@ -91,7 +91,7 @@ stem1 = StemCfg(uid=1,
                 zero_pose=(172, 150, 150, 172, 150, 150),
                 angle_ranges=angle_ranges,
                 max_torque=100,
-                powerswitch=2)
+                powerswitch=1)
 
 stem2 = StemCfg(uid=2,
                 serial_id='A4008apX',
@@ -103,7 +103,7 @@ stem2 = StemCfg(uid=2,
                 zero_pose=(173.0, 149.0, 149.0, 176.0, 149.6, 129.9),
                 angle_ranges=angle_ranges,
                 max_torque=100,
-                powerswitch=3)
+                powerswitch=2)
 
 stem3 = StemCfg(uid=3,
                 serial_id='A4008bke',
@@ -115,7 +115,7 @@ stem3 = StemCfg(uid=3,
                 zero_pose=(172, 150, 150, 172, 150, 150),
                 angle_ranges=angle_ranges,
                 max_torque=100,
-                powerswitch=4)
+                powerswitch=3)
 
 # test stem
 stem4 = StemCfg(uid=4,
