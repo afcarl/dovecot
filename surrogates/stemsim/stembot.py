@@ -20,6 +20,10 @@ class StemBot(object):
     def __init__(self, cfg, **kwargs):
         self.cfg = cfg
         self.m_prim = prims.create_mprim(self.cfg.mprim.name, self.cfg)
+        # will check if the movement has a possibility of generating a non-null sensory feedback
+        # if not and filter_real_execution is True, it will not be executed.
+        self._prefilter = cfg.sprim.prefilter
+
         self.stemcom = stemcom.StemCom(cfg, **kwargs)
 
     @property
@@ -31,6 +35,10 @@ class StemBot(object):
         return self.m_prim.m_bounds
 
     def create_trajectory(self, order):
+        """ For an order vector, produce a trajectory
+
+            If the order induce a collision with the robot or the static environment, raise CollisionError
+        """
         motor_traj, max_steps = self.m_prim.process_order(order)
 
         ts = [0.01*i for i in range(len(motor_traj[0][0]))]
@@ -46,13 +54,13 @@ class StemBot(object):
             #print('{}/{}'.format(i+1, len(pose)), end'\r')
             #sys.stdout.flush()
 
-        # print motor_traj[0]
-        # print motor_traj[-1]
-
         return ts, motor_traj
 
     def execute_order(self, order):
         ts, motor_traj = self.create_trajectory(order)
+
+        if self._prefilter.active:
+            pass
 
         self.stemcom.setup(self.cfg.mprim.init_states)
         time.sleep(0.1)

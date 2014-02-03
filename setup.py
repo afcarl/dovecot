@@ -18,7 +18,7 @@ setup(
     keywords = "robots interface",
     url = "flowers.inria.fr",
     packages=['surrogates', 'surrogates.kinsim',
-                            'surrogates.vrepsim',
+                            'surrogates.vrepsim', 'surrogates.vrepsim.objscene',
                             'surrogates.prims',
                             'surrogates.stemsim', 'surrogates.stemsim.adjust',
                                                   'surrogates.stemsim.calibration',
@@ -27,7 +27,7 @@ setup(
                                                   ],
     classifiers=[],
     package_data={'surrogates.vrepsim': ['surrogate.ttt'],
-                  'surrogates.stemsim': ['ar.ttt', 'ar_center.ttt'],
+                  'surrogates.vrepsim.objscene': ['ar.ttt', 'ar_center.ttt'],
                   'surrogates.stemsim.collider'  : ['stem.smodel'],
                   'surrogates.stemsim.calibration' : ['calib0.data', 'calib1.data', 'calib2.data', 'calib3.data']},
 )

@@ -6,6 +6,7 @@ import treedict
 from natnet import FrameBuffer
 
 from ..vrepsim import vrepcom
+from ..vrepsim import objscene
 
 
 class OptiVrepAR(object):
@@ -14,7 +15,8 @@ class OptiVrepAR(object):
         self.port = 1984
         self.verbose = verbose
         print(cfg.makeReport())
-        self.scene = '../stemsim/' + cfg.sprims.scene
+
+        self.scene = objscene.scenes[cfg.sprims.scene].filename
         self.script = script
         cfg2 = cfg.copy(deep=True)
         cfg2.sprims.tip = False

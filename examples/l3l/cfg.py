@@ -11,6 +11,9 @@ cfg.hide_vrep = True
 cfg.sprims.names     = ['push']
 cfg.sprim.tip        = False
 cfg.sprims.uniformze = False
+cfg.sprims.prefilter.active = False
+cfg.sprims.scene     = 'cube'
+
 
 cfg.mprim.name = 'dmpg25'
 cfg.mprim.motor_steps = 500

@@ -10,17 +10,20 @@ cycle device:
 
 import os
 
-if os.uname()[0] == 'Linux':
-    import pyudev
-
 from toolbox import execute
 
 def usb_syspath():
+    import pyudev
     context = pyudev.Context()
     return {device['ID_SERIAL_SHORT']: device.sys_path for device in context.list_devices(subsystem='usb', ID_VENDOR_ID='0403', ID_MODEL_ID='6001')}
 
-def cycle_usb(stemcfg):
-    execute.execute('sudo ~/cycle_usb.sh {}'.format(stemcfg.sysloc))
+def cycle_usb(serial_id):
+    if os.uname()[0] == 'Linux':
+        syspath = usb_syspath()[serial_id]
+        sysloc  = os.path.basename(syspath)
+        execute.execute('sudo ~/cycle_usb.sh {}'.format(sysloc), quiet=True)
+    else:
+        raise OSError("cycle_usb is not supported yet on your platform !")
 
 class StemCfg(object):
 
@@ -55,13 +58,7 @@ class StemCfg(object):
         self.powerswitch = powerswitch
 
     def cycle_usb(self):
-        if os.uname()[0] == 'Linux':
-            import pyudev
-            self.syspath = usb_syspath()[self.serial_id]
-            self.sysloc  = os.path.basename(self.syspath)
-            execute.execute('sudo ~/cycle_usb.sh {}'.format(self.sysloc), quiet=True)
-        else:
-            raise OSError("cycle_usb is not supported yet on your platform !")
+        cycle_usb(self.serial_id)
 
     @property
     def angle_limits(self):

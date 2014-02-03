@@ -5,9 +5,11 @@ cfg.vrep.ppf = 10
 
 cfg.sprims.names = ['push']
 cfg.sprims.uniformze = False
+cfg.sprims.prefilter.active = False
+cfg.sprims.scene     = 'cube'
 
 cfg.mprim.name = 'dmpg'
-cfg.mprim.motor_steps = 2000 
+cfg.mprim.motor_steps = 2000
 cfg.mprim.max_steps   = 2000
 cfg.mprim.uniformze   = False
 cfg.mprim.n_basis     = 2
