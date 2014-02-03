@@ -33,7 +33,8 @@ class StemCfg(object):
                        model_file=None,
                        zero_pose=None,
                        angle_ranges=None,
-                       max_torque=None):
+                       max_torque=None,
+                       powerswitch=None):
         assert uid is not None
 
         self.uid = uid
@@ -51,6 +52,7 @@ class StemCfg(object):
         self.zero_pose = zero_pose
         self.angle_ranges = angle_ranges
         self.max_torque = max_torque
+        self.powerswitch = powerswitch
 
     def cycle_usb(self):
         if os.uname()[0] == 'Linux':
@@ -76,7 +78,8 @@ stem0 = StemCfg(uid=0,
                 model_file='stem.smodel',
                 zero_pose=(172, 150, 150, 172, 150, 150),
                 angle_ranges=angle_ranges,
-                max_torque=100)
+                max_torque=100,
+                powerswitch=1)
 
 stem1 = StemCfg(uid=1,
                 serial_id='A4008aCD',
@@ -87,29 +90,32 @@ stem1 = StemCfg(uid=1,
                 model_file='stem.smodel',
                 zero_pose=(172, 150, 150, 172, 150, 150),
                 angle_ranges=angle_ranges,
-                max_torque=100)
+                max_torque=100,
+                powerswitch=2)
 
 stem2 = StemCfg(uid=2,
                 serial_id='A4008apX',
                 hostname='latistem',
                 optitrack_addr='239.255.42.98',
-                optitrack_side='left',
+                optitrack_side='right',
                 motorid_range=(11, 16),
                 model_file='stem.smodel',
                 zero_pose=(173.0, 149.0, 149.0, 176.0, 149.6, 129.9),
                 angle_ranges=angle_ranges,
-                max_torque=100)
+                max_torque=100,
+                powerswitch=3)
 
 stem3 = StemCfg(uid=3,
                 serial_id='A4008bke',
                 hostname='latistem',
                 optitrack_addr='239.255.42.98',
-                optitrack_side='right',
+                optitrack_side='left',
                 motorid_range=(51, 56),
                 model_file='stem.smodel',
                 zero_pose=(172, 150, 150, 172, 150, 150),
                 angle_ranges=angle_ranges,
-                max_torque=100)
+                max_torque=100,
+                powerswitch=4)
 
 # test stem
 stem4 = StemCfg(uid=4,
