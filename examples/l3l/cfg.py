@@ -11,7 +11,7 @@ cfg.hide_vrep = True
 cfg.sprims.names     = ['push']
 cfg.sprim.tip        = False
 cfg.sprims.uniformze = False
-cfg.sprims.prefilter.active = False
+cfg.sprims.prefilter = False
 cfg.sprims.scene     = 'cube'
 
 

@@ -64,6 +64,10 @@ class Episode(object):
             self.fb.track(self.stem.optitrack_side)
             start, end = self.sb.execute_order(order)
             self.fb.stop_tracking()
+
+            if (start, end) == (None, None):
+                return self.vs.null_feedback
+
             if self.verbose:
                 print('')
             time.sleep(0.01)

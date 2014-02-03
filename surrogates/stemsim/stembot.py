@@ -5,6 +5,8 @@ import numpy as np
 from .. import prims
 from . import stemcom
 from . import collider
+from collider import maycollide
+from ..vrepsim import objscene
 
 class CollisionError(Exception):
     pass
@@ -22,7 +24,11 @@ class StemBot(object):
         self.m_prim = prims.create_mprim(self.cfg.mprim.name, self.cfg)
         # will check if the movement has a possibility of generating a non-null sensory feedback
         # if not and filter_real_execution is True, it will not be executed.
-        self._prefilter = cfg.sprim.prefilter
+        self._prefilter = cfg.sprims.prefilter
+        if self._prefilter:
+            obj_scene = objscene.scenes[self.cfg.sprims.scene]
+            self._collision_filter = maycollide.CollisionFilter(obj_scene.object_pos, obj_scene.object_geom, 11)
+
 
         self.stemcom = stemcom.StemCom(cfg, **kwargs)
 
@@ -59,14 +65,15 @@ class StemBot(object):
     def execute_order(self, order):
         ts, motor_traj = self.create_trajectory(order)
 
-        if self._prefilter.active:
-            pass
+        if self._prefilter:
+            if not self._collision_filter.may_collide(motor_traj):
+                return None, None
 
         self.stemcom.setup(self.cfg.mprim.init_states)
         time.sleep(0.1)
 
-        self.max_speed    = 100
-        self.torque_limit = 70
+        self.max_speed    = 300
+        self.torque_limit = 100
 
         start_time = time.time()
         while time.time()-start_time < ts[-1]:

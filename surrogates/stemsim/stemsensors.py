@@ -29,6 +29,10 @@ class VrepSensors(object):
             self.s_units  += sp.s_units
             self.real_s_bounds += sp.real_s_bounds
 
+    @property
+    def null_feedback(self):
+        return (0.0,)*len(self.s_feats)
+
     def process_sensors(self, object_sensors, joint_sensors, tip_sensors):
 
         #Construct sensors channels

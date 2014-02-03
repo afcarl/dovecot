@@ -9,7 +9,7 @@ import dynamics.fwdkin.smodel as smodel
 A, B, C, D, E, F, G = map(sympy.Symbol, ['A', 'B', 'C', 'D', 'E', 'F', 'G'])
 phi1, phi2, phi3, phi4, phi5, phi6 = map(sympy.Symbol, ['phi1', 'phi2', 'phi3', 'phi4', 'phi5', 'phi6'])
 
-d_constants = {A: 25.0, B: 28.0, C: 83.0, D: 80.0, E: 68.0, F: 67.0, G: 81.0}
+d_constants = {A: 25.0, B: 56.0, C: 83.0, D: 80.0, E: 68.0, F: 67.0, G: 78.0}
 
                                   # d,       theta, r, alpha
 srj0 = smodel.SymbolicRevoluteJoint(A,           0, 0,     0, constants = [A])
