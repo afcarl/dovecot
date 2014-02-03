@@ -53,14 +53,25 @@ def set_compliance_slopes(v):
     for m in ms.motors:
         m.compliance_slopes = (v, v)
     time.sleep(0.1) # change are taking effect
+    
+def set_return_delay_time(v):
+    for m in ms.motors:
+        m.return_delay_time = v
+    time.sleep(0.1)
 
+def set_status_return_level(v):
+    for m in ms.motors:
+        m.status_return_level = v
+    time.sleep(0.1)
 
-observe_max_angles()
+#observe_max_angles()
 
 # set_angle_limits()
 # print_angle_limits()
 
-# set_compliance_margins(1.0)
-# #set_compliance_slopes(16)
-# print_compliance_margins()
-# #print_compliance_slopes()
+set_compliance_margins(1.0)
+set_compliance_slopes(16)
+set_return_delay_time(0)
+set_status_return_level(1)
+print_compliance_margins()
+print_compliance_slopes()
