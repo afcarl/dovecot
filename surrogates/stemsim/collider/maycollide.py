@@ -19,7 +19,7 @@ class CollisionFilter(object):
         if len(obj_geom) == 3: # cube
             obj_radius = math.sqrt(sorted(obj_geom)[2]**2 + sorted(obj_geom)[1]**2)
 
-        self.min_d_sq = 1.25*((obj_radius + marker_radius)**2)
+        self.min_d_sq = 1.33*((obj_radius + marker_radius)**2)
         self.obj_pos = obj_pos
         self.stem_model = smodel.SymbolicModel.from_file(os.path.abspath(os.path.join(__file__, '..')) + '/' + 'stem.smodel')
 

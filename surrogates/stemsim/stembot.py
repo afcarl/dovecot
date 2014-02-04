@@ -40,10 +40,12 @@ class StemBot(object):
     def m_bounds(self):
         return self.m_prim.m_bounds
 
-    def create_trajectory(self, order):
+    def create_trajectory(self, order, partial=False):
         """ For an order vector, produce a trajectory
 
-            If the order induce a collision with the robot or the static environment, raise CollisionError
+            If the order induce a collision with the robot or the static environment,
+                if partial, return the non-collision prefix
+                else raise CollisionError
         """
         motor_traj, max_steps = self.m_prim.process_order(order)
 
@@ -55,15 +57,16 @@ class StemBot(object):
 
         # check for collisions beforehand
         for i, pose in enumerate(motor_traj):
-            if len(collider.collide(pose)) > 0:
-                raise CollisionError
+            if i % 5 == 0: # every 50ms.
+                if len(collider.collide(pose)) > 0:
+                    raise CollisionError
             #print('{}/{}'.format(i+1, len(pose)), end'\r')
             #sys.stdout.flush()
 
         return ts, motor_traj
 
-    def execute_order(self, order):
-        ts, motor_traj = self.create_trajectory(order)
+    def execute_order(self, order, partial=False):
+        ts, motor_traj = self.create_trajectory(order, partial=partial)
 
         if self._prefilter:
             if not self._collision_filter.may_collide(motor_traj):
@@ -72,8 +75,8 @@ class StemBot(object):
         self.stemcom.setup(self.cfg.mprim.init_states)
         time.sleep(0.1)
 
-        self.max_speed    = 300
-        self.torque_limit = 100
+        self.max_speed    = 100
+        self.torque_limit =  50
 
         start_time = time.time()
         while time.time()-start_time < ts[-1]:
