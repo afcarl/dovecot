@@ -66,11 +66,6 @@ class StemCfg(object):
 
 angle_ranges = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0, 120.0), (99.0, 99.0), (99.0, 99.0))
 
-angle_ranges_0 = ((100.0,  100.0), (89.0, 89.0), (89.0, 89.0), (110.0, 110.0), (89.0, 89.0), (89.0, 89.0))
-angle_ranges_1 = ((90.0,  90.0), (79.0, 79.0), (79.0, 79.0), (100.0, 100.0), (79.0, 79.0), (79.0, 79.0))
-angle_ranges_2 = ((80.0,  80.0), (69.0, 69.0), (69.0, 69.0), (90.0, 90.0), (69.0, 69.0), (69.0, 69.0))
-angle_ranges_3 = ((70.0,  70.0), (59.0, 59.0), (59.0, 59.0), (80.0, 80.0), (59.0, 59.0), (59.0, 59.0))
-
 stem0 = StemCfg(uid=0,
                 serial_id='A8006BPa',
                 hostname='optistem',
@@ -79,7 +74,7 @@ stem0 = StemCfg(uid=0,
                 motorid_range=(1, 6),
                 model_file='stem.smodel',
                 zero_pose=(172, 150, 150, 172, 150, 150),
-                angle_ranges=angle_ranges_0,
+                angle_ranges=angle_ranges,
                 max_torque=100,
                 powerswitch=0)
 
@@ -91,7 +86,7 @@ stem1 = StemCfg(uid=1,
                 motorid_range=(41, 46),
                 model_file='stem.smodel',
                 zero_pose=(172, 150, 150, 172, 150, 150),
-                angle_ranges=angle_ranges_1,
+                angle_ranges=angle_ranges,
                 max_torque=100,
                 powerswitch=1)
 
@@ -103,7 +98,7 @@ stem2 = StemCfg(uid=2,
                 motorid_range=(11, 16),
                 model_file='stem.smodel',
                 zero_pose=(173.0, 149.0, 149.0, 176.0, 149.6, 129.9),
-                angle_ranges=angle_ranges_2,
+                angle_ranges=angle_ranges,
                 max_torque=100,
                 powerswitch=2)
 
@@ -115,7 +110,7 @@ stem3 = StemCfg(uid=3,
                 motorid_range=(51, 56),
                 model_file='stem.smodel',
                 zero_pose=(172, 150, 150, 172, 150, 150),
-                angle_ranges=angle_ranges_3,
+                angle_ranges=angle_ranges,
                 max_torque=100,
                 powerswitch=3)
 

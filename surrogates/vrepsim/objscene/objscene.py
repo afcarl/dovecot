@@ -24,6 +24,6 @@ ObjectScene(name='cube',
             object_geom=(  45.0/2,  45.0/2,   45.0/2))
 ObjectScene(name='cube_center',
             filename='ar_center.ttt',
-            object_pos=  (245.44, 0.50, 155.74),
+            object_pos=  (195.44, 0.50, 155.74),
             object_geom=(  45.0/2,  45.0/2,   45.0/2))
 
