@@ -29,24 +29,23 @@ class StemCom(MotorSet):
         self.max_torque   = self.stemcfg.max_torque
         self.angle_limits = self.stemcfg.angle_limits
 
-    def make_non_compliant(self):
-        for m in self.motors:
-            m.request_write('torque_enable', True)
-        time.sleep(0.05)
-        start = time.time()
-        while any(self.compliant) and time.time()-start < 1.0:
-            time.sleep(0.1)
-        if any(self.compliant):
-            raise IOError("impossible to set all motor non-compliant ({})".format(self.compliant))
+    # def make_non_compliant(self):
+    #     for m in self.motors:
+    #         m.request_write('torque_enable', True)
+    #     time.sleep(0.05)
+    #     start = time.time()
+    #     while any(self.compliant) and time.time()-start < 1.0:
+    #         time.sleep(0.1)
+    #     if any(self.compliant):
+    #         raise IOError("impossible to set all motor non-compliant ({})".format(self.compliant))
 
 
     def setup(self, pose, blocking=True):
         """Setup the stem at the correct position"""
         self.compliant = False
-        #self.make_non_compliant()
 
-        self.max_speed    = 70
-        self.torque_limit = 50
+        self.max_speed    = 50
+        self.torque_limit = 40
         self.pose         = pose
 
         if blocking:
@@ -54,11 +53,12 @@ class StemCom(MotorSet):
                 time.sleep(0.1)
 
     def rest(self):
-        self.max_speed = 100
+        self.max_speed = 50
 
         rest_pose = np.array([0.0, 96.3, -97.8, 0.0, -46.5, -18.9])
         #rest_pose = np.array([0.0, -98.0, -54.0, 0.0, 58.0, 0.0])
-        # self.angle_ranges  = [(min(p, rp), max(p, rp)) for p, rp in zip(self.pose, rest_pose)]
+        old_angle_ranges  = self.angle_ranges
+        self.angle_ranges  = [(100, 100) for p in self.pose]
 
 
         self.pose = rest_pose
