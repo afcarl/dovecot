@@ -70,7 +70,7 @@ class StemCom(MotorSet):
         while max(abs(p - tg) for p, tg in zip(self.pose, rest_pose)) > 2.0 and time.time()-start_time < 1.0:
             time.sleep(0.05)
 
-        self.angle_ranges = [(p-5, p+5) for p in self.pose]
+        self.angle_ranges = old_angle_ranges
         self.compliant = True
         time.sleep(0.3)
 
