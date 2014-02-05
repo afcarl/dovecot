@@ -10,7 +10,7 @@ import env
 from surrogates.vrepsim import vrepbot
 from cfg import cfg
 
-cfg.vrep.ppf  = 1
+cfg.vrep.ppf  = 200
 cfg.vrep.vrep_folder='/Applications/V-REP/v_rep/bin/'
 cfg.vrep.load = True
 cfg.vrep.headless = True

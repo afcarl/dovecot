@@ -71,14 +71,17 @@ class VRepCom(object):
             self.vrep_proc.stdout.read()
             self.vrep_proc.stderr.read()
 
-    def load(self, scene="surrogate.ttt", script="Flower"):
+    def load(self, scene=None, script="Flower"):
         if not self.connected:
             self.vrep.connect(self.port)
             self.connected = True
 
-        scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), scene))
-        if self.verbose:
-            print("Loading v-rep scene {}".format(scene_file))
+        if scene is None:
+            scene=self.cfg.vrep.scene
+
+        scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', scene))
+        assert os.path.isfile(scene_file), "scene file {} not found".format(scene_file)
+        print("loading v-rep scene {}".format(scene_file))
         ret = self.vrep.simLoadScene(scene_file)
         #if ret == -1:
         #    raise IOError

@@ -118,11 +118,12 @@ class DmpG25(MotorPrimitive):
     def __init__(self, cfg):
         self.cfg = cfg
         self.size = 6
-        self.m_feats = tuple(range(-1, -2*2*self.size-2, -1))
+        self.m_feats = tuple(range(-1, -2*2*self.size-3, -1))
         self.max_steps = cfg.mprim.max_steps
         self.n_basis   = cfg.mprim.n_basis
 
-        self.m_bounds = self.size*self.n_basis*((-400.0, 400.0), (-400.0, 400.0)) + ((0.05, 1.0),)
+        self.m_bounds = self.size*self.n_basis*((-400.0, 400.0), (-400.0, 400.0)) + 2*((0.05, 1.0),)
+        assert len(self.m_bounds) == len(self.m_feats)
         self.real_m_bounds = self.m_bounds
         self.motor_steps   = cfg.mprim.motor_steps - (cfg.mprim.motor_steps % 2)
 
@@ -141,11 +142,11 @@ class DmpG25(MotorPrimitive):
         pass
 
     def process_order(self, order):
-        assert len(order) == 2*self.n_basis*self.size+1
+        assert len(order) == 2*self.n_basis*self.size+2
 
         traj = []
 
-        widths = (order[-1],)*self.n_basis
+        widths = (order[-2], order[-1],)
         centers = tuple(np.linspace(0.0, 1.0, num=self.n_basis+2)[1:-1])
 
         for i, d in enumerate(self.dmps):

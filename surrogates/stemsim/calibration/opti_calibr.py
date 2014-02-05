@@ -72,13 +72,14 @@ def vrep_capture(poses):
     else:
         cfg.vrep.vrep_folder = '/home/fbenurea/external/vrep/3.0.5/'
     cfg.vrep.load            = True
-    cfg.vrep.headless        = False
+    cfg.vrep.headless        = True
+    cfg.vrep.scene           = 'vrep_calibrate.ttt'
 
     cfg.sprims.names = ['push']
     cfg.sprims.uniformze = False
     cfg.sprims.tip = True
 
-    cfg.mprim.name = 'dmpg'
+    cfg.mprim.name = 'dmpg25'
     cfg.mprim.motor_steps = 1000
     cfg.mprim.max_steps   = 1000
     cfg.mprim.uniformze   = False
@@ -96,7 +97,7 @@ def vrep_capture(poses):
         cfg.mprim.target_states = tg
         sb.m_prim = prims.create_mprim(cfg.mprim.name, cfg)
 
-        order = (0.0, 0.0, 0.20)*cfg.mprim.n_basis*6
+        order = (0.0, 0.0)*cfg.mprim.n_basis*6 + (0.20, 0.20)
         sb.execute_order(order)
         vrep_res.append(np.mean([sb.channels['tip_pos'][-50:]], axis=1))
 

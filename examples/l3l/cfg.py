@@ -7,6 +7,7 @@ cfg.stem.dt = 0.01
 cfg.stem.verbose_com = True
 cfg.stem.verbose_dyn = True
 cfg.vrep.headless    = False
+cfg.vrep.scene       = 'vrep_center.ttt'
 
 cfg.sprims.names     = ['push']
 cfg.sprim.tip        = False

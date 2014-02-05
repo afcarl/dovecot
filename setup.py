@@ -26,8 +26,8 @@ setup(
                                                   'surrogates.stemsim.stemcfg',
                                                   ],
     classifiers=[],
-    package_data={'surrogates.vrepsim': ['surrogate.ttt'],
-                  'surrogates.vrepsim.objscene': ['ar.ttt', 'ar_center.ttt'],
+    package_data={'surrogates.vrepsim.objscene': ['vrep_center.ttt', 'vrep_calibrate.ttt',
+                                                  'ar.ttt', 'ar_center.ttt', 'ar_center_sphere.ttt', 'ar_center_cylinder.ttt'],
                   'surrogates.stemsim.collider'  : ['stem.smodel'],
                   'surrogates.stemsim.calibration' : ['calib0.data', 'calib1.data', 'calib2.data', 'calib3.data']},
 )

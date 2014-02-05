@@ -18,9 +18,7 @@ class OptiVrepAR(object):
 
         self.scene = objscene.scenes[cfg.sprims.scene].filename
         self.script = script
-        cfg2 = cfg.copy(deep=True)
-        cfg2.sprims.tip = False
-        self.opivcom = vrepcom.OptiVrepCom(cfg2, load=False, verbose=self.verbose, headless=False, vrep_folder=None, ppf=self.ppf)
+        self.opivcom = vrepcom.OptiVrepCom(cfg, load=False, verbose=self.verbose, vrep_folder=None, ppf=self.ppf)
         if not self.opivcom.connected:
             self.opivcom.load(self.scene, self.script)
 
