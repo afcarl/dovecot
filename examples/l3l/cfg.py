@@ -25,3 +25,9 @@ cfg.mprim.end_time    = 1.15
 
 cfg.mprim.init_states   = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 cfg.mprim.target_states = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+
+cfg2 = cfg.copy(deep=True)
+cfg2.vrep.scene       = 'vrep_cylinder.ttt'
+cfg2.sprims.names     = ['rollspin']
+cfg2.sprims.scene     = 'cylinder'

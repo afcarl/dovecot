@@ -34,6 +34,10 @@ ObjectScene(name='other_cube',
             filename='ar_other_cube.ttt',
             object_pos=  (125.44, -90.50, 135.74),
             object_geom=(  45.0/2,  45.0/2,   45.0/2))
+ObjectScene(name='cylinder',
+            filename='ar_cylinder.ttt',
+            object_pos= (None, None, None),
+            object_geom=(None, None, None))
 
 
 
