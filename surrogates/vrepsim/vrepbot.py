@@ -1,16 +1,18 @@
 from .. import prims
 from . import vrepcom
 
+from ..stemsim import stemcfg
+
 class VRepBot(object):
 
     def __init__(self, cfg):
         self.cfg = cfg
+        self.cfg.mprim.angle_ranges = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0, 120.0), (99.0, 99.0), (99.0, 99.0))
         self.setup_prims()
         self.vrepcom = vrepcom.VRepCom(cfg,
                                        ppf        =cfg.vrep.ppf,
                                        vrep_folder=cfg.vrep.vrep_folder,
-                                       load       =cfg.vrep.load,
-                                       headless   =cfg.vrep.headless)
+                                       load       =cfg.vrep.load)
 
     @property
     def m_feats(self):

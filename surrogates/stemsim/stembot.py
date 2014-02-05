@@ -21,7 +21,6 @@ class StemBot(object):
 
     def __init__(self, cfg, **kwargs):
         self.cfg = cfg
-        self.m_prim = prims.create_mprim(self.cfg.mprim.name, self.cfg)
         # will check if the movement has a possibility of generating a non-null sensory feedback
         # if not and filter_real_execution is True, it will not be executed.
         self._prefilter = cfg.sprims.prefilter
@@ -31,6 +30,8 @@ class StemBot(object):
 
 
         self.stemcom = stemcom.StemCom(cfg, **kwargs)
+        self.cfg.mprim.angle_ranges = self.stemcom.angle_ranges
+        self.m_prim = prims.create_mprim(self.cfg.mprim.name, self.cfg)
 
     @property
     def m_feats(self):

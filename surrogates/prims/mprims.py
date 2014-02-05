@@ -74,12 +74,12 @@ class DmpG(MotorPrimitive):
 
         self.dmps = []
         assert len(self.cfg.mprim.init_states) == len(self.cfg.mprim.target_states) == self.size
-        for init_state, target_state in zip(self.cfg.mprim.init_states, self.cfg.mprim.target_states):
+        for i, (init_state, target_state) in enumerate(zip(self.cfg.mprim.init_states, self.cfg.mprim.target_states)):
             d = dmp.DMP()
             d.dmp.set_timesteps(self.motor_steps, 0.0, self.cfg.mprim.end_time)
             d.lwr_meta_params(self.n_basis)
-            d.dmp.set_initial_state([deg2dmp(init_state)])
-            d.dmp.set_attractor_state([deg2dmp(target_state)])
+            d.dmp.set_initial_state([self.deg_angle2dmp(i, init_state)])
+            d.dmp.set_attractor_state([self.deg_angle2dmp(i, target_state)])
 
             self.dmps.append(d)
 
@@ -103,7 +103,8 @@ class DmpG(MotorPrimitive):
 
             d.lwr_model_params(centers, widths, slopes, offsets)
             ts, ys, yds = d.trajectory()
-            ys = dmp2rad(np.array(ys))
+
+            ys = self.dmp2angle_rad(i, np.array(ys))
             #print('{}: {:6.2f}/{:6.2f}'.format(i, 180.0/math.pi*np.min(ys), 180.0/math.pi*np.max(ys)))
 
             traj.append((tuple(ys), self.cfg.mprim.max_speed))
@@ -157,11 +158,24 @@ class DmpG25(MotorPrimitive):
 
             d.lwr_model_params(centers, widths, slopes, offsets)
             ts, ys, yds = d.trajectory()
-            ys = dmp2rad(np.array(ys))
+            ys = self.dmp2angle_rad(i, np.array(ys))
 
             traj.append((tuple(ys), self.cfg.mprim.max_speed))
 
         return tuple(traj), self.max_steps
+
+    def dmp2angle_rad(self, i, ys):
+        """In radians"""
+        assert self.cfg.mprim.angle_ranges[i][0] == self.cfg.mprim.angle_ranges[i][1]
+        r = self.cfg.mprim.angle_ranges[i][1]
+        return r/5.0 * (math.pi/180.0) * ys
+
+    def deg_angle2dmp(self, i, a):
+        """In radians"""
+        assert self.cfg.mprim.angle_ranges[i][0] == self.cfg.mprim.angle_ranges[i][1]
+        r = self.cfg.mprim.angle_ranges[i][1]
+        return 5.0/r * (180/math.pi) * a
+
 
 mprims['dmpg25'] = DmpG25
 
