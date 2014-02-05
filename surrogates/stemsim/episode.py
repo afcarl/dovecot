@@ -22,6 +22,7 @@ class Episode(object):
         self.cfg = cfg
         self.verbose = verbose
         self.optitrack = optitrack
+        self.testmode = self.cfg.testmode
 
         self.stem = stemcfg.stems[self.cfg.stem.uid]
         self.M_trans = calibration.calibr.load_calibration(self.stem)

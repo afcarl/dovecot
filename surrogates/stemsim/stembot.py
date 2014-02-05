@@ -32,6 +32,8 @@ class StemBot(object):
         self.stemcom = stemcom.StemCom(cfg, **kwargs)
         self.cfg.mprim.angle_ranges = self.stemcom.angle_ranges
         self.m_prim = prims.create_mprim(self.cfg.mprim.name, self.cfg)
+        self.partial_mvt = self.cfg.partial_mvt # when doing test, we do the tests even if they generate collisions:
+                                          # we stop just before the collision
 
     @property
     def m_feats(self):
@@ -41,7 +43,7 @@ class StemBot(object):
     def m_bounds(self):
         return self.m_prim.m_bounds
 
-    def create_trajectory(self, order, partial=False):
+    def create_trajectory(self, order, partial_mvt=False):
         """ For an order vector, produce a trajectory
 
             If the order induce a collision with the robot or the static environment,
@@ -60,14 +62,18 @@ class StemBot(object):
         for i, pose in enumerate(motor_traj):
             if i % 5 == 0: # every 50ms.
                 if len(collider.collide(pose)) > 0:
+                    if partial_mvt:
+                        return ts[:i-10], motor_traj[:i-10]
+
                     raise CollisionError
             #print('{}/{}'.format(i+1, len(pose)), end'\r')
             #sys.stdout.flush()
 
         return ts, motor_traj
 
-    def execute_order(self, order, partial=False):
-        ts, motor_traj = self.create_trajectory(order, partial=partial)
+    def execute_order(self, order):
+
+        ts, motor_traj = self.create_trajectory(order, partial_mvt=self.partial_mvt)
 
         if self._prefilter:
             if not self._collision_filter.may_collide(motor_traj):
