@@ -13,6 +13,7 @@ stem = stemcfg.stems[uid]
 stem.cycle_usb()
 ms = MotorSet(serial_id=stem.serial_id, motor_range=stem.motorid_range, verbose=True)
 ms.zero_pose = stem.zero_pose
+ms.angle_ranges = stem.angle_ranges
 
 def observe_max_angles():
     max_angles = [[float('inf'), float('-inf')] for _ in ms.motors]
@@ -53,7 +54,7 @@ def set_compliance_slopes(v):
     for m in ms.motors:
         m.compliance_slopes = (v, v)
     time.sleep(0.1) # change are taking effect
-    
+
 def set_return_delay_time(v):
     for m in ms.motors:
         m.return_delay_time = v

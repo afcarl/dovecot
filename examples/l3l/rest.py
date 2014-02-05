@@ -13,6 +13,7 @@ stem.cycle_usb()
 
 ms = MotorSet(serial_id=stem.serial_id, motor_range=stem.motorid_range, verbose=True)
 ms.zero_pose = stem.zero_pose
+ms.angle_limits = stem.angle_limits
 
 ms.compliant = False
 time.sleep(0.1)

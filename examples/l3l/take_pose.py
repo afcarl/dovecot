@@ -20,7 +20,9 @@ ms.max_speed  = 100
 ms.torque_limit = 100
 ms.pose = (20.0, 10.0, 10.0, 10.0, 10.0, 10.0)
 time.sleep(1.0)
-ms.pose = [ 2.70, -82.39,  25.11, -24.25,  52.11,  7.08]
+ms.pose = [ 0.0,]*6
+
+#ms.pose = [ 2.70, -82.39,  25.11, -24.25,  52.11,  7.08]
 
 time.sleep(3.0)
 print("pos: [{}]".format(', '.join('{:.1f}'.format(p) for p in ms.pose)))

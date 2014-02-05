@@ -6,7 +6,7 @@ cfg.stem.dt = 0.01
 
 cfg.stem.verbose_com = True
 cfg.stem.verbose_dyn = True
-cfg.hide_vrep = True
+cfg.vrep.headless    = False
 
 cfg.sprims.names     = ['push']
 cfg.sprim.tip        = False
@@ -14,8 +14,7 @@ cfg.sprims.uniformze = False
 cfg.sprims.prefilter = False
 cfg.sprims.scene     = 'cube'
 
-
-cfg.mprim.name = 'dmpg25'
+cfg.mprim.name        = 'dmpg25'
 cfg.mprim.motor_steps = 500
 cfg.mprim.max_steps   = 500
 cfg.mprim.uniformze   = False

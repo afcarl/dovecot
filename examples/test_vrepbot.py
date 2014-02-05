@@ -10,16 +10,16 @@ import env
 from surrogates.vrepsim import vrepbot
 
 cfg = treedict.TreeDict()
-cfg.vrep.ppf = 200
+cfg.vrep.ppf  = 10
 cfg.vrep.vrep_folder='/Applications/V-REP/v_rep/bin/'
 cfg.vrep.load = True
+cfg.vrep.headless = False
 
 cfg.sprims.names = ['push']
 cfg.sprims.uniformze = False
-
 cfg.mprim.name = 'dmpg'
-cfg.mprim.motor_steps = 2000
-cfg.mprim.max_steps   = 2000
+cfg.mprim.motor_steps = 500
+cfg.mprim.max_steps   = 500
 cfg.mprim.uniformze   = False
 cfg.mprim.n_basis     = 2
 cfg.mprim.max_speed   = 1.0
