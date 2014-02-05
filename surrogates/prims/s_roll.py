@@ -71,3 +71,37 @@ class Roll(sprims.SensoryPrimitive):
         return ('rad', 'rad', None)
 
 sprims.sprims['roll'] = Roll
+
+
+class Spin(Roll):
+    """Highly specific to a situation. Need to be generalized. FIXME"""
+
+    def __init__(self, cfg):
+        #self.object_name = cfg.sprimitive.push.object_name
+        Roll.__init__(self, cfg)
+        self.s_feats  = (6, 7)
+
+    def process_context(self, context):
+        self.s_bounds = ((-10.0, 10.0), (0.0, 1.0))
+        self.real_s_bounds = self.s_bounds
+
+    def process_sensors(self, sensors_data):
+        ori_array = sensors_data[self.object_name + '_ori']
+        u = np.matrix([[0.0], [0.0], [1.0]])
+        angle = 0.0
+        last_u = None
+        for ori in ori_array:
+            ori_rot = matrices.quat2rot(ori)
+            x_rot = ori_rot*u
+            if last_u is None:
+                last_u = x_rot
+
+            dangle = angle_between((last_u[0,0], last_u[1,0], last_u[2,0]),
+                                   (x_rot[0,0], x_rot[1,0], x_rot[2,0]))
+            angle += dangle
+            last_u = x_rot
+
+        return (angle, 0.0 if angle == 0.0 else 1.0)
+
+
+sprims.sprims['spin'] = Spin
