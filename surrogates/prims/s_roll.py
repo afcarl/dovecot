@@ -105,3 +105,21 @@ class Spin(Roll):
 
 
 sprims.sprims['spin'] = Spin
+
+class RollSpin(sprims.SensoryPrimitive):
+
+    def __init__(self, cfg):
+        self.spin = Spin(self, cfg)
+        self.roll = Roll(self, cfg)
+        self.s_feats = self.spin.s_feats[:-1]+self.roll_s_feats
+
+    def process_context(self, context):
+        self.s_bounds = self.spin.s_bounds[:-1]+self.roll_s_bounds
+        self.real_s_bounds = self.s_bounds
+
+    def process_sensors(self, sensors_data):
+        effect_spin = self.spin.process_sensors(sensors_data)
+        effect_roll = self.roll.process_sensors(sensors_data)
+        return effect_spin[:-1]+effect_roll
+
+sprims.sprims['rollspin'] = RollSpin
