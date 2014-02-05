@@ -97,7 +97,7 @@ stem2 = StemCfg(uid=2,
                 optitrack_side='right',
                 motorid_range=(11, 16),
                 model_file='stem.smodel',
-                zero_pose=(173.0, 149.0, 149.0, 176.0, 149.6, 129.9),
+                zero_pose=(173.0, 150.0, 151.0, 176.0, 150.0, 129.9),
                 angle_ranges=angle_ranges,
                 max_torque=100,
                 powerswitch=2)
