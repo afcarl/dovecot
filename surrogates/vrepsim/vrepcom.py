@@ -11,11 +11,10 @@ import pyvrep
 
 class VRepCom(object):
 
-    def __init__(self, cfg, port=1984, load=True, verbose=False, headless=False, vrep_folder=None, ppf=200):
+    def __init__(self, cfg, port=1984, load=True, verbose=False, vrep_folder=None, ppf=200):
         self.cfg = cfg
         self.connected = False
         self.verbose = verbose
-        self.headless = headless
         self.ppf  = ppf
         self.port = port
 
@@ -38,12 +37,12 @@ class VRepCom(object):
         lognumber = random.randint(0, 1000000000)
         logname = '/tmp/vreplog{}'.format(lognumber)
 
-        headless_flag = '-h' if self.headless else ''
+        headless_flag = '' # '-h' if self.cfg.vrep.headless else ''
         if os.uname()[0] == "Linux":
-            if False and not self.cfg.hide_vrep:
-                cmd = "xvfb_run vrep >> {}".format(logname)
-            else:
+            if self.cfg.vrep.headless:
                 cmd = "xvfb-run vrep >> {}".format(logname)
+            else:
+                cmd = "DISPLAY=:0 vrep >> {}".format(logname)
         elif os.uname()[0] == "Darwin":
             cmd = "cd {}; ./vrep {} -g{} >> {}".format(self.vrep_folder, headless_flag, port, logname)
         else:
