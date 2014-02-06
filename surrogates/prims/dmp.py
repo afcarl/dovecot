@@ -28,7 +28,7 @@ class DMP(object):
 
     def trajectory(self):
         traj = self.dmp.generate_trajectory()
-        return traj[::3], traj[1::3], traj[2::3] 
+        return traj[::3], traj[1::3], traj[2::3]
 
     def lwr_meta_params(self, n_bases, overlap=0.1):
         self.n_bases = n_bases
@@ -44,13 +44,13 @@ class DMP(object):
     def lwr_model_params(self, centers = None, widths = None,
                                slopes = None, offsets = None):
         assert self.centers is not None, "you must set lwr_meta_parameters before set_lwr_model_parameters."
-        self.centers = centers or self.centers
-        self.widths  = widths  or self.widths
-        self.slopes  = slopes  or self.slopes
-        self.offsets = offsets or self.offsets
+        self.centers = centers if centers is None else self.centers
+        self.widths  = widths  if widths  is None else self.widths
+        self.slopes  = slopes  if slopes  is None else self.slopes
+        self.offsets = offsets if offsets is None else self.offsets
 
         assert self.n_bases == len(self.centers) == len(self.widths) == len(self.slopes) == len(self.offsets)
-        self.dmp.set_lwr_model_parameters(list(self.centers), list(self.widths), 
+        self.dmp.set_lwr_model_parameters(list(self.centers), list(self.widths),
                                           list(self.slopes), list(self.offsets))
 
 
