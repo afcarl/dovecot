@@ -68,7 +68,7 @@ class Roll(sprims.SensoryPrimitive):
 
     @property
     def s_units(self):
-        return ('rad', 'rad', None)
+        return ('rad', None)
 
 sprims.sprims['roll'] = Roll
 
@@ -80,6 +80,7 @@ class Spin(Roll):
         #self.object_name = cfg.sprimitive.push.object_name
         Roll.__init__(self, cfg)
         self.s_feats  = (6, 7)
+        self.s_fixed  = (None, 1.0)
 
     def process_context(self, context):
         self.s_bounds = ((-10.0, 10.0), (0.0, 1.0))
@@ -109,17 +110,26 @@ sprims.sprims['spin'] = Spin
 class RollSpin(sprims.SensoryPrimitive):
 
     def __init__(self, cfg):
-        self.spin = Spin(self, cfg)
-        self.roll = Roll(self, cfg)
-        self.s_feats = self.spin.s_feats[:-1]+self.roll_s_feats
+        self.spin = Spin(cfg)
+        self.roll = Roll(cfg)
+        self.s_feats = self.spin.s_feats[:-1]+self.roll.s_feats
+        self.s_fixed  = self.spin.s_fixed[:-1]+self.roll.s_fixed
+
 
     def process_context(self, context):
-        self.s_bounds = self.spin.s_bounds[:-1]+self.roll_s_bounds
+        self.roll.process_context(context)
+        self.spin.process_context(context)
+        self.s_bounds = self.spin.s_bounds[:-1]+self.roll.s_bounds
         self.real_s_bounds = self.s_bounds
 
     def process_sensors(self, sensors_data):
         effect_spin = self.spin.process_sensors(sensors_data)
         effect_roll = self.roll.process_sensors(sensors_data)
         return effect_spin[:-1]+effect_roll
+
+    @property
+    def s_units(self):
+        return ('rad', 'rad', None)
+
 
 sprims.sprims['rollspin'] = RollSpin
