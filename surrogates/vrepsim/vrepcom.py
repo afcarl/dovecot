@@ -42,7 +42,10 @@ class VRepCom(object):
             if self.cfg.vrep.headless:
                 cmd = "xvfb-run vrep >> {}".format(logname)
             else:
-                cmd = "DISPLAY=:0 vrep >> {}".format(logname)
+                if self.cfg.vrep.vglrun:
+                    cmd = "vglrun vrep >> {}".format(logname)
+                else:
+                    cmd = "DISPLAY=:0 vrep >> {}".format(logname)
         elif os.uname()[0] == "Darwin":
             cmd = "cd {}; ./vrep {} -g{} >> {}".format(self.vrep_folder, headless_flag, port, logname)
         else:
