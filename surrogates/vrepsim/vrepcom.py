@@ -15,7 +15,7 @@ class VRepCom(object):
         self.cfg = cfg
         self.connected = False
         self.verbose = verbose
-        self.ppf  = ppf
+        self.ppf  = cfg.vrep.ppf
         self.port = port
 
         self.vrep_proc = None
