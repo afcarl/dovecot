@@ -7,13 +7,15 @@ cfg.stem.dt = 0.01
 cfg.stem.verbose_com = True
 cfg.stem.verbose_dyn = True
 cfg.vrep.headless    = False
+cfg.vrep.vglrun      = False
+cfg.vrep.ppf         = 1
 cfg.vrep.scene       = 'vrep_center.ttt'
 
 cfg.sprims.names     = ['push']
 cfg.sprim.tip        = False
 cfg.sprims.uniformze = False
 cfg.sprims.prefilter = False
-cfg.sprims.scene     = 'cube'
+cfg.sprims.scene     = 'cube_center'
 
 cfg.mprim.name        = 'dmpg25'
 cfg.mprim.motor_steps = 500

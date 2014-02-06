@@ -8,7 +8,8 @@ from surrogates.stemsim import episode
 import cfg
 
 cfg_run = cfg.cfg
-cfg_run.stem.uid = int(sys.argv[1])
+cfg_run.mprim.n_basis = 2
+cfg_run.stem.uid  = int(sys.argv[1])
 
 episodes_count  = 1 if len(sys.argv) <= 2 else int(sys.argv[2])
 collisions      = 0
