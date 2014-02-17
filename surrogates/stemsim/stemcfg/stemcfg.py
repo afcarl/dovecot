@@ -67,8 +67,8 @@ class StemCfg(object):
 angle_ranges = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0, 120.0), (99.0, 99.0), (99.0, 99.0))
 
 stem0 = StemCfg(uid=0,
-                serial_id='A8006BPa',
-                hostname='optistem',
+                serial_id='A4008bke',
+                hostname='littlehp',
                 optitrack_addr='239.255.42.99',
                 optitrack_side='upper.left',
                 motorid_range=(1, 6),
@@ -79,8 +79,8 @@ stem0 = StemCfg(uid=0,
                 powerswitch=0)
 
 stem1 = StemCfg(uid=1,
-                serial_id='A4008aCD',
-                hostname='optistem',
+                serial_id='A9005MWF',
+                hostname='littlehp',
                 optitrack_addr='239.255.42.99',
                 optitrack_side='bottom.left',
                 motorid_range=(41, 46),
@@ -91,8 +91,8 @@ stem1 = StemCfg(uid=1,
                 powerswitch=1)
 
 stem2 = StemCfg(uid=2,
-                serial_id='A4008apX',
-                hostname='latistem',
+                serial_id='AH00R9U0',
+                hostname='littlehp',
                 optitrack_addr='239.255.42.99',
                 optitrack_side='upper.right',
                 motorid_range=(11, 16),
@@ -103,8 +103,8 @@ stem2 = StemCfg(uid=2,
                 powerswitch=2)
 
 stem3 = StemCfg(uid=3,
-                serial_id='A4008bke',
-                hostname='latistem',
+                serial_id='A4012AJS',
+                hostname='littlehp',
                 optitrack_addr='239.255.42.99',
                 optitrack_side='bottom.right',
                 motorid_range=(51, 56),
