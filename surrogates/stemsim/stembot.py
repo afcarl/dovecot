@@ -4,8 +4,8 @@ import numpy as np
 
 from .. import prims
 from . import stemcom
-from . import collider
-from collider import maycollide
+from .collider import maycollide
+from .collider import collider
 from ..vrepsim import objscene
 
 class CollisionError(Exception):
@@ -30,8 +30,10 @@ class StemBot(object):
 
 
         self.stemcom = stemcom.StemCom(cfg, **kwargs)
-        self.cfg.mprim.angle_ranges = self.stemcom.angle_ranges
+        if 'angle_ranges' not in self.cfg.mprim:
+            self.cfg.mprim.angle_ranges = self.stemcom.angle_ranges
         self.m_prim = prims.create_mprim(self.cfg.mprim.name, self.cfg)
+        self.m_prim.process_context({})
         self.partial_mvt = self.cfg.partial_mvt # when doing test, we do the tests even if they generate collisions:
                                           # we stop just before the collision
 
