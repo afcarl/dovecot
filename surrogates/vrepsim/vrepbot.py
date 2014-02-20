@@ -1,18 +1,32 @@
+import numpy as np
+
 from .. import prims
 from . import vrepcom
 
 from ..stemsim import stemcfg
+from ..stemsim.collider import maycollide
+from . import objscene
+
+class OrderNotExecutableError(Exception):
+    pass
 
 class VRepBot(object):
 
     def __init__(self, cfg):
         self.cfg = cfg
-        self.cfg.mprim.angle_ranges = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0, 120.0), (99.0, 99.0), (99.0, 99.0))
+        if 'angle_ranges' not in self.cfg.mprim:
+            self.cfg.mprim.angle_ranges = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0, 120.0), (99.0, 99.0), (99.0, 99.0))
         self.setup_prims()
         self.vrepcom = vrepcom.VRepCom(cfg,
                                        ppf        =cfg.vrep.ppf,
                                        vrep_folder=cfg.vrep.vrep_folder,
                                        load       =cfg.vrep.load)
+
+        if cfg.sprims.prefilter:
+            obj_scene = objscene.scenes[self.cfg.sprims.scene]
+            self._collision_filter = maycollide.CollisionFilter(obj_scene.object_pos, obj_scene.object_geom, 11)
+
+        self.OrderNotExecutableError = OrderNotExecutableError
 
     @property
     def m_feats(self):
@@ -28,6 +42,7 @@ class VRepBot(object):
         self.context = {'x_bounds': (-3.0, 3.0),
                         'y_bounds': (-3.0, 3.0),
                         'z_bounds': ( 1.4, 3.3)}
+        self.m_prim.process_context(self.context)
         self.process_context()
 
     def process_context(self):
@@ -88,9 +103,18 @@ class VRepBot(object):
 
         return tuple(vals[f_i] for f_i in self.s_feats)
 
+    def check_object_collision(self, motor_traj):
+        #return True
+        if self.cfg.sprims.prefilter:
+            if not self._collision_filter.may_collide(motor_traj):
+                return False
+        return True
+
     def execute_order(self, order):
-        #print(order)
         motor_traj, max_steps = self.m_prim.process_order(order)
+        motor_traj_2 = list(zip(*tuple(np.degrees(t_i[0]) for t_i in motor_traj)))
+        if not self.check_object_collision(motor_traj_2):
+            return (0.0,)*len(self.s_feats)
         sensors_data = self.vrepcom.run_simulation(motor_traj, max_steps)
         return self.process_sensors(*sensors_data)
 
