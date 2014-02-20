@@ -36,10 +36,10 @@ class Uniformize(MotorPrimitive):
 
     def __init__(self, motor_prim):
         self.motor_prim = motor_prim
+        self.m_feats = self.motor_prim.m_feats
 
     def process_context(self, context):
         self.motor_prim.process_context(context)
-        self.m_feats = self.motor_prim.m_feats
         self.m_bounds = tuple((0.0, 1.0) for i in self.motor_prim.m_bounds)
 
     def _uni2sim(self, order):
@@ -118,11 +118,11 @@ class DmpG25(MotorPrimitive):
     def __init__(self, cfg):
         self.cfg = cfg
         self.size = 6
-        self.m_feats = tuple(range(-1, -2*2*self.size-3, -1))
-        self.max_steps = cfg.mprim.max_steps
         self.n_basis   = cfg.mprim.n_basis
+        self.m_feats = tuple(range(-1, -2*self.n_basis*self.size - self.n_basis -1, -1))
+        self.max_steps = cfg.mprim.max_steps
 
-        self.m_bounds = self.size*self.n_basis*((-400.0, 400.0), (-400.0, 400.0)) + 2*((0.05, 1.0),)
+        self.m_bounds = self.size*self.n_basis*((-400.0, 400.0), (-400.0, 400.0)) + self.n_basis*((0.05, 1.0),)
         assert len(self.m_bounds) == len(self.m_feats)
         self.real_m_bounds = self.m_bounds
         self.motor_steps   = cfg.mprim.motor_steps - (cfg.mprim.motor_steps % 2)
@@ -142,11 +142,11 @@ class DmpG25(MotorPrimitive):
         pass
 
     def process_order(self, order):
-        assert len(order) == 2*self.n_basis*self.size+2
+        assert len(order) == self.n_basis*(2*self.size+1)
 
         traj = []
 
-        widths = (order[-2], order[-1],)
+        widths = order[-self.n_basis:]
         centers = tuple(np.linspace(0.0, 1.0, num=self.n_basis+2)[1:-1])
 
         for i, d in enumerate(self.dmps):

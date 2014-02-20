@@ -44,11 +44,12 @@ class DMP(object):
     def lwr_model_params(self, centers = None, widths = None,
                                slopes = None, offsets = None):
         assert self.centers is not None, "you must set lwr_meta_parameters before set_lwr_model_parameters."
-        self.centers = centers if centers is None else self.centers
-        self.widths  = widths  if widths  is None else self.widths
-        self.slopes  = slopes  if slopes  is None else self.slopes
-        self.offsets = offsets if offsets is None else self.offsets
+        self.centers = centers if centers is not None else self.centers
+        self.widths  = widths  if widths  is not None else self.widths
+        self.slopes  = slopes  if slopes  is not None else self.slopes
+        self.offsets = offsets if offsets is not None else self.offsets
 
+        #print(self.centers, self.widths, self.slopes, self.offsets)
         assert self.n_bases == len(self.centers) == len(self.widths) == len(self.slopes) == len(self.offsets)
         self.dmp.set_lwr_model_parameters(list(self.centers), list(self.widths),
                                           list(self.slopes), list(self.offsets))
