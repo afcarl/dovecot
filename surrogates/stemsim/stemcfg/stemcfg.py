@@ -37,6 +37,7 @@ class StemCfg(object):
                        zero_pose=None,
                        angle_ranges=None,
                        max_torque=None,
+                       powerswitch_mac=None,
                        powerswitch=None):
         assert uid is not None
 
@@ -56,6 +57,7 @@ class StemCfg(object):
         self.angle_ranges = angle_ranges
         self.max_torque = max_torque
         self.powerswitch = powerswitch
+        self.powerswitch_mac = powerswitch_mac
 
     def cycle_usb(self):
         cycle_usb(self.serial_id)
@@ -76,6 +78,7 @@ stem0 = StemCfg(uid=0,
                 zero_pose=(172, 150, 150, 172, 150, 150),
                 angle_ranges=angle_ranges,
                 max_torque=100,
+                powerswitch_mac='00:13:f6:01:52:d6',
                 powerswitch=0)
 
 stem1 = StemCfg(uid=1,
@@ -88,6 +91,7 @@ stem1 = StemCfg(uid=1,
                 zero_pose=(172, 150, 150, 172, 150, 150),
                 angle_ranges=angle_ranges,
                 max_torque=100,
+                powerswitch_mac='00:13:f6:01:52:d6',
                 powerswitch=1)
 
 stem2 = StemCfg(uid=2,
@@ -100,6 +104,7 @@ stem2 = StemCfg(uid=2,
                 zero_pose=(172, 150, 150, 145, 150, 150),
                 angle_ranges=angle_ranges,
                 max_torque=100,
+                powerswitch_mac='00:13:f6:01:52:d6',
                 powerswitch=2)
 
 stem3 = StemCfg(uid=3,
@@ -112,6 +117,7 @@ stem3 = StemCfg(uid=3,
                 zero_pose=(172, 150, 150, 172, 150, 150),
                 angle_ranges=angle_ranges,
                 max_torque=100,
+                powerswitch_mac='00:13:f6:01:52:d6',
                 powerswitch=3)
 
 # test stem
@@ -124,6 +130,8 @@ stem4 = StemCfg(uid=4,
                 model_file='stem.smodel',
                 zero_pose=(172, 150, 150, 172, 150, 150),
                 angle_ranges=angle_ranges,
+                powerswitch_mac='00:13:f6:01:52:d6',
+                powerswitch=3,
                 max_torque=100)
 
 stems = [stem0, stem1, stem2, stem3, stem4]

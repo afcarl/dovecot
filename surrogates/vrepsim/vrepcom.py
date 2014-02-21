@@ -6,12 +6,40 @@ import signal
 import subprocess
 import random
 import string
-
+import hashlib
 import pyvrep
+import pickle
+
+def md5sum(filename, blocksize=65536):
+    hash = hashlib.md5()
+    with open(filename, "r+b") as f:
+        for block in iter(lambda: f.read(blocksize), ""):
+            hash.update(block)
+    return hash.hexdigest()
+
+class SceneToyCalibrationData(object):
+
+    def __init__(self, positions, mass, dimensions, md5, scene):
+        self.positions = positions
+        self.mass = mass
+        self.dimensions = dimensions
+        scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', self.scene))
+        assert os.path.isfile(scene_file), "scene file {} not found".format(scene_file)
+        self.md5 = md5sum(scene_file)
+        self.scene = scene
+
+    def check_for_changes(self):
+        if md5sum(self.scene) == self.md5:
+            return False
+        return True
+
+    def save(self):
+        with open(self.scene + '.calib', 'wb') as f:
+            pickle.dump(self, f)
 
 class VRepCom(object):
 
-    def __init__(self, cfg, port=1984, load=True, verbose=False, vrep_folder=None, ppf=200):
+    def __init__(self, cfg, port=1984, load=True, verbose=False, vrep_folder=None, ppf=200, calibrate=False):
         self.cfg = cfg
         self.connected = False
         self.verbose = verbose
@@ -24,8 +52,16 @@ class VRepCom(object):
 
         self.vrep = pyvrep.PyVrep()
 
+        self.scene = None
+        self.calib = None
+
         if load:
             self.load()
+
+        if calibrate:
+            self.calibrate_scene()
+            self.close()
+        self.load_calibration_data()
 
     def launch_sim(self):
         """Launch a subprocess of V-Rep"""
@@ -80,12 +116,14 @@ class VRepCom(object):
             self.connected = True
 
         if scene is None:
-            scene=self.cfg.vrep.scene
+            self.scene=self.cfg.vrep.scene
+        else:
+            self.scene = scene
 
-        scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', scene))
+        scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', self.scene))
         assert os.path.isfile(scene_file), "scene file {} not found".format(scene_file)
         print("loading v-rep scene {}".format(scene_file))
-        ret = self.vrep.simLoadScene(scene_file)
+        ret = self.vrep.simLoadScene(os.path.abspath(scene_file)) # os.path.abspath TO BE VERIFIED
         #if ret == -1:
         #    raise IOError
         self.handle_script = self.vrep.simGetScriptHandle(script);
@@ -147,6 +185,30 @@ class VRepCom(object):
 
         joint_sensors = None
         return (object_sensors, joint_sensors, tip_sensors)
+
+    def load_calibration_data(self):
+        scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', self.scene))
+        assert os.path.isfile(scene_file), "scene file {} not found".format(scene_file)
+        with open(self.scene + '.calib', 'rb') as f:
+            self.calib = pickle.load(f)
+        assert self.calib.md5 == md5sum(scene_file), "loaded scene calibration ({}) differs from scene ({})".format(scene_file + '.calib',scene_file)
+
+
+    def calibrate_scene(self):
+        toy_h = vrep.simGetObjectHandle("toy")
+        base_h = vrep.simGetObjectHandle("dummy_ref_base")
+        min_x = vrep.simGetObjectFloatParameter(toy_h, 21)[0] * 100
+        max_x = vrep.simGetObjectFloatParameter(toy_h, 24)[0] * 100
+        min_y = vrep.simGetObjectFloatParameter(toy_h, 22)[0] * 100
+        max_y = vrep.simGetObjectFloatParameter(toy_h, 25)[0] * 100
+        min_z = vrep.simGetObjectFloatParameter(toy_h, 23)[0] * 100
+        max_z = vrep.simGetObjectFloatParameter(toy_h, 26)[0] * 100
+        dimensions = [max_x - min_x, max_y - min_y, max_z - min_z]
+        mass_toy = vrep.simGetObjectFloatParameter(toy_h, 3005)[0] * 100
+        toy_positions = vrep.simGetObjectPosition(toy_h, base_h)
+        positions = [100 * e for e in toy_positions]
+        self.calib = SceneToyCalibrationData(positions, mass_toy, dimensions self.scene)
+        self.calib.save()
 
 
 class OptiVrepCom(VRepCom):

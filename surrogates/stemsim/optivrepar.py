@@ -10,7 +10,7 @@ from ..vrepsim import objscene
 
 
 class OptiVrepAR(object):
-    def __init__(self, cfg, port=1984, verbose=True, ppf=200, script="marker"):
+    def __init__(self, cfg, port=1984, verbose=True, ppf=200, script="marker", calibrate=False):
         self.ppf = ppf
         self.port = 1984
         self.verbose = verbose
