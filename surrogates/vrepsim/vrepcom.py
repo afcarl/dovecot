@@ -19,11 +19,11 @@ def md5sum(filename, blocksize=65536):
 
 class SceneToyCalibrationData(object):
 
-    def __init__(self, positions, mass, dimensions, md5, scene):
+    def __init__(self, positions, mass, dimensions, scene):
         self.positions = positions
         self.mass = mass
         self.dimensions = dimensions
-        scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', self.scene))
+        scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', scene))
         assert os.path.isfile(scene_file), "scene file {} not found".format(scene_file)
         self.md5 = md5sum(scene_file)
         self.scene = scene
@@ -83,7 +83,7 @@ class VRepCom(object):
                 else:
                     cmd = "DISPLAY=:0 vrep >> {}".format(logname)
         elif os.uname()[0] == "Darwin":
-            cmd = "cd {}; ./vrep {} -g{} >> {}".format(self.vrep_folder, headless_flag, port, logname)
+            cmd = "cd {}; ./vrep >> {}".format(self.vrep_folder, logname)
         else:
             raise OSError
         print(cmd)
@@ -198,17 +198,17 @@ class VRepCom(object):
 
 
     def calibrate_scene(self):
-        toy_h = vrep.simGetObjectHandle("toy")
-        base_h = vrep.simGetObjectHandle("dummy_ref_base")
-        min_x = vrep.simGetObjectFloatParameter(toy_h, 21)[0] * 100
-        max_x = vrep.simGetObjectFloatParameter(toy_h, 24)[0] * 100
-        min_y = vrep.simGetObjectFloatParameter(toy_h, 22)[0] * 100
-        max_y = vrep.simGetObjectFloatParameter(toy_h, 25)[0] * 100
-        min_z = vrep.simGetObjectFloatParameter(toy_h, 23)[0] * 100
-        max_z = vrep.simGetObjectFloatParameter(toy_h, 26)[0] * 100
+        toy_h = self.vrep.simGetObjectHandle("toy")
+        base_h = self.vrep.simGetObjectHandle("dummy_ref_base")
+        min_x = self.vrep.simGetObjectFloatParameter(toy_h, 21)[0] * 100
+        max_x = self.vrep.simGetObjectFloatParameter(toy_h, 24)[0] * 100
+        min_y = self.vrep.simGetObjectFloatParameter(toy_h, 22)[0] * 100
+        max_y = self.vrep.simGetObjectFloatParameter(toy_h, 25)[0] * 100
+        min_z = self.vrep.simGetObjectFloatParameter(toy_h, 23)[0] * 100
+        max_z = self.vrep.simGetObjectFloatParameter(toy_h, 26)[0] * 100
         dimensions = [max_x - min_x, max_y - min_y, max_z - min_z]
-        mass_toy = vrep.simGetObjectFloatParameter(toy_h, 3005)[0] * 100
-        toy_positions = vrep.simGetObjectPosition(toy_h, base_h)
+        mass_toy = self.vrep.simGetObjectFloatParameter(toy_h, 3005)[0] * 100
+        toy_positions = self.vrep.simGetObjectPosition(toy_h, base_h)
         positions = [100 * e for e in toy_positions]
         self.calib = SceneToyCalibrationData(positions, mass_toy, dimensions, self.scene)
         self.calib.save()
