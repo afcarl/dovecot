@@ -210,7 +210,7 @@ class VRepCom(object):
         mass_toy = vrep.simGetObjectFloatParameter(toy_h, 3005)[0] * 100
         toy_positions = vrep.simGetObjectPosition(toy_h, base_h)
         positions = [100 * e for e in toy_positions]
-        self.calib = SceneToyCalibrationData(positions, mass_toy, dimensions self.scene)
+        self.calib = SceneToyCalibrationData(positions, mass_toy, dimensions, self.scene)
         self.calib.save()
 
 
