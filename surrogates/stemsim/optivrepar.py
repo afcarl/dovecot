@@ -6,8 +6,6 @@ import treedict
 from natnet import FrameBuffer
 
 from ..vrepsim import vrepcom
-from ..vrepsim import objscene
-
 
 class OptiVrepAR(object):
     def __init__(self, cfg, port=1984, verbose=True, ppf=200, script="marker", calibrate=False):
@@ -16,7 +14,7 @@ class OptiVrepAR(object):
         self.verbose = verbose
         print(cfg.makeReport())
 
-        self.scene = objscene.scenes[cfg.sprims.scene].filename
+        self.scene = 'ar_' + cfg.sprims.scene + '.ttt'
         self.script = script
         self.opivcom = vrepcom.OptiVrepCom(cfg, load=False, verbose=self.verbose, vrep_folder=None, ppf=self.ppf)
         if not self.opivcom.connected:

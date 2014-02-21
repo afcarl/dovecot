@@ -110,13 +110,16 @@ class VRepCom(object):
             self.vrep_proc.stdout.read()
             self.vrep_proc.stderr.read()
 
-    def load(self, scene=None, script="Flower"):
+    def load(self, scene=None, script="Flower", augmented_reality=False):
         if not self.connected:
             self.vrep.connect(self.port)
             self.connected = True
 
         if scene is None:
-            self.scene=self.cfg.vrep.scene
+            if not augmented_reality:
+                self.scene='vrep_' + self.cfg.sprims.scene + '.ttt'
+            else:
+                self.scene='ar_' + self.cfg.sprims.scene + '.ttt'
         else:
             self.scene = scene
 
@@ -189,7 +192,7 @@ class VRepCom(object):
     def load_calibration_data(self):
         scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', self.scene))
         assert os.path.isfile(scene_file), "scene file {} not found".format(scene_file)
-        with open(self.scene + '.calib', 'rb') as f:
+        with open(scene_file + '.calib', 'rb') as f:
             self.calib = pickle.load(f)
         assert self.calib.md5 == md5sum(scene_file), "loaded scene calibration ({}) differs from scene ({})".format(scene_file + '.calib',scene_file)
 

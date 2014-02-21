@@ -5,7 +5,6 @@ from . import vrepcom
 
 from ..stemsim import stemcfg
 from ..stemsim.collider import maycollide
-from . import objscene
 
 class OrderNotExecutableError(Exception):
     pass
@@ -23,8 +22,7 @@ class VRepBot(object):
                                        load       =cfg.vrep.load)
 
         if cfg.sprims.prefilter:
-            obj_scene = objscene.scenes[self.cfg.sprims.scene]
-            self._collision_filter = maycollide.CollisionFilter(obj_scene.object_pos, obj_scene.object_geom, 11)
+            self._collision_filter = maycollide.CollisionFilter(self.vrepcom.calib.positions, self.vrepcom.calib.dimensions, 11)
 
         self.OrderNotExecutableError = OrderNotExecutableError
 

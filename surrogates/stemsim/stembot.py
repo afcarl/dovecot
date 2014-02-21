@@ -6,7 +6,6 @@ from .. import prims
 from . import stemcom
 from .collider import maycollide
 from .collider import collider
-from ..vrepsim import objscene
 
 class CollisionError(Exception):
     pass
@@ -25,8 +24,12 @@ class StemBot(object):
         # if not and filter_real_execution is True, it will not be executed.
         self._prefilter = cfg.sprims.prefilter
         if self._prefilter:
-            obj_scene = objscene.scenes[self.cfg.sprims.scene]
-            self._collision_filter = maycollide.CollisionFilter(obj_scene.object_pos, obj_scene.object_geom, 11)
+            scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', 'vrep_' + self.cfg.sprims.scene + '.ttt'))
+            assert os.path.isfile(scene_file), "scene file {} not found".format(scene_file)
+            with open(scene_file + '.calib', 'rb') as f:
+                calib_data = pickle.load(f)
+            assert self.calib.md5 == md5sum(scene_file), "loaded scene calibration ({}) differs from scene ({})".format(scene_file + '.calib',scene_file)
+            self._collision_filter = maycollide.CollisionFilter(calib_data.positions, calib_data.dimensions, 11)
 
 
         self.stemcom = stemcom.StemCom(cfg, **kwargs)
