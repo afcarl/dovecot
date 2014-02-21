@@ -1,3 +1,5 @@
+from __init__ import print_function, division
+
 import os
 import time
 import numpy as np

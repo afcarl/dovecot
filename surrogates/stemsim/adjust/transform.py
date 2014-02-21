@@ -1,5 +1,6 @@
 from __future__ import division, print_function
 import numpy as np
+import cPickle
 
 def _detect_gaps(trajectory):
     assert trajectory[0][1] is not None
@@ -44,6 +45,6 @@ def opti2vrep(opti_traj, M):
 
 def load_calibration(stemcfg):
     with open(os.path.abspath(os.path.join(__file__, '..')) + '/../calibration/' + stemcfg.calib_file, 'r') as f:
-        m = cPickle.load(f)
+        cal = cPickle.load(f)
 
-    return m
+    return cal

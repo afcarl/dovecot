@@ -8,9 +8,9 @@ class VrepSensors(object):
 
     def setup_sprims(self):
         self.s_prims = [prims.create_sprim(sprim_name, self.cfg) for sprim_name in self.cfg.sprims.names]
-        self.context = {'x_bounds': (-3.0, 3.0),
-                        'y_bounds': (-3.0, 3.0),
-                        'z_bounds': ( 1.4, 3.3)}
+        self.context = {'x_bounds': (-300.0, 300.0),
+                        'y_bounds': (-300.0, 300.0),
+                        'z_bounds': ( 140.0, 330.0)}
         self.process_context()
 
     def process_context(self):
@@ -38,10 +38,10 @@ class VrepSensors(object):
         #Construct sensors channels
         assert len(object_sensors) % (3+3+3+4) == 0
         n = int(len(object_sensors)/13)
-        positions    = tuple(tuple(object_sensors[13*i   :13*i+ 3]) for i in range(n))
-        quaternions  = tuple(tuple(object_sensors[13*i+ 3:13*i+ 7]) for i in range(n))
-        velocities_t = tuple(tuple(object_sensors[13*i+ 7:13*i+10]) for i in range(n))
-        velocities_a = tuple(tuple(object_sensors[13*i+10:13*i+13]) for i in range(n))
+        positions    = tuple(tuple(100.0*object_sensors[13*i   :13*i+ 3]) for i in range(n))
+        quaternions  = tuple(tuple(      object_sensors[13*i+ 3:13*i+ 7]) for i in range(n))
+        velocities_t = tuple(tuple(100.0*object_sensors[13*i+ 7:13*i+10]) for i in range(n))
+        velocities_a = tuple(tuple(      object_sensors[13*i+10:13*i+13]) for i in range(n))
 
         self.channels = {}
         self.channels['object_pos']   = positions

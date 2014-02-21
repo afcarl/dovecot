@@ -1,6 +1,5 @@
 from __future__ import division, print_function
 import time
-import random
 import sys
 import atexit
 

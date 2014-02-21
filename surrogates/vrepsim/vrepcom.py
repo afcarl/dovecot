@@ -264,7 +264,7 @@ class OptiVrepCom(VRepCom):
         if self.verbose:
             print("Getting resulting parameters.")
 
-        object_sensors = self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "Object_Sensors")
+        object_sensors = np.array(self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "Object_Sensors"))
 
         self.vrep.simStopSimulation()
 
