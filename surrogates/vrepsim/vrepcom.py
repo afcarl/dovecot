@@ -131,11 +131,12 @@ class VRepCom(object):
         #    raise IOError
         self.handle_script = self.vrep.simGetScriptHandle(script);
 
-    def close(self):
-        #pid = self.vrep.speGetVrepPid()
+    def close(self, kill=False):
         if self.connected:
-            self.vrep.disconnect()
-        #os.kill(pid, signal.SIGKILL)
+            if not kill:
+                self.vrep.disconnect()
+            else:
+                self.vrep.disconnectAndQuit()
 
     def run_simulation(self, trajectory, max_steps):
         """
@@ -242,9 +243,7 @@ class OptiVrepCom(VRepCom):
         traj_x, traj_y, traj_z = zip(*pos_raw)
         timstamps = ts
 
-        self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Traj_X", list(traj_x))
-        self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Traj_Y", list(traj_y))
-        self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Traj_Z", list(traj_z))
+        self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Trajectory", list(traj_x + traj_y + traj_z))
 
         self.vrep.simSetSimulationPassesPerRenderingPass(self.ppf)
 

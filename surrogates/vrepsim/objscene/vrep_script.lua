@@ -7,13 +7,15 @@ if (simGetScriptExecutionCount() == 0) then
 	handles[4] = simGetObjectHandle("vx28_4")
 	handles[5] = simGetObjectHandle("vx28_5")
 	handles[6] = simGetObjectHandle("vx28_6")
-	cube = simGetObjectHandle("cube")
+	toy = simGetObjectHandle("toy")
+	tip  = simGetObjectHandle("tip")
 	simAddStatusbarMessage("Getting handles... done.")
 
 	simAddStatusbarMessage("Getting scripts parameters...")
-
+	
 	Trajectory = simUnpackFloats(simGetScriptSimulationParameter(sim_handle_self, "Trajectory"))
-
+	simSetScriptSimulationParameter(sim_handle_self, "Trajectory", "")
+	
 	motors_sim_steps = math.floor(Trajectory[1])
 	max_sim_steps    = math.floor(Trajectory[2])
 	max_speed        = Trajectory[3]
@@ -23,6 +25,7 @@ if (simGetScriptExecutionCount() == 0) then
 	sim_step = simGetScriptExecutionCount()
 
 	-- will be return
+	tip_sensors = {}
 	object_sensors = {}
 	joint_sensors  = {}
 
@@ -35,14 +38,17 @@ end
 -- during the simulation
 if (simGetScriptExecutionCount() > 0) then
 	simHandleChildScript(sim_handle_all_except_explicit) -- make sure children are executed !
+	
+	pt = simGetObjectPosition(tip, -1)
+	for i = 1, 3 do table.insert(tip_sensors, pt[i]) end
 
-	pc = simGetObjectPosition(cube, -1)
+	pc = simGetObjectPosition(toy, -1)
 	for i = 1, 3 do table.insert(object_sensors, pc[i]) end
 
-	qc = simGetObjectQuaternion(cube, -1)
+	qc = simGetObjectQuaternion(toy, -1)
 	for i = 1, 4 do table.insert(object_sensors, qc[i]) end
-
-	--lvc, avc = simGetObjectVelocity(cube)
+	
+	--lvc, avc = simGetObjectVelocity(toy)
 	--for i = 1, 3 do table.insert(object_sensors, lvc[i]) end
 	--for i = 1, 3 do table.insert(object_sensors, avc[i]) end
 
@@ -63,6 +69,7 @@ if (simGetScriptExecutionCount() > 0) then
 	end
 
 	if(sim_step > max_sim_steps) then
+		simSetScriptSimulationParameter(sim_handle_self, "Tip_Sensors",  simPackFloats(tip_sensors))
 		simSetScriptSimulationParameter(sim_handle_self, "Object_Sensors", simPackFloats(object_sensors))
 		simSetScriptSimulationParameter(sim_handle_self, "Joint_Sensors",  simPackFloats(joint_sensors))
 		simPauseSimulation()
