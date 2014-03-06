@@ -17,6 +17,7 @@ def calibrate_ar_scene(name):
     cfg.vrep.headless = False
     cfg.vrep.vglrun = False
     com = vrepcom.OptiVrepCom(cfg, vrep_folder='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS', calibrate = True)
+    com.close(kill=True)
     return com.calib
     
 def calibrate_vrep_scene(name):
@@ -25,6 +26,25 @@ def calibrate_vrep_scene(name):
     cfg.vrep.headless = False
     cfg.vrep.vglrun = False
     com = vrepcom.VRepCom(cfg, vrep_folder='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS', calibrate = True)
+    com.close(kill=True)
+    return com.calib
+
+def test_ar_scene(name):
+    cfg = treedict.TreeDict()
+    cfg.sprims.scene = name
+    cfg.vrep.headless = False
+    cfg.vrep.vglrun = False
+    com = vrepcom.OptiVrepCom(cfg, vrep_folder='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS', calibrate = True)
+    com.close(kill=True)
+    return com.calib
+    
+def test_vrep_scene(name):
+    cfg = treedict.TreeDict()
+    cfg.sprims.scene = name
+    cfg.vrep.headless = False
+    cfg.vrep.vglrun = False
+    com = vrepcom.VRepCom(cfg, vrep_folder='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS', calibrate = True)
+    com.close(kill=True)
     return com.calib
 
 def compare_calib_data(ar_calib, v_calib):
@@ -38,12 +58,12 @@ def calibrate_all():
         try:
             v_calib = calibrate_vrep_scene(conf)
         except Exception as e:
-            #traceback.print_exc()
+            traceback.print_exc()
             print "No vrep file for {}".format(conf)
         try:
             ar_calib = calibrate_ar_scene(conf)
         except Exception as e:
-            #traceback.print_exc()
+            traceback.print_exc()
             print "No ar file for {}".format(conf)
         if ar_calib != None and v_calib != None:
             try:
@@ -53,4 +73,19 @@ def calibrate_all():
                 v_calib.print_it()
                 print "Calibration datas are not the same for file : vrep_{}.ttt and ar_{}.ttt".format(conf, conf)
 
-calibrate_all()
+def test_all():
+    for conf in configurations:
+        ar_calib, v_calib = None, None
+        try:
+            v_calib = test_vrep_scene(conf)
+        except Exception as e:
+            traceback.print_exc()
+            print "Calibration error for {}".format(conf)
+        try:
+            ar_calib = test_ar_scene(conf)
+        except Exception as e:
+            traceback.print_exc()
+            print "Calibration error  for {}".format(conf)
+
+#calibrate_all()
+test_all()
