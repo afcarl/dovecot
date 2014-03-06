@@ -12,30 +12,35 @@ import pickle
 
 def md5sum(filename, blocksize=65536):
     hash = hashlib.md5()
-    with open(filename, "r+b") as f:
+    with open(filename, "r") as f:
         for block in iter(lambda: f.read(blocksize), ""):
             hash.update(block)
     return hash.hexdigest()
 
 class SceneToyCalibrationData(object):
 
-    def __init__(self, positions, mass, dimensions, scene):
+    def __init__(self, positions, mass, dimensions, scene_file):
         self.positions = positions
         self.mass = mass
         self.dimensions = dimensions
-        scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', scene))
-        assert os.path.isfile(scene_file), "scene file {} not found".format(scene_file)
         self.md5 = md5sum(scene_file)
-        self.scene = scene
+        self.scene_file = scene_file
 
     def check_for_changes(self):
-        if md5sum(self.scene) == self.md5:
+        if md5sum(self.scene_file) == self.md5:
             return False
         return True
 
     def save(self):
-        with open(self.scene + '.calib', 'wb') as f:
+        with open(self.scene_file + '.calib', 'w+') as f:
             pickle.dump(self, f)
+
+    def print_it(self):
+        print ("File = {}".format(self.scene_file))
+        print ("Positions = {}".format(self.positions))
+        print ("Mass = {}".format(self.mass))
+        print ("Dimensions = {}".format(self.dimensions))
+        print ("MD5 = {}".format(self.md5))
 
 class VRepCom(object):
 
@@ -60,7 +65,7 @@ class VRepCom(object):
 
         if calibrate:
             self.calibrate_scene()
-            self.close()
+            self.close(kill=True)
         self.load_calibration_data()
 
     def launch_sim(self):
@@ -193,7 +198,7 @@ class VRepCom(object):
     def load_calibration_data(self):
         scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', self.scene))
         assert os.path.isfile(scene_file), "scene file {} not found".format(scene_file)
-        with open(scene_file + '.calib', 'rb') as f:
+        with open(scene_file + '.calib', 'r') as f:
             self.calib = pickle.load(f)
         assert self.calib.md5 == md5sum(scene_file), "loaded scene calibration ({}) differs from scene ({})".format(scene_file + '.calib',scene_file)
 
@@ -211,7 +216,9 @@ class VRepCom(object):
         mass_toy = self.vrep.simGetObjectFloatParameter(toy_h, 3005)[0] * 100
         toy_positions = self.vrep.simGetObjectPosition(toy_h, base_h)
         positions = [100 * e for e in toy_positions]
-        self.calib = SceneToyCalibrationData(positions, mass_toy, dimensions, self.scene)
+        scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', self.scene))
+        assert os.path.isfile(scene_file), "scene file {} not found".format(scene_file)
+        self.calib = SceneToyCalibrationData(positions, mass_toy, dimensions, scene_file)
         self.calib.save()
 
 
@@ -229,6 +236,9 @@ class OptiVrepCom(VRepCom):
                 new_traj.append(trajectory[i])
                 ts_ref = ts_ref + 0.01
         return new_traj
+
+    def load(self, scene=None, script="Flower", augmented_reality=False):
+        super(self.__class__, self).load(scene, script, True)
 
     def run_trajectory(self, trajectory):
         """

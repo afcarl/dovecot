@@ -24,7 +24,7 @@ def calibrate_vrep_scene(name):
     cfg.sprims.scene = name
     cfg.vrep.headless = False
     cfg.vrep.vglrun = False
-    com = vrepcom.VRepCom(cfg, vrep_folder='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS',calibrate = True)
+    com = vrepcom.VRepCom(cfg, vrep_folder='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS', calibrate = True)
     return com.calib
 
 def compare_calib_data(ar_calib, v_calib):
@@ -38,17 +38,19 @@ def calibrate_all():
         try:
             v_calib = calibrate_vrep_scene(conf)
         except Exception as e:
-            traceback.print_exc()
+            #traceback.print_exc()
             print "No vrep file for {}".format(conf)
         try:
             ar_calib = calibrate_ar_scene(conf)
         except Exception as e:
-            traceback.print_exc()
+            #traceback.print_exc()
             print "No ar file for {}".format(conf)
         if ar_calib != None and v_calib != None:
             try:
                 compare_calib_data(ar_calib, v_calib)
             except:
-                print "Calibration datas are not the same for file : vrep_{}.ttt and ar_{}.ttt".format(conf)
+                ar_calib.print_it()
+                v_calib.print_it()
+                print "Calibration datas are not the same for file : vrep_{}.ttt and ar_{}.ttt".format(conf, conf)
 
 calibrate_all()
