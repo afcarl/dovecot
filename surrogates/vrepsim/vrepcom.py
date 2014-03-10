@@ -19,12 +19,14 @@ def md5sum(filename, blocksize=65536):
 
 class SceneToyCalibrationData(object):
 
-    def __init__(self, positions, mass, dimensions, scene_file):
+    def __init__(self, positions, mass, dimensions, scene_file, name, folder):
         self.positions = positions
         self.mass = mass
         self.dimensions = dimensions
         self.md5 = md5sum(scene_file)
         self.scene_file = scene_file
+        self.name = name
+        self.folder = folder
 
     def check_for_changes(self):
         if md5sum(self.scene_file) == self.md5:
@@ -32,11 +34,15 @@ class SceneToyCalibrationData(object):
         return True
 
     def save(self):
-        with open(self.scene_file + '.calib', 'w+') as f:
+        folder_path = os.path.expanduser(self.folder)
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+        with open(folder_path + '/' + str(self.name) + '.calib', 'w+') as f:
             pickle.dump(self, f)
 
     def print_it(self):
         print ("File = {}".format(self.scene_file))
+        print ("Calibration file = {}".format(self.folder + '/' + self.name + '.calib'))
         print ("Positions = {}".format(self.positions))
         print ("Mass = {}".format(self.mass))
         print ("Dimensions = {}".format(self.dimensions))
@@ -198,9 +204,11 @@ class VRepCom(object):
     def load_calibration_data(self):
         scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', self.scene))
         assert os.path.isfile(scene_file), "scene file {} not found".format(scene_file)
-        with open(scene_file + '.calib', 'r') as f:
+        calib_file = os.path.expanduser(self.cfg.calib_datas_folder) + '/' + self.scene + '.calib'
+        assert os.path.isfile(calib_file), "calibration file {} not found".format(calib_file)
+        with open(calib_file, 'r') as f:
             self.calib = pickle.load(f)
-        assert self.calib.md5 == md5sum(scene_file), "loaded scene calibration ({}) differs from scene ({})".format(scene_file + '.calib',scene_file)
+        assert self.calib.md5 == md5sum(scene_file), "loaded scene calibration ({}) differs from scene ({})".format(calib_file, scene_file)
 
 
     def calibrate_scene(self):
@@ -218,7 +226,7 @@ class VRepCom(object):
         positions = [100 * e for e in toy_positions]
         scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', self.scene))
         assert os.path.isfile(scene_file), "scene file {} not found".format(scene_file)
-        self.calib = SceneToyCalibrationData(positions, mass_toy, dimensions, scene_file)
+        self.calib = SceneToyCalibrationData(positions, mass_toy, dimensions, scene_file, self.scene, self.cfg.calib_datas_folder)
         self.calib.save()
 
 

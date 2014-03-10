@@ -11,39 +11,32 @@ configurations={
     'cylinder'
 }
 
+cfg = treedict.TreeDict()
+cfg.vrep.headless = False
+cfg.vrep.vglrun = False
+cfg.calib_datas_folder = '~/l2l-files/'
+
 def calibrate_ar_scene(name):
-    cfg = treedict.TreeDict()
     cfg.sprims.scene = name
-    cfg.vrep.headless = False
-    cfg.vrep.vglrun = False
     com = vrepcom.OptiVrepCom(cfg, vrep_folder='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS', calibrate = True)
     com.close(kill=True)
     return com.calib
     
 def calibrate_vrep_scene(name):
-    cfg = treedict.TreeDict()
     cfg.sprims.scene = name
-    cfg.vrep.headless = False
-    cfg.vrep.vglrun = False
     com = vrepcom.VRepCom(cfg, vrep_folder='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS', calibrate = True)
     com.close(kill=True)
     return com.calib
 
 def test_ar_scene(name):
-    cfg = treedict.TreeDict()
     cfg.sprims.scene = name
-    cfg.vrep.headless = False
-    cfg.vrep.vglrun = False
-    com = vrepcom.OptiVrepCom(cfg, vrep_folder='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS', calibrate = True)
+    com = vrepcom.OptiVrepCom(cfg, vrep_folder='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS', calibrate = False)
     com.close(kill=True)
     return com.calib
     
 def test_vrep_scene(name):
-    cfg = treedict.TreeDict()
     cfg.sprims.scene = name
-    cfg.vrep.headless = False
-    cfg.vrep.vglrun = False
-    com = vrepcom.VRepCom(cfg, vrep_folder='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS', calibrate = True)
+    com = vrepcom.VRepCom(cfg, vrep_folder='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS', calibrate = False)
     com.close(kill=True)
     return com.calib
 
@@ -87,5 +80,5 @@ def test_all():
             traceback.print_exc()
             print "Calibration error  for {}".format(conf)
 
-#calibrate_all()
+calibrate_all()
 test_all()

@@ -16,5 +16,7 @@ cfg.mprim.n_basis     = 1
 cfg.mprim.max_speed   = 1.0
 cfg.mprim.end_time    = 1.25
 
+cfg.calib_datas_folder = '~/l2l-files/'
+
 cfg.mprim.init_states   = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 cfg.mprim.target_states = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
