@@ -1,13 +1,16 @@
 import forest
 
 cfg = forest.Tree()
+cfg._branch('vrep')
 cfg.vrep.ppf = 10
 
+cfg._branch('sprims')
 cfg.sprims.names = ['push']
 cfg.sprims.uniformze = False
 cfg.sprims.prefilter.active = False
 cfg.sprims.scene     = 'cube'
 
+cfg._branch('mprim')
 cfg.mprim.name = 'dmpg'
 cfg.mprim.motor_steps = 2000
 cfg.mprim.max_steps   = 2000

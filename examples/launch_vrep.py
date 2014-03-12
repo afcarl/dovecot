@@ -7,6 +7,7 @@ import env
 from surrogates.vrepsim import vrepbot
 
 cfg = forest.Tree()
+cfg._branch('vrep')
 cfg.vrep.ppf         = 10
 
 if os.uname()[0] == 'Darwin':
@@ -16,9 +17,11 @@ else:
 cfg.vrep.load            = True
 cfg.vrep.headless        = False
 
+cfg._branch('sprims')
 cfg.sprims.names = ['push']
 cfg.sprims.uniformze = False
 
+cfg._branch('mprim')
 cfg.mprim.name = 'dmpg'
 cfg.mprim.motor_steps = 500
 cfg.mprim.max_steps   = 500

@@ -6,6 +6,7 @@ import env
 from surrogates.stemsim import stemcom
 
 cfg = forest.Tree()
+cfg._branch('stem')
 cfg.stem.dt = 0.01
 cfg.stem.verbose_com = True
 cfg.stem.verbose_dyn = True

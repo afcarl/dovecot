@@ -12,9 +12,11 @@ configurations={
 }
 
 cfg = forest.Tree()
+cfg._branch('vrep')
 cfg.vrep.headless = False
 cfg.vrep.vglrun = False
 cfg.calib_datas_folder = '~/l2l-files/'
+cfg._branch('sprims')
 
 def calibrate_ar_scene(name):
     cfg.sprims.scene = name

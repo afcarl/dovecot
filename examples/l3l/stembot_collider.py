@@ -9,12 +9,14 @@ from surrogates.stemsim import stembot
 
 cfg = forest.Tree()
 
+cfg._branch('stem')
 cfg.stem.dt = 0.01
 cfg.stem.uid = 0
 cfg.stem.verbose_com = True
 cfg.stem.verbose_dyn = True
 cfg.stem.motor_range = [01, 06]
 
+cfg._branch('mprim')
 cfg.mprim.name = 'dmpg25'
 cfg.mprim.motor_steps = 500
 cfg.mprim.max_steps   = 500

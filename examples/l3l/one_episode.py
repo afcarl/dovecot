@@ -17,16 +17,19 @@ from surrogates.stemsim import stemcfg
 
 cfg = forest.Tree()
 
+cfg._branch('stem')
 cfg.stem.dt = 0.01
 cfg.stem.uid = int(sys.argv[1])
 cfg.stem.verbose_com = True
 cfg.stem.verbose_dyn = True
 cfg.hide_vrep = True
 
+cfg._branch('sprims')
 cfg.sprims.names     = ['push']
 cfg.sprim.tip        = False
 cfg.sprims.uniformze = False
 
+cfg._branch('mprim')
 cfg.mprim.name = 'dmpg'
 cfg.mprim.motor_steps = 500
 cfg.mprim.max_steps   = 500

@@ -11,6 +11,7 @@ from surrogates.vrepsim import vrepbot
 from surrogates import prims
 
 cfg = forest.Tree()
+cfg._branch('vrep')
 cfg.vrep.ppf         = 10
 
 if os.uname()[0] == 'Darwin':
@@ -20,10 +21,12 @@ else:
 cfg.vrep.load            = True
 cfg.vrep.headless        = False
 
+cfg._branch('sprims')
 cfg.sprims.names = ['push']
 cfg.sprims.uniformze = False
 cfg.sprims.tip = True
 
+cfg._branch('mprim')
 cfg.mprim.name = 'dmpg'
 cfg.mprim.motor_steps = 1000
 cfg.mprim.max_steps   = 1000
