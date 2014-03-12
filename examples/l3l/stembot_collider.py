@@ -2,12 +2,12 @@ from __future__ import division, print_function
 import time
 import random
 
-import treedict
+import forest
 
 import env
 from surrogates.stemsim import stembot
 
-cfg = treedict.TreeDict()
+cfg = forest.Tree()
 
 cfg.stem.dt = 0.01
 cfg.stem.uid = 0

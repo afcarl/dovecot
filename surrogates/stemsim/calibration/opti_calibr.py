@@ -3,7 +3,7 @@ import time
 import os
 
 import numpy as np
-import treedict
+import forest
 
 from toolbox import gfx
 import natnet
@@ -64,7 +64,10 @@ def transform_3D(A, B, scaling=True):
 
 def vrep_capture(poses):
 
-    cfg = treedict.TreeDict()
+    cfg = forest.Tree()
+    cfg._branch['vrep']
+    cfg._branch['mprim']
+
     cfg.vrep.ppf         = 10
 
     if os.uname()[0] == 'Darwin':
@@ -105,7 +108,7 @@ def vrep_capture(poses):
     return vrep_res
 
 def opti_capture(poses, stemcfg, fb=None):
-    cfg = treedict.TreeDict()
+    cfg = forest.Tree()
     cfg.stem.uid = stemcfg.uid
     stem_com = stemcom.StemCom(cfg)
 

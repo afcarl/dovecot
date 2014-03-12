@@ -3,7 +3,7 @@ import time
 import random
 import sys
 
-import treedict
+import forest
 
 from toolbox import gfx
 from natnet import FrameBuffer
@@ -15,7 +15,7 @@ from surrogates.stemsim import stembot
 from surrogates.stemsim import optivrepar
 from surrogates.stemsim import stemcfg
 
-cfg = treedict.TreeDict()
+cfg = forest.Tree()
 
 cfg.stem.dt = 0.01
 cfg.stem.uid = int(sys.argv[1])

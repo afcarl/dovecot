@@ -1,6 +1,11 @@
-import treedict
+import forest
 
-cfg = treedict.TreeDict()
+cfg = forest.Tree()
+cfg._branch('stem')
+cfg._branch('vrep')
+cfg._branch('mprim')
+cfg._branch('sprims')
+cfg._branch('calib')
 
 cfg.stem.dt = 0.01
 
@@ -30,7 +35,7 @@ cfg.mprim.target_states = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
 cfg.calib_datas_folder = '~/l2l-files/'
 
-cfg2 = cfg.copy(deep=True)
+cfg2 = cfg._copy(deep=True)
 cfg2.vrep.scene       = 'vrep_cylinder.ttt'
 cfg2.sprims.names     = ['rollspin']
 cfg2.sprims.scene     = 'cylinder'

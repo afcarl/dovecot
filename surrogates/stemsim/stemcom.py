@@ -3,13 +3,13 @@ from __init__ import print_function, division
 import os
 import time
 import numpy as np
-import treedict
 
+import forest
 from pydyn.msets import MotorSet
 
 import stemcfg
 
-defcfg = treedict.TreeDict()
+defcfg = forest.Tree()
 defcfg.stem.motor_range = (0, 253)
 defcfg.stem.verbose_dyn = True
 
@@ -17,7 +17,7 @@ class StemCom(MotorSet):
 
     def __init__(self, cfg):
         self.cfg = cfg
-        self.cfg.update(defcfg, overwrite=False)
+        self.cfg._update(defcfg, overwrite=False)
 
         self.stemcfg = stemcfg.stems[cfg.stem.uid]
         if os.uname()[0] == 'Linux':

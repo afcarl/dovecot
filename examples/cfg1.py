@@ -1,6 +1,6 @@
-import treedict
+import forest
 
-cfg = treedict.TreeDict()
+cfg = forest.Tree()
 cfg.vrep.ppf = 10
 
 cfg.sprims.names = ['push']

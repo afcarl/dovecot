@@ -1,4 +1,4 @@
-import treedict
+import forest
 import traceback
 
 from surrogates.vrepsim import vrepcom
@@ -11,7 +11,7 @@ configurations={
     'cylinder'
 }
 
-cfg = treedict.TreeDict()
+cfg = forest.Tree()
 cfg.vrep.headless = False
 cfg.vrep.vglrun = False
 cfg.calib_datas_folder = '~/l2l-files/'

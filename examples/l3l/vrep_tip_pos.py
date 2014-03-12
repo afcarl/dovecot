@@ -4,13 +4,13 @@ import random
 import os
 import numpy as np
 
-import treedict
+import forest
 
 import env
 from surrogates.vrepsim import vrepbot
 from surrogates import prims
 
-cfg = treedict.TreeDict()
+cfg = forest.Tree()
 cfg.vrep.ppf         = 10
 
 if os.uname()[0] == 'Darwin':

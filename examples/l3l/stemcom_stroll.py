@@ -1,11 +1,11 @@
 from __future__ import division, print_function
-import treedict
+import forest
 import time
 
 import env
 from surrogates.stemsim import stemcom
 
-cfg = treedict.TreeDict()
+cfg = forest.Tree()
 cfg.stem.dt = 0.01
 cfg.stem.verbose_com = True
 cfg.stem.verbose_dyn = True

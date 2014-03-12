@@ -1,7 +1,7 @@
 import time
 
 import numpy as np
-import treedict
+import forest
 
 from natnet import FrameBuffer
 

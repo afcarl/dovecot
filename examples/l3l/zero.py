@@ -22,8 +22,8 @@ while not all(m.torque_limit==100 for m in ms.motors):
         m.torque_limit = 100
     time.sleep(1.0)
 
-ms.max_speed  = 100
-ms.torque_limit = 100
+ms.moving_speed  = 100
+m.torque = 100
 ms.pose = (0.0,)*6
 
 time.sleep(3.0)

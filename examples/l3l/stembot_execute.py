@@ -3,12 +3,12 @@ import time
 import random
 import sys
 
-import treedict
+import forest
 
 import env
 from surrogates.stemsim import stembot
 
-cfg = treedict.TreeDict()
+cfg = forest.Tree()
 
 cfg.stem.dt = 0.01
 cfg.stem.verbose_com = True

@@ -1,12 +1,12 @@
 from __future__ import print_function
 
-import treedict
+import forest
 import os
 
 import env
 from surrogates.vrepsim import vrepbot
 
-cfg = treedict.TreeDict()
+cfg = forest.Tree()
 cfg.vrep.ppf         = 10
 
 if os.uname()[0] == 'Darwin':

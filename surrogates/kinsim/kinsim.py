@@ -28,7 +28,7 @@ class KinSim(robots.Robot):
         self.object_radius = distance(object_center, object_edge)
         print self.object_radius
 
-        self.res = cfg.get('interpol_res', 150) # interpolation resolution
+        self.res = cfg._get('interpol_res', 150) # interpolation resolution
 
     def forward_kin(self, order):
         assert len(order) == 6

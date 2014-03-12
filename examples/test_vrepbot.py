@@ -4,12 +4,12 @@ import sys
 import random
 import time
 
-import treedict
+import forest
 
 import env
 from surrogates.vrepsim import vrepbot
 
-cfg = treedict.TreeDict()
+cfg = forest.Tree()
 cfg.vrep.ppf  = 10
 cfg.vrep.vrep_folder='/Applications/V-REP/v_rep/bin/'
 cfg.vrep.load = True

@@ -5,7 +5,7 @@ import random
 random.seed(3344242)
 import time
 
-import treedict
+import forest
 
 import env
 from surrogates.vrepsim import vrepbot
