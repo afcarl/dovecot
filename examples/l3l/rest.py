@@ -18,7 +18,7 @@ ms.angle_limits = stem.angle_limits
 ms.compliant = False
 time.sleep(0.1)
 
-ms.max_speed    = 100
+ms.moving_speed    = 100
 ms.torque_limit = 50
 
 rest_pose = [5.3, 96.3, -97.8, 0.6, -46.5, -18.9]
@@ -27,7 +27,7 @@ ms.pose = rest_pose
 while max(abs(p - tg) for p, tg in zip(ms.pose, rest_pose)) > 10:
     time.sleep(0.1)
 
-ms.max_speed = 20
+ms.moving_speed = 20
 ms.torque_limit = 5
 
 start_time = time.time()

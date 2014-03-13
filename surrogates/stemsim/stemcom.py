@@ -1,4 +1,4 @@
-from __init__ import print_function, division
+from __future__ import print_function, division
 
 import os
 import time
@@ -10,8 +10,8 @@ from pydyn.msets import MotorSet
 import stemcfg
 
 defcfg = forest.Tree()
-defcfg.stem.motor_range = (0, 253)
-defcfg.stem.verbose_dyn = True
+defcfg['stem.motor_range'] = (0, 253)
+defcfg['stem.verbose_dyn'] = True
 
 class StemCom(MotorSet):
 

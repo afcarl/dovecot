@@ -11,7 +11,7 @@ uid = None if len(sys.argv) == 1 else int(sys.argv[1])
 stem = stemcfg.stems[uid]
 stem.cycle_usb()
 
-ms = MotorSet(serial_id=stem.serial_id, motor_range=stem.motorid_range, verbose=True)
+ms = MotorSet(serial_id=stem.serial_id, motor_range=stem.motorid_range, timeout=10, verbose=True)
 ms.zero_pose = stem.zero_pose
 
 ms.compliant = False
@@ -23,7 +23,7 @@ while not all(m.torque_limit==100 for m in ms.motors):
     time.sleep(1.0)
 
 ms.moving_speed  = 100
-m.torque = 100
+ms.torque_limit = 100
 ms.pose = (0.0,)*6
 
 time.sleep(3.0)
