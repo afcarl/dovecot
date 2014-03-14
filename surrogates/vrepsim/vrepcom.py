@@ -74,6 +74,9 @@ class VRepCom(object):
             self.close(kill=True)
         self.load_calibration_data()
 
+    def __del__(self):
+        self.close(kill=True)
+
     def launch_sim(self):
         """Launch a subprocess of V-Rep"""
 
@@ -148,6 +151,7 @@ class VRepCom(object):
                 self.vrep.disconnect()
             else:
                 self.vrep.disconnectAndQuit()
+            self.connected = False
 
     def run_simulation(self, trajectory, max_steps):
         """
