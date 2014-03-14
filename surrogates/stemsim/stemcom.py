@@ -44,16 +44,16 @@ class RangedMotorSet(MotorSet):
 
     @MotorSet.pose.setter
     def pose(self, values):
-        if not hasattr(val, '__iter__'):
+        if not hasattr(values, '__iter__'):
             values = tuple(values for m in self.motors)
         # we enforce ranges
-        pose_range = tuple(max(a_min, min(a_max, p)) for p, (a_min, a_max)
-                           in zip(self.angle_ranges, values))
+        pose_range = tuple(max(zp-a_min, min(zp+a_max, p)) for p, zp, (a_min, a_max)
+                           in zip(values, self.zero_pose, self.angle_ranges))
         # we apply zero_pose
         unzeroed = tuple(v+zp for v, zp in zip(pose_range, self.zero_pose))
         # we enforce angle_limits
         pose_limits = tuple(max(a_min, min(a_max, p)) for p, (a_min, a_max)
-                           in zip(self.angle_limits, values))
+                           in zip(unzeroed, self.angle_limits))
         for m, p in zip(self.motors, pose_limits):
             m.position = p
 
@@ -81,12 +81,12 @@ class StemCom(object):
     def setup(self, pose, blocking=True):
         """Setup the stem at the correct position"""
         self.ms.compliant    = False
-        self.ms.max_speed    = 50
+        self.ms.moving_speed = 50
         self.ms.torque_limit = 40
         self.ms.pose         = pose
 
         if blocking:
-            while max(abs(p - tg) for p, tg in zip(self.pose, pose)) > 3:
+            while max(abs(p - tg) for p, tg in zip(self.ms.pose, pose)) > 3:
                 time.sleep(0.1)
 
     def rest(self):

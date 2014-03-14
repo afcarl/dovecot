@@ -87,8 +87,8 @@ class StemBot(object):
         self.stemcom.setup(self.cfg.mprim.init_states)
         time.sleep(0.1)
 
-        self.max_speed    = 100
-        self.torque_limit =  50
+        self.stemcom.ms.moving_speed    = 100
+        self.stemcom.ms.torque_limit =  50
 
         start_time = time.time()
         while time.time()-start_time < ts[-1]:

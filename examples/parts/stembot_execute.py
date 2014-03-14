@@ -8,29 +8,10 @@ import forest
 import env
 from surrogates.stemsim import stembot
 
-cfg = forest.Tree()
+from cfg import cfg0
 
-cfg._branch('stem')
-cfg.stem.dt = 0.01
-cfg.stem.verbose_com = True
-cfg.stem.verbose_dyn = True
-cfg.stem.uid = int(sys.argv[1])
-
-cfg._branch('mprim')
-cfg.mprim.name = 'dmpg'
-cfg.mprim.motor_steps = 500
-cfg.mprim.max_steps   = 500
-cfg.mprim.uniformze   = False
-cfg.mprim.n_basis     = 2
-cfg.mprim.max_speed   = 1.0
-cfg.mprim.end_time    = 1.45
-
-cfg.calib_datas_folder = '~/l2l-files/'
-
-cfg.mprim.init_states   = [ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-cfg.mprim.target_states = [ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-
-sb = stembot.StemBot(cfg)
+cfg0.stem.uid = int(sys.argv[1])
+sb = stembot.StemBot(cfg0)
 
 total = 50
 count = 0
