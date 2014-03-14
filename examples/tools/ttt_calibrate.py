@@ -4,11 +4,11 @@ import traceback
 from surrogates.vrepsim import vrepcom
 
 configurations={
-    'center_cube',
-    'center_cylinder',
-    'center_sphere',
-    'other_cube',
-    'cylinder',
+    # 'center_cube',
+    # 'center_cylinder',
+    # 'center_sphere',
+    # 'other_cube',
+    # 'cylinder',
     'calibrate',
 }
 
@@ -52,7 +52,6 @@ def compare_calib_data(ar_calib, v_calib):
 def calibrate_all():
     for conf in configurations:
         ar_calib, v_calib = None, None
-        if
         try:
             v_calib = calibrate_vrep_scene(conf)
         except AssertionError as e:
@@ -86,4 +85,4 @@ def test_all():
             print "Calibration error  for {}".format(conf)
 
 calibrate_all()
-test_all()
+#test_all()
