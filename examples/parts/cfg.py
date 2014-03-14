@@ -1,41 +1,41 @@
 import forest
 
-cfg = forest.Tree()
-cfg._branch('stem')
-cfg._branch('vrep')
-cfg._branch('mprim')
-cfg._branch('sprims')
-cfg._branch('calib')
+cfg0 = forest.Tree()
+cfg0._branch('stem')
+cfg0._branch('vrep')
+cfg0._branch('mprim')
+cfg0._branch('sprims')
+cfg0._branch('calib')
 
-cfg.stem.dt = 0.01
+cfg0.stem.dt = 0.01
 
-cfg.stem.verbose_com = True
-cfg.stem.verbose_dyn = True
-cfg.vrep.headless    = False
-cfg.vrep.vglrun      = False
-cfg.vrep.ppf         = 1
-cfg.vrep.scene       = 'vrep_center.ttt'
+cfg0.stem.verbose_com = True
+cfg0.stem.verbose_dyn = True
+cfg0.vrep.headless    = False
+cfg0.vrep.vglrun      = False
+cfg0.vrep.ppf         = 1
+cfg0.vrep.scene       = 'vrep_center.ttt'
 
-cfg.sprims.names     = ['push']
-cfg.sprim.tip        = False
-cfg.sprims.uniformze = False
-cfg.sprims.prefilter = False
-cfg.sprims.scene     = 'cube_center'
+cfg0.sprims.names     = ['push']
+cfg0.sprims.tip       = False
+cfg0.sprims.uniformze = False
+cfg0.sprims.prefilter = False
+cfg0.sprims.scene     = 'cube_center'
 
-cfg.mprim.name        = 'dmpg25'
-cfg.mprim.motor_steps = 500
-cfg.mprim.max_steps   = 500
-cfg.mprim.uniformze   = False
-cfg.mprim.n_basis     = 2
-cfg.mprim.max_speed   = 1.0
-cfg.mprim.end_time    = 1.15
+cfg0.mprim.name        = 'dmpg25'
+cfg0.mprim.motor_steps = 500
+cfg0.mprim.max_steps   = 500
+cfg0.mprim.uniformze   = False
+cfg0.mprim.n_basis     = 2
+cfg0.mprim.max_speed   = 1.0
+cfg0.mprim.end_time    = 1.15
 
-cfg.mprim.init_states   = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-cfg.mprim.target_states = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+cfg0.mprim.init_states   = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+cfg0.mprim.target_states = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
-cfg.calib_datas_folder = '~/l2l-files/'
+cfg0.calib_datas_folder = '~/l2l-files/'
 
-cfg2 = cfg._copy(deep=True)
-cfg2.vrep.scene       = 'vrep_cylinder.ttt'
-cfg2.sprims.names     = ['rollspin']
-cfg2.sprims.scene     = 'cylinder'
+cfg1 = cfg0._copy(deep=True)
+cfg1.vrep.scene       = 'vrep_cylinder.ttt'
+cfg1.sprims.names     = ['rollspin']
+cfg1.sprims.scene     = 'cylinder'
