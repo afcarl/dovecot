@@ -167,7 +167,7 @@ class DmpG25(MotorPrimitive):
 
     def dmp2angle_rad(self, i, ys):
         """In radians"""
-        assert self.cfg.mprim.angle_ranges[i][0] == self.cfg.mprim.angle_ranges[i][1]
+        assert self.cfg.mprim.angle_ranges[i][0] == self.cfg.mprim.angle_ranges[i][1], "angles range of {}th motor are not symmetric: {}".format(i, self.cfg.mprim.angle_ranges[i])
         r = self.cfg.mprim.angle_ranges[i][1]
         return r/5.0 * (math.pi/180.0) * ys
 

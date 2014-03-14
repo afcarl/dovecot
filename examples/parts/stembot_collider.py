@@ -32,6 +32,6 @@ for i in range(total):
 dur = time.time() - start
 sb.close(rest=False)
 
-print((cfg.mprim.name, cfg.mprim.n_basis))
+print((cfg.cfg0.mprim.name, cfg.cfg0.mprim.n_basis))
 print("{}/{} reject, computed in {:.2f}s ({:.2f}s per executable order)".format(
         rejects, total, dur, dur/max(1, (total-rejects))))

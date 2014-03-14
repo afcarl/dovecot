@@ -7,6 +7,8 @@ cfg0._branch('mprim')
 cfg0._branch('sprims')
 cfg0._branch('calib')
 
+cfg0.partial_mvt = False
+
 cfg0.stem.dt = 0.01
 
 cfg0.stem.verbose_com = True
