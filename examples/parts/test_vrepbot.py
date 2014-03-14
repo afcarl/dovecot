@@ -13,6 +13,7 @@ cfg = forest.Tree()
 cfg._branch('vrep')
 cfg.vrep.ppf  = 10
 cfg.vrep.vrep_folder='/Applications/V-REP/v_rep/bin/'
+cfg.vrep.calibrdir = '~/l2l-files/'
 cfg.vrep.load = True
 cfg.vrep.headless = False
 
@@ -28,7 +29,6 @@ cfg.mprim.n_basis     = 2
 cfg.mprim.max_speed   = 1.0
 cfg.mprim.end_time    = 1.25
 
-cfg.calib_datas_folder = '~/l2l-files/'
 
 cfg.mprim.init_states   = [-30.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 cfg.mprim.target_states = [ 30.0, 0.0, 0.0, 0.0, 0.0, 0.0]

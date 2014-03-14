@@ -90,14 +90,14 @@ class StemCom(object):
                 time.sleep(0.1)
 
     def rest(self):
-        self.ms.max_speed = 50
+        self.ms.moving_speed = 50
 
         rest_pose = np.array([0.0, 96.3, -97.8, 0.0, -46.5, -18.9])
 
         self.ms.pose = rest_pose
         while max(abs(p - tg) for p, tg in zip(self.ms.pose, rest_pose)) > 20:
             time.sleep(0.05)
-        self.ms.max_speed    = 20
+        self.ms.moving_speed    = 20
         self.ms.torque_limit = 20
         start_time = time.time()
         while max(abs(p - tg) for p, tg in zip(self.ms.pose, rest_pose)) > 2.0 and time.time()-start_time < 1.0:
@@ -132,3 +132,10 @@ class StemCom(object):
 
     def close(self):
         self.ms.close_all()
+
+    def go_to(self, pose, margin=3.0, timeout=10.0):
+        self.ms.pose = pose
+        start = time.time()
+        while max(abs(p - tg) for p, tg in zip(self.ms.pose, pose)) > margin and time.time()-start<timeout:
+            time.sleep(0.05)
+        return tuple(p-tg for p, tg in zip(self.ms.pose, pose))

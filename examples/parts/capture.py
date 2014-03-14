@@ -1,3 +1,5 @@
+""""""
+
 from __future__ import division, print_function
 import sys
 import forest
@@ -12,4 +14,4 @@ cfg.stem.verbose_com = True
 cfg.stem.verbose_dyn = True
 sc = stemcom.StemCom(cfg)
 
-print("pos: [{}]".format(', '.join('{:.1f}'.format(m.position) for m in sc.motors)))
+print("pos: [{}]".format(', '.join('{:.1f}'.format(p) for p in sc.ms.pose)))

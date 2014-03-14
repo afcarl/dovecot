@@ -35,7 +35,7 @@ cfg0.mprim.end_time    = 1.15
 cfg0.mprim.init_states   = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 cfg0.mprim.target_states = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
-cfg0.calib_datas_folder = '~/l2l-files/'
+cfg0.vrep.calibrdir = '~/l2l-files/'
 
 cfg1 = cfg0._copy(deep=True)
 cfg1.vrep.scene       = 'vrep_cylinder.ttt'

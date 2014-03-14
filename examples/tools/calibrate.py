@@ -9,4 +9,4 @@ from surrogates.stemsim.calibration import calibr
 stem = stemcfg.stems[int(sys.argv[1])]
 stem.cycle_usb()
 
-calibr.calibrate(stem, cached_opti=False, cached_vrep=False)
+calibr.calibrate(stem, cached_opti=True, cached_vrep=False)

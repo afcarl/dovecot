@@ -204,7 +204,7 @@ class VRepCom(object):
     def load_calibration_data(self):
         scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', self.scene))
         assert os.path.isfile(scene_file), "scene file {} not found".format(scene_file)
-        calib_file = os.path.expanduser(self.cfg.calib_datas_folder) + '/' + self.scene + '.calib'
+        calib_file = os.path.expanduser(self.cfg.vrep.calibrdir) + '/' + self.scene + '.calib'
         assert os.path.isfile(calib_file), "calibration file {} not found".format(calib_file)
         with open(calib_file, 'r') as f:
             self.calib = pickle.load(f)
@@ -226,7 +226,7 @@ class VRepCom(object):
         positions = [100 * e for e in toy_positions]
         scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', self.scene))
         assert os.path.isfile(scene_file), "scene file {} not found".format(scene_file)
-        self.calib = SceneToyCalibrationData(positions, mass_toy, dimensions, scene_file, self.scene, self.cfg.calib_datas_folder)
+        self.calib = SceneToyCalibrationData(positions, mass_toy, dimensions, scene_file, self.scene, self.cfg.vrep.calibrdir)
         self.calib.save()
 
 

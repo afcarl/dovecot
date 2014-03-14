@@ -8,14 +8,16 @@ configurations={
     'center_cylinder',
     'center_sphere',
     'other_cube',
-    'cylinder'
+    'cylinder',
+    'calibrate',
 }
 
 cfg = forest.Tree()
 cfg._branch('vrep')
-cfg.vrep.headless = False
-cfg.vrep.vglrun = False
-cfg.calib_datas_folder = '~/l2l-files/'
+cfg.vrep.ppf       = 10
+cfg.vrep.headless  = False
+cfg.vrep.vglrun    = False
+cfg.vrep.calibrdir = '~/l2l-files/'
 cfg._branch('sprims')
 
 def calibrate_ar_scene(name):
@@ -23,7 +25,7 @@ def calibrate_ar_scene(name):
     com = vrepcom.OptiVrepCom(cfg, vrep_folder='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS', calibrate = True)
     com.close(kill=True)
     return com.calib
-    
+
 def calibrate_vrep_scene(name):
     cfg.sprims.scene = name
     com = vrepcom.VRepCom(cfg, vrep_folder='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS', calibrate = True)
@@ -35,7 +37,7 @@ def test_ar_scene(name):
     com = vrepcom.OptiVrepCom(cfg, vrep_folder='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS', calibrate = False)
     com.close(kill=True)
     return com.calib
-    
+
 def test_vrep_scene(name):
     cfg.sprims.scene = name
     com = vrepcom.VRepCom(cfg, vrep_folder='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS', calibrate = False)
@@ -50,14 +52,15 @@ def compare_calib_data(ar_calib, v_calib):
 def calibrate_all():
     for conf in configurations:
         ar_calib, v_calib = None, None
+        if
         try:
             v_calib = calibrate_vrep_scene(conf)
-        except Exception as e:
+        except AssertionError as e:
             traceback.print_exc()
             print "No vrep file for {}".format(conf)
         try:
             ar_calib = calibrate_ar_scene(conf)
-        except Exception as e:
+        except AssertionError as e:
             traceback.print_exc()
             print "No ar file for {}".format(conf)
         if ar_calib != None and v_calib != None:

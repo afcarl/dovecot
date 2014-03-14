@@ -4,7 +4,7 @@ import sys, time
 import pydyn
 
 import env
-from surrogates.stemsim import collider
+from surrogates.stemsim.collider import collider
 from surrogates.stemsim import stemcfg
 
 scfg = stemcfg.stems[int(sys.argv[1])]

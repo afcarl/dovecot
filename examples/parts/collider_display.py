@@ -5,26 +5,28 @@ import math
 import pydyn
 
 import env
-from surrogates.stemsim import collider
 from surrogates.stemsim import stemcfg
+from surrogates.stemsim import stemcom
 from surrogates.stemsim.collider import stem_bodytree
 from surrogates.stemsim.collider import display
+from surrogates.stemsim.collider import collider
 
-scfg = stemcfg.stems[int(sys.argv[1])]
-stem = pydyn.MotorSet(serial_id=scfg.serial_id, motor_range=scfg.motorid_range, verbose=True)
-stem.zero_pose = scfg.zero_pose
+from cfg import cfg0
+
+cfg0.stem.uid = int(sys.argv[1])
+sc = stemcom.StemCom(cfg0)
 
 btdisplay = display.BodyTreeCubes(stem_bodytree.bt)
 
 def update():
 
     orientation = [  1,  -1,  -1,   1,   1,   1]
-    u_angles = [o_i*p_i for p_i, o_i in zip(list(stem.pose), orientation)]
+    u_angles = [o_i*p_i for p_i, o_i in zip(list(sc.ms.pose), orientation)]
     r_angles = [math.radians(a) for a in u_angles]
 
     if os.uname()[0] == 'Linux':
         btdisplay.green()
-        contacts = collider.collide(stem.pose)
+        contacts = collider.collide(sc.ms.pose)
         for c in contacts:
             btdisplay.cubes_map[c[1].meta].collides = True
             btdisplay.cubes_map[c[2].meta].collides = True
