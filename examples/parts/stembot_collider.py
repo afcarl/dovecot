@@ -15,6 +15,7 @@ from surrogates.stemsim import stembot
 
 import cfg
 
+cfg.cfg0.stem.uid = 0
 sb = stembot.StemBot(cfg.cfg0)
 
 total   = 30

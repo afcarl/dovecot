@@ -29,7 +29,7 @@ class RangedMotorSet(MotorSet):
         angle_ranges = []
         for zp, m in zip(self.zero_pose, self.motors):
             a_min, a_max = m.angle_limits
-            angle_ranges.append(zp-a_min, a_max-zp)
+            angle_ranges.append((zp-a_min, a_max-zp))
         object.__setattr__(self, '_angle_ranges', tuple(angle_ranges))
 
     @property
@@ -38,14 +38,14 @@ class RangedMotorSet(MotorSet):
 
     @angle_ranges.setter
     def angle_ranges(self, values):
-        if hasattr(val, '__iter__'):
-            values = tuple(values for m in self.ms.motors)
+        if hasattr(values, '__iter__'):
+            values = tuple(values for m in self.motors)
         self._angle_ranges = values
 
     @MotorSet.pose.setter
     def pose(self, values):
         if hasattr(val, '__iter__'):
-            values = tuple(values for m in self.ms.motors)
+            values = tuple(values for m in self.motors)
         # we enforce ranges
         pose_range = tuple(max(a_min, min(a_max, p)) for p, (a_min, a_max)
                            in zip(self.angle_ranges, values))
@@ -58,7 +58,7 @@ class RangedMotorSet(MotorSet):
             m.position = p
 
 
-class StemCom(MotorSet):
+class StemCom(object):
 
     def __init__(self, cfg):
         self.cfg = cfg
