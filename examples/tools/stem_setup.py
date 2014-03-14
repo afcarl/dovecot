@@ -24,7 +24,7 @@ def observe_max_angles():
     print(', '.join(gfx.ppv(ma) for ma in max_angles))
 
 def set_angle_limits():
-    angle_limits = [(50.9, 249.3), (50.9, 249.3), (50.9, 249.3), (50.9, 249.3), (50.9, 249.3), (50.9, 249.3)]
+    angle_limits = [(-150, 150), (-150, 150), (-150, 150), (-150, 150), (-150, 150), (-150, 150)]
 
     for m, al in zip(ms.motors, angle_limits):
         if al is not None:
