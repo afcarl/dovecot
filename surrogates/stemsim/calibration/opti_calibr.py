@@ -82,6 +82,7 @@ def vrep_capture(poses):
     cfg.sprims.scene = 'calibrate'
     cfg.sprims.names = ['push']
     cfg.sprims.uniformize = False
+    cfg.sprims.prefilter = False
     cfg.sprims.tip = True
 
     cfg.mprim.name = 'dmpg25'
