@@ -4,11 +4,11 @@ import traceback
 from surrogates.vrepsim import vrepcom
 
 configurations={
-    # 'center_cube',
-    # 'center_cylinder',
-    # 'center_sphere',
-    # 'other_cube',
-    # 'cylinder',
+    'center_cube',
+    'center_cylinder',
+    'center_sphere',
+    'other_cube',
+    'cylinder',
     'calibrate',
 }
 
