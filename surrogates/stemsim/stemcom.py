@@ -60,7 +60,7 @@ class RangedMotorSet(MotorSet):
 
 class StemCom(object):
 
-    def __init__(self, cfg):
+    def __init__(self, cfg, timeout=10):
         self.cfg = cfg
         self.cfg._update(defcfg, overwrite=False)
 
@@ -70,24 +70,26 @@ class StemCom(object):
 
         self.ms = RangedMotorSet(  serial_id=self.stemcfg.serial_id,
                                  motor_range=self.stemcfg.motorid_range,
-                                     verbose=self.cfg.stem.verbose_dyn)
+                                     verbose=self.cfg.stem.verbose_dyn,
+                                     timeout=timeout)
         assert len(self.ms.motors) == 6
 
         self.ms.zero_pose    = self.stemcfg.zero_pose
         self.ms.angle_ranges = self.stemcfg.angle_ranges
-        self.ms.max_torque   = self.stemcfg.max_torque
-        self.ms.angle_limits = self.stemcfg.angle_limits
 
     def setup(self, pose, blocking=True):
         """Setup the stem at the correct position"""
         self.ms.compliant    = False
         self.ms.moving_speed = 50
-        self.ms.torque_limit = 40
         self.ms.pose         = pose
 
         if blocking:
             while max(abs(p - tg) for p, tg in zip(self.ms.pose, pose)) > 3:
-                time.sleep(0.1)
+#                self.ms.moving_speed = (min(50, sp + 5) for sp in self.ms.moving_speed)
+                time.sleep(0.02)
+#        else:
+#            self.ms.moving_speed = 50
+
 
     def rest(self):
         self.ms.moving_speed = 50
@@ -97,7 +99,7 @@ class StemCom(object):
         self.ms.pose = rest_pose
         while max(abs(p - tg) for p, tg in zip(self.ms.pose, rest_pose)) > 20:
             time.sleep(0.05)
-        self.ms.moving_speed    = 20
+        self.ms.moving_speed = 20
         self.ms.torque_limit = 20
         start_time = time.time()
         while max(abs(p - tg) for p, tg in zip(self.ms.pose, rest_pose)) > 2.0 and time.time()-start_time < 1.0:
@@ -122,6 +124,11 @@ class StemCom(object):
         except IndexError:
             i = len(ts)-1
         try:
+            dp = np.abs(np.array(poses[i]) - np.array(self.ms.pose))
+            dt = 1.0/5 # 40 Hz
+            speed = dp/dt
+            speed = np.clip(speed, 0, 400)
+            self.ms.moving_speed = speed
             self.ms.pose = poses[i]
         except ValueError as e:
             print(self.ms.pose)

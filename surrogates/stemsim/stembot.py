@@ -10,9 +10,9 @@ from .collider import collider
 class CollisionError(Exception):
     pass
 
+import pydyn
 
-SPEED_LIMIT  = 20
-TORQUE_LIMIT = 30
+TORQUE_LIMIT = 50
 
 class StemBot(object):
 
@@ -91,7 +91,6 @@ class StemBot(object):
         self.stemcom.setup(self.cfg.mprim.init_states)
         time.sleep(0.1)
 
-        self.stemcom.ms.moving_speed = SPEED_LIMIT
         self.stemcom.ms.torque_limit = TORQUE_LIMIT
 
         start_time = time.time()
@@ -99,7 +98,6 @@ class StemBot(object):
             self.stemcom.step((ts, motor_traj), start_time)
         end_time = time.time()
 
-        time.sleep(0.05)
         self.stemcom.setup(self.cfg.mprim.init_states, blocking=False)
 
         return start_time, end_time
