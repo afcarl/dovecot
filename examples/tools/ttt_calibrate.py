@@ -22,25 +22,25 @@ cfg._branch('sprims')
 
 def calibrate_ar_scene(name):
     cfg.sprims.scene = name
-    com = vrepcom.OptiVrepCom(cfg, vrep_folder='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS', calibrate = True)
+    com = vrepcom.OptiVrepCom(cfg, calibrate = True)
     com.close(kill=True)
     return com.calib
 
 def calibrate_vrep_scene(name):
     cfg.sprims.scene = name
-    com = vrepcom.VRepCom(cfg, vrep_folder='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS', calibrate = True)
+    com = vrepcom.VRepCom(cfg, calibrate = True)
     com.close(kill=True)
     return com.calib
 
 def test_ar_scene(name):
     cfg.sprims.scene = name
-    com = vrepcom.OptiVrepCom(cfg, vrep_folder='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS', calibrate = False)
+    com = vrepcom.OptiVrepCom(cfg, calibrate = False)
     com.close(kill=True)
     return com.calib
 
 def test_vrep_scene(name):
     cfg.sprims.scene = name
-    com = vrepcom.VRepCom(cfg, vrep_folder='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS', calibrate = False)
+    com = vrepcom.VRepCom(cfg, calibrate = False)
     com.close(kill=True)
     return com.calib
 

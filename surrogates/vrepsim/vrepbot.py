@@ -16,10 +16,7 @@ class VRepBot(object):
         if 'angle_ranges' not in self.cfg.mprim:
             self.cfg.mprim.angle_ranges = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0, 120.0), (99.0, 99.0), (99.0, 99.0))
         self.setup_prims()
-        self.vrepcom = vrepcom.VRepCom(cfg,
-                                       ppf        =cfg.vrep.ppf,
-                                       vrep_folder=cfg.vrep.vrep_folder,
-                                       load       =cfg.vrep.load)
+        self.vrepcom = vrepcom.VRepCom(cfg)
 
         if cfg.sprims.prefilter:
             self._collision_filter = maycollide.CollisionFilter(self.vrepcom.calib.positions, self.vrepcom.calib.dimensions, 11)

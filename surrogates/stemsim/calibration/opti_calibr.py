@@ -71,10 +71,7 @@ def vrep_capture(poses):
 
     cfg.vrep.ppf         = 10
 
-    if os.uname()[0] == 'Darwin':
-        cfg.vrep.vrep_folder = '/Applications/V-REP/v_rep/bin'
-    else:
-        cfg.vrep.vrep_folder = '/home/fbenurea/external/vrep/3.0.5/'
+    cfg.vrep.mac_folder = '/Applications/V-REP/v_rep/bin'
     cfg.vrep.load            = True
     cfg.vrep.headless        = True
 

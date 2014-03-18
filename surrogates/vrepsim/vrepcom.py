@@ -50,7 +50,7 @@ class SceneToyCalibrationData(object):
 
 class VRepCom(object):
 
-    def __init__(self, cfg, port=1984, load=True, verbose=False, vrep_folder=None, ppf=200, calibrate=False):
+    def __init__(self, cfg, port=1984, verbose=False, calibrate=False):
         self.cfg = cfg
         self.connected = False
         self.verbose = verbose
@@ -58,7 +58,7 @@ class VRepCom(object):
         self.port = port
 
         self.vrep_proc = None
-        self.vrep_folder = vrep_folder
+        self.mac_folder = cfg.vrep.mac_folder
         port = self.launch_sim()
 
         self.vrep = pyvrep.PyVrep()
@@ -66,7 +66,7 @@ class VRepCom(object):
         self.scene = None
         self.calib = None
 
-        if load:
+        if cfg.vrep.load:
             self.load()
 
         if calibrate:
@@ -97,7 +97,7 @@ class VRepCom(object):
                 else:
                     cmd = "DISPLAY=:0 vrep >> {}".format(logname)
         elif os.uname()[0] == "Darwin":
-            cmd = "cd {}; ./vrep >> {}".format(self.vrep_folder, logname)
+            cmd = "cd {}; ./vrep >> {}".format(self.mac_folder, logname)
         else:
             raise OSError
         print(cmd)

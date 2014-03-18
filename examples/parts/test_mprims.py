@@ -3,9 +3,9 @@ import random
 
 import env
 from surrogates import prims
-import cfg
+from cfg import cfg0
 
-mprims = prims.create_mprim(cfg.cfg.mprim.name, cfg.cfg)
+mprims = prims.create_mprim(cfg0.mprim.name, cfg0)
 print('   slope    offset    center     width')
 for i in range(1000):
     order = tuple(random.uniform(a, b) for a, b in mprims.m_bounds)

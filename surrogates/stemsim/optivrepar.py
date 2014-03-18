@@ -16,7 +16,7 @@ class OptiVrepAR(object):
 
         self.scene = 'ar_' + cfg.sprims.scene + '.ttt'
         self.script = script
-        self.opivcom = vrepcom.OptiVrepCom(cfg, load=False, verbose=self.verbose, vrep_folder=None, ppf=self.ppf)
+        self.opivcom = vrepcom.OptiVrepCom(cfg, load=False, verbose=self.verbose, ppf=self.ppf)
         if not self.opivcom.connected:
             self.opivcom.load(self.scene, self.script, augmented_reality=True)
 

@@ -25,7 +25,8 @@ desc._isinstance('stem.verbose_dyn', bool)
     # V-REP config
 desc._branch('vrep')
 desc._isinstance('vrep.scene', str)
-
+# do we load vrep or not ?
+desc._isinstance('vrep.load', bool)
 # pass of the physic engine per frame (max 200)
 desc._isinstance('vrep.ppf', numbers.Integral)
 
@@ -34,8 +35,8 @@ desc._isinstance('vrep.headless', bool)
 desc._isinstance('vrep.vglrun', bool)
 
 desc._isinstance('vrep.calibrdir', str)
-
-
+# on mac, we need to know where vrep is
+desc._isinstance('vrep.mac_folder', str)
 
     # Sensory primitives
 desc._branch('sprims')
