@@ -12,7 +12,7 @@ class OptiVrepAR(object):
         self.ppf = ppf
         self.port = 1984
         self.verbose = verbose
-        print(cfg.makeReport())
+        print(cfg)
 
         self.scene = 'ar_' + cfg.sprims.scene + '.ttt'
         self.script = script

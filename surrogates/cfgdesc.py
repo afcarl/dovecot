@@ -1,4 +1,6 @@
+import collections
 import numbers
+
 import forest
 
 desc = forest.Tree()
@@ -64,25 +66,25 @@ desc._branch('mprim')
 desc._isinstance('mprim.name', str)
 
 # the number of position (and possibly velocity) orders executed
-desc.mprim.motor_steps = 500
+desc._isinstance('mprim.motor_steps', int)
 
 # defines when the simulation is finished
-desc.mprim.max_steps   = 500
+desc._isinstance('mprim.max_steps', int)
 
 # uniformize motor orders dimension between 0 and 1 ?
-desc.mprim.uniformze   = False
+desc._isinstance('mprim.uniformize', bool)
 
 # how many basis for the dmp ?
-desc.mprim.n_basis     = 2
+desc._isinstance('mprim.n_basis', int)
 
 # the maximum speed of the motors # FIXME units ?
-desc.mprim.max_speed   = 1.0
+desc._isinstance('mprim.max_speed', float)
 
 # when does the dmp trajectory end ?
-desc.mprim.end_time    = 1.15
+desc._isinstance('mprim.end_time', float)
 
 # starting position of the stem
-desc.mprim.init_states   = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+desc._isinstance('mprim.init_states', collections.Iterable)
 
 # target position of the stem
-desc.mprim.target_states = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+desc._isinstance('mprim.target_states', collections.Iterable)

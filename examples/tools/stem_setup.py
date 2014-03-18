@@ -11,9 +11,10 @@ from surrogates.stemsim import stemcfg
 uid = int(sys.argv[1])
 stem = stemcfg.stems[uid]
 stem.cycle_usb()
+
 ms = MotorSet(serial_id=stem.serial_id, motor_range=stem.motorid_range, verbose=True)
-ms.zero_pose = stem.zero_pose
-ms.angle_ranges = stem.angle_ranges
+#ms.zero_pose    = stem.zero_pose
+#ms.angle_ranges = stem.angle_ranges
 
 def observe_max_angles():
     max_angles = [[float('inf'), float('-inf')] for _ in ms.motors]
@@ -23,56 +24,19 @@ def observe_max_angles():
 
     print(', '.join(gfx.ppv(ma) for ma in max_angles))
 
-def set_angle_limits():
-    angle_limits = [(-150, 150), (-150, 150), (-150, 150), (-150, 150), (-150, 150), (-150, 150)]
 
-    for m, al in zip(ms.motors, angle_limits):
-        if al is not None:
-            m.angle_limits = al
-    time.sleep(0.1) # change are taking effect
+ms.max_torque            = 100
+ms.ccw_angle_limit       =  150
+ms.cw_angle_limit        = -150
+ms.ccw_compliance_margin = 1.0
+ms.cw_compliance_margin  = 1.0
+#ms.compliance_margines  = (1.0, 1.0)
+ms.ccw_compliance_slope_bytes  = 16
+ms.cw_compliance_slope_bytes   = 16
+#ms.compliance_slopes    = (16, 16)
+ms.return_delay_time     = 0
+ms.status_return_level   = 1
+ms.alarm_led_bytes       = 37
+ms.alarm_shutdown_bytes  = 37
 
-def print_angle_limits():
-    for m in ms.motors:
-        print(m.angle_limits)
-
-def print_compliance_margins():
-    for m in ms.motors:
-        print(m.compliance_margins)
-
-def print_compliance_slopes():
-    for m in ms.motors:
-        print(m.compliance_slopes)
-#        print(m.compliance_slopes_raw)
-
-
-def set_compliance_margins(v):
-    for m in ms.motors:
-        m.compliance_margins = (v, v)
-    time.sleep(0.1) # change are taking effect
-
-def set_compliance_slopes(v):
-    for m in ms.motors:
-        m.compliance_slopes = (v, v)
-    time.sleep(0.1) # change are taking effect
-
-def set_return_delay_time(v):
-    for m in ms.motors:
-        m.return_delay_time = v
-    time.sleep(0.1)
-
-def set_status_return_level(v):
-    for m in ms.motors:
-        m.status_return_level = v
-    time.sleep(0.1)
-
-#observe_max_angles()
-
-# set_angle_limits()
-# print_angle_limits()
-
-set_compliance_margins(1.0)
-set_compliance_slopes(16)
-set_return_delay_time(0)
-set_status_return_level(1)
-print_compliance_margins()
-print_compliance_slopes()
+time.sleep(1.0)

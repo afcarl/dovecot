@@ -4,13 +4,11 @@ import time
 
 import env
 from surrogates.stemsim import stemcom
+from cfg import cfg0
 
 cfg = forest.Tree()
 cfg._branch('stem')
-cfg.stem.dt = 0.01
-cfg.stem.verbose_com = True
-cfg.stem.verbose_dyn = True
-cfg.stem.uid = 0
+cfg.stem._update(cfg0.stem)
 
 sc = stemcom.StemCom(cfg)
 

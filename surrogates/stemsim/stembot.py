@@ -10,6 +10,10 @@ from .collider import collider
 class CollisionError(Exception):
     pass
 
+
+SPEED_LIMIT  = 20
+TORQUE_LIMIT = 30
+
 class StemBot(object):
 
     """ This class is responsible of executing the motor primitive only.
@@ -87,8 +91,8 @@ class StemBot(object):
         self.stemcom.setup(self.cfg.mprim.init_states)
         time.sleep(0.1)
 
-        self.stemcom.ms.moving_speed    = 100
-        self.stemcom.ms.torque_limit =  50
+        self.stemcom.ms.moving_speed = SPEED_LIMIT
+        self.stemcom.ms.torque_limit = TORQUE_LIMIT
 
         start_time = time.time()
         while time.time()-start_time < ts[-1]:
