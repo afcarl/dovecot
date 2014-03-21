@@ -14,17 +14,9 @@ stem.cycle_usb()
 ms = MotorSet(serial_id=stem.serial_id, motor_range=stem.motorid_range, timeout=10, verbose=True)
 ms.zero_pose = stem.zero_pose
 
-ms.compliant = False
-time.sleep(1.0)
-while not all(m.torque_limit==100 for m in ms.motors):
-    for m in ms.motors:
-        m.max_torque = 100
-        m.torque_limit = 100
-    time.sleep(1.0)
-
-ms.moving_speed  = 100
+ms.moving_speed = 100
 ms.torque_limit = 100
 ms.pose = (0.0,)*6
 
-time.sleep(3.0)
+time.sleep(2.0)
 print("pos: [{}]".format(', '.join('{:.1f}'.format(p) for p in ms.pose)))
