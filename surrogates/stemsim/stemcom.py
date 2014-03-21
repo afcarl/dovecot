@@ -127,7 +127,7 @@ class StemCom(object):
             dp = np.abs(np.array(poses[i]) - np.array(self.ms.pose))
             dt = 1.0/5 # 40 Hz
             speed = dp/dt
-            speed = np.clip(speed, 0, 400)
+            speed = np.clip(speed, 1, 400)
             self.ms.moving_speed = speed
             self.ms.pose = poses[i]
         except ValueError as e:
