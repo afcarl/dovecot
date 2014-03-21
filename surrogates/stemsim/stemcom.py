@@ -83,8 +83,9 @@ class StemCom(object):
         self.ms.moving_speed = 50
         self.ms.pose         = pose
 
+        start = time.time()
         if blocking:
-            while max(abs(p - tg) for p, tg in zip(self.ms.pose, pose)) > 3:
+            while max(abs(p - tg) for p, tg in zip(self.ms.pose, pose)) > 3 and time.time() - start < 10:
 #                self.ms.moving_speed = (min(50, sp + 5) for sp in self.ms.moving_speed)
                 time.sleep(0.02)
 #        else:
