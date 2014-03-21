@@ -24,7 +24,6 @@ desc._isinstance('stem.verbose_dyn', bool)
 
     # V-REP config
 desc._branch('vrep')
-desc._isinstance('vrep.scene', str)
 # do we load vrep or not ?
 desc._isinstance('vrep.load', bool)
 # pass of the physic engine per frame (max 200)
@@ -41,7 +40,7 @@ desc._isinstance('vrep.mac_folder', str)
     # Sensory primitives
 desc._branch('sprims')
 
-# the scene to load in vrep #FIXME diff between vrep.scene ?
+# the scene to load in vrep
 # if equal to 'cube_center', experiments are pure simulation, then 'vrep_cube_center.ttt' is loaded
 # else, 'ar_cube_center.ttt' is loaded
 desc._isinstance('sprims.scene', str)
@@ -67,22 +66,22 @@ desc._branch('mprim')
 desc._isinstance('mprim.name', str)
 
 # the number of position (and possibly velocity) orders executed
-desc._isinstance('mprim.motor_steps', int)
+desc._isinstance('mprim.motor_steps', numbers.Integral)
 
 # defines when the simulation is finished
-desc._isinstance('mprim.max_steps', int)
+desc._isinstance('mprim.max_steps', numbers.Integral)
 
 # uniformize motor orders dimension between 0 and 1 ?
 desc._isinstance('mprim.uniformize', bool)
 
 # how many basis for the dmp ?
-desc._isinstance('mprim.n_basis', int)
+desc._isinstance('mprim.n_basis', numbers.Integral)
 
 # the maximum speed of the motors # FIXME units ?
-desc._isinstance('mprim.max_speed', float)
+desc._isinstance('mprim.max_speed', numbers.Real)
 
 # when does the dmp trajectory end ?
-desc._isinstance('mprim.end_time', float)
+desc._isinstance('mprim.end_time', numbers.Real)
 
 # starting position of the stem
 desc._isinstance('mprim.init_states', collections.Iterable)
