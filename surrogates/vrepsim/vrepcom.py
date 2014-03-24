@@ -58,7 +58,8 @@ class VRepCom(object):
         self.port = port
 
         self.vrep_proc = None
-        self.mac_folder = cfg.vrep.mac_folder
+        self.mac_folder = os.path.expanduser(cfg.vrep.mac_folder)
+        print(cfg._coverage('vrep.mac_folder'))
         port = self.launch_sim()
 
         self.vrep = pyvrep.PyVrep()
@@ -75,6 +76,9 @@ class VRepCom(object):
         self.load_calibration_data()
 
     def __del__(self):
+        self.close(kill=True)
+
+    def __exit__(self):
         self.close(kill=True)
 
     def launch_sim(self):

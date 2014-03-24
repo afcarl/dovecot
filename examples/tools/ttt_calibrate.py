@@ -5,11 +5,11 @@ from surrogates.vrepsim import vrepcom
 
 configurations={
     'center_cube',
-    'center_cylinder',
-    'center_sphere',
-    'other_cube',
-    'cylinder',
-    'calibrate',
+    # 'center_cylinder',
+    # 'center_sphere',
+    # 'other_cube',
+    # 'cylinder',
+    # 'calibrate',
 }
 
 cfg = forest.Tree()
@@ -18,6 +18,8 @@ cfg.vrep.ppf       = 10
 cfg.vrep.headless  = False
 cfg.vrep.vglrun    = False
 cfg.vrep.calibrdir = '~/l2l-files/'
+cfg.vrep.mac_folder = '~/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS/'
+cfg.vrep.load       = True
 cfg._branch('sprims')
 
 def calibrate_ar_scene(name):
