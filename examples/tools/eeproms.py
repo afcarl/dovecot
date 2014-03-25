@@ -14,4 +14,3 @@ stem.cycle_usb()
 ms = MotorSet(serial_id=stem.serial_id, motor_range=stem.motorid_range, verbose=True)
 for m in ms.motors:
     print(m.eeprom_desc())
-    print(m.ram_desc())

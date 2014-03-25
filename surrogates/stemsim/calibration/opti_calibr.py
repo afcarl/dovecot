@@ -3,7 +3,7 @@ import time
 import os
 
 import numpy as np
-import treedict
+import forest
 
 from toolbox import gfx
 import natnet
@@ -64,19 +64,22 @@ def transform_3D(A, B, scaling=True):
 
 def vrep_capture(poses):
 
-    cfg = treedict.TreeDict()
+    cfg = forest.Tree()
+    cfg._branch('vrep')
+    cfg._branch('mprim')
+    cfg._branch('sprims')
+
     cfg.vrep.ppf         = 10
 
-    if os.uname()[0] == 'Darwin':
-        cfg.vrep.vrep_folder = '/Applications/V-REP/v_rep/bin'
-    else:
-        cfg.vrep.vrep_folder = '/home/fbenurea/external/vrep/3.0.5/'
+    cfg.vrep.mac_folder = '/Applications/V-REP/v_rep/bin'
     cfg.vrep.load            = True
     cfg.vrep.headless        = True
-    cfg.vrep.scene           = 'vrep_calibrate.ttt'
 
+    cfg.vrep.calibrdir = '~/l2l-files/'
+    cfg.sprims.scene = 'calibrate'
     cfg.sprims.names = ['push']
-    cfg.sprims.uniformze = False
+    cfg.sprims.uniformize = False
+    cfg.sprims.prefilter = False
     cfg.sprims.tip = True
 
     cfg.mprim.name = 'dmpg25'
@@ -105,12 +108,13 @@ def vrep_capture(poses):
     return vrep_res
 
 def opti_capture(poses, stemcfg, fb=None):
-    cfg = treedict.TreeDict()
+    cfg = forest.Tree()
+    cfg._branch('stem')
     cfg.stem.uid = stemcfg.uid
     stem_com = stemcom.StemCom(cfg)
 
-    stem_com.max_speed    = 100
-    stem_com.torque_limit = stemcfg.max_torque
+    stem_com.ms.moving_speed    = 100
+    stem_com.ms.torque_limit = stemcfg.max_torque
 
     time.sleep(0.1)
 

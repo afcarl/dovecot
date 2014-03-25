@@ -5,7 +5,6 @@ from . import vrepcom
 
 from ..stemsim import stemcfg
 from ..stemsim.collider import maycollide
-from . import objscene
 
 class OrderNotExecutableError(Exception):
     pass
@@ -17,14 +16,10 @@ class VRepBot(object):
         if 'angle_ranges' not in self.cfg.mprim:
             self.cfg.mprim.angle_ranges = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0, 120.0), (99.0, 99.0), (99.0, 99.0))
         self.setup_prims()
-        self.vrepcom = vrepcom.VRepCom(cfg,
-                                       ppf        =cfg.vrep.ppf,
-                                       vrep_folder=cfg.vrep.vrep_folder,
-                                       load       =cfg.vrep.load)
+        self.vrepcom = vrepcom.VRepCom(cfg)
 
         if cfg.sprims.prefilter:
-            obj_scene = objscene.scenes[self.cfg.sprims.scene]
-            self._collision_filter = maycollide.CollisionFilter(obj_scene.object_pos, obj_scene.object_geom, 11)
+            self._collision_filter = maycollide.CollisionFilter(self.vrepcom.calib.positions, self.vrepcom.calib.dimensions, 11)
 
         self.OrderNotExecutableError = OrderNotExecutableError
 

@@ -4,19 +4,23 @@ import sys
 import random
 import time
 
-import treedict
+import forest
 
 import env
 from surrogates.vrepsim import vrepbot
 
-cfg = treedict.TreeDict()
+cfg = forest.Tree()
+cfg._branch('vrep')
 cfg.vrep.ppf  = 10
 cfg.vrep.vrep_folder='/Applications/V-REP/v_rep/bin/'
+cfg.vrep.calibrdir = '~/l2l-files/'
 cfg.vrep.load = True
 cfg.vrep.headless = False
 
+cfg._branch('sprims')
 cfg.sprims.names = ['push']
 cfg.sprims.uniformze = False
+cfg._branch('mprim')
 cfg.mprim.name = 'dmpg'
 cfg.mprim.motor_steps = 500
 cfg.mprim.max_steps   = 500

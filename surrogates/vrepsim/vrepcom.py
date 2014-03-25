@@ -6,12 +6,51 @@ import signal
 import subprocess
 import random
 import string
-
+import hashlib
 import pyvrep
+import pickle
+
+def md5sum(filename, blocksize=65536):
+    hash = hashlib.md5()
+    with open(filename, "r") as f:
+        for block in iter(lambda: f.read(blocksize), ""):
+            hash.update(block)
+    return hash.hexdigest()
+
+class SceneToyCalibrationData(object):
+
+    def __init__(self, positions, mass, dimensions, scene_file, name, folder):
+        self.positions = positions
+        self.mass = mass
+        self.dimensions = dimensions
+        self.md5 = md5sum(scene_file)
+        self.scene_file = scene_file
+        self.name = name
+        self.folder = folder
+
+    def check_for_changes(self):
+        if md5sum(self.scene_file) == self.md5:
+            return False
+        return True
+
+    def save(self):
+        folder_path = os.path.expanduser(self.folder)
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+        with open(folder_path + '/' + str(self.name) + '.calib', 'w+') as f:
+            pickle.dump(self, f)
+
+    def print_it(self):
+        print ("File = {}".format(self.scene_file))
+        print ("Calibration file = {}".format(self.folder + '/' + self.name + '.calib'))
+        print ("Positions = {}".format(self.positions))
+        print ("Mass = {}".format(self.mass))
+        print ("Dimensions = {}".format(self.dimensions))
+        print ("MD5 = {}".format(self.md5))
 
 class VRepCom(object):
 
-    def __init__(self, cfg, port=1984, load=True, verbose=False, vrep_folder=None, ppf=200):
+    def __init__(self, cfg, port=1984, verbose=False, calibrate=False):
         self.cfg = cfg
         self.connected = False
         self.verbose = verbose
@@ -19,13 +58,28 @@ class VRepCom(object):
         self.port = port
 
         self.vrep_proc = None
-        self.vrep_folder = vrep_folder
+        self.mac_folder = os.path.expanduser(cfg.vrep.mac_folder)
+        print(cfg._coverage('vrep.mac_folder'))
         port = self.launch_sim()
 
         self.vrep = pyvrep.PyVrep()
 
-        if load:
+        self.scene = None
+        self.calib = None
+
+        if cfg.vrep.load:
             self.load()
+
+        if calibrate:
+            self.calibrate_scene()
+            self.close(kill=True)
+        self.load_calibration_data()
+
+    def __del__(self):
+        self.close(kill=True)
+
+    def __exit__(self):
+        self.close(kill=True)
 
     def launch_sim(self):
         """Launch a subprocess of V-Rep"""
@@ -47,7 +101,7 @@ class VRepCom(object):
                 else:
                     cmd = "DISPLAY=:0 vrep >> {}".format(logname)
         elif os.uname()[0] == "Darwin":
-            cmd = "cd {}; ./vrep {} -g{} >> {}".format(self.vrep_folder, headless_flag, port, logname)
+            cmd = "cd {}; ./vrep >> {}".format(self.mac_folder, logname)
         else:
             raise OSError
         print(cmd)
@@ -74,27 +128,34 @@ class VRepCom(object):
             self.vrep_proc.stdout.read()
             self.vrep_proc.stderr.read()
 
-    def load(self, scene=None, script="Flower"):
+    def load(self, scene=None, script="Flower", augmented_reality=False):
         if not self.connected:
             self.vrep.connect(self.port)
             self.connected = True
 
         if scene is None:
-            scene=self.cfg.vrep.scene
+            if not augmented_reality:
+                self.scene='vrep_' + self.cfg.sprims.scene + '.ttt'
+            else:
+                self.scene='ar_' + self.cfg.sprims.scene + '.ttt'
+        else:
+            self.scene = scene
 
-        scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', scene))
+        scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', self.scene))
         assert os.path.isfile(scene_file), "scene file {} not found".format(scene_file)
         print("loading v-rep scene {}".format(scene_file))
-        ret = self.vrep.simLoadScene(scene_file)
+        ret = self.vrep.simLoadScene(os.path.abspath(scene_file)) # os.path.abspath TO BE VERIFIED
         #if ret == -1:
         #    raise IOError
         self.handle_script = self.vrep.simGetScriptHandle(script);
 
-    def close(self):
-        #pid = self.vrep.speGetVrepPid()
+    def close(self, kill=False):
         if self.connected:
-            self.vrep.disconnect()
-        #os.kill(pid, signal.SIGKILL)
+            if not kill:
+                self.vrep.disconnect()
+            else:
+                self.vrep.disconnectAndQuit()
+            self.connected = False
 
     def run_simulation(self, trajectory, max_steps):
         """
@@ -148,6 +209,34 @@ class VRepCom(object):
         joint_sensors = None
         return (object_sensors, joint_sensors, tip_sensors)
 
+    def load_calibration_data(self):
+        scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', self.scene))
+        assert os.path.isfile(scene_file), "scene file {} not found".format(scene_file)
+        calib_file = os.path.expanduser(self.cfg.vrep.calibrdir) + '/' + self.scene + '.calib'
+        assert os.path.isfile(calib_file), "calibration file {} not found".format(calib_file)
+        with open(calib_file, 'r') as f:
+            self.calib = pickle.load(f)
+        assert self.calib.md5 == md5sum(scene_file), "loaded scene calibration ({}) differs from scene ({})".format(calib_file, scene_file)
+
+
+    def calibrate_scene(self):
+        toy_h = self.vrep.simGetObjectHandle("toy")
+        base_h = self.vrep.simGetObjectHandle("dummy_ref_base")
+        min_x = self.vrep.simGetObjectFloatParameter(toy_h, 21)[0] * 100
+        max_x = self.vrep.simGetObjectFloatParameter(toy_h, 24)[0] * 100
+        min_y = self.vrep.simGetObjectFloatParameter(toy_h, 22)[0] * 100
+        max_y = self.vrep.simGetObjectFloatParameter(toy_h, 25)[0] * 100
+        min_z = self.vrep.simGetObjectFloatParameter(toy_h, 23)[0] * 100
+        max_z = self.vrep.simGetObjectFloatParameter(toy_h, 26)[0] * 100
+        dimensions = [max_x - min_x, max_y - min_y, max_z - min_z]
+        mass_toy = self.vrep.simGetObjectFloatParameter(toy_h, 3005)[0] * 100
+        toy_positions = self.vrep.simGetObjectPosition(toy_h, base_h)
+        positions = [100 * e for e in toy_positions]
+        scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', self.scene))
+        assert os.path.isfile(scene_file), "scene file {} not found".format(scene_file)
+        self.calib = SceneToyCalibrationData(positions, mass_toy, dimensions, scene_file, self.scene, self.cfg.vrep.calibrdir)
+        self.calib.save()
+
 
 class OptiVrepCom(VRepCom):
 
@@ -164,6 +253,9 @@ class OptiVrepCom(VRepCom):
                 ts_ref = ts_ref + 0.01
         return new_traj
 
+    def load(self, scene=None, script="Flower", augmented_reality=False):
+        super(self.__class__, self).load(scene, script, True)
+
     def run_trajectory(self, trajectory):
         """
 
@@ -177,9 +269,7 @@ class OptiVrepCom(VRepCom):
         traj_x, traj_y, traj_z = zip(*pos_raw)
         timstamps = ts
 
-        self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Traj_X", list(traj_x))
-        self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Traj_Y", list(traj_y))
-        self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Traj_Z", list(traj_z))
+        self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Trajectory", list(traj_x + traj_y + traj_z))
 
         self.vrep.simSetSimulationPassesPerRenderingPass(self.ppf)
 
@@ -199,7 +289,7 @@ class OptiVrepCom(VRepCom):
         if self.verbose:
             print("Getting resulting parameters.")
 
-        object_sensors = self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "Object_Sensors")
+        object_sensors = np.array(self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "Object_Sensors"))
 
         self.vrep.simStopSimulation()
 

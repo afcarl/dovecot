@@ -37,6 +37,7 @@ class StemCfg(object):
                        zero_pose=None,
                        angle_ranges=None,
                        max_torque=None,
+                       powerswitch_mac=None,
                        powerswitch=None):
         assert uid is not None
 
@@ -56,6 +57,7 @@ class StemCfg(object):
         self.angle_ranges = angle_ranges
         self.max_torque = max_torque
         self.powerswitch = powerswitch
+        self.powerswitch_mac = powerswitch_mac
 
     def cycle_usb(self):
         cycle_usb(self.serial_id)
@@ -69,61 +71,67 @@ angle_ranges = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0, 120.0), (99
 stem0 = StemCfg(uid=0,
                 serial_id='A4008bke',
                 hostname='optistem',
-                optitrack_addr='239.255.42.99',
+                optitrack_addr='239.255.42.94',
                 optitrack_side='upper.left',
-                motorid_range=(1, 6),
+                motorid_range=(9, 15),
                 model_file='stem.smodel',
-                zero_pose=(172, 150, 150, 172, 150, 150),
+                zero_pose=(0, 0, 0, 5, 0, 0),
                 angle_ranges=angle_ranges,
                 max_torque=100,
+                powerswitch_mac='00:13:f6:01:52:d6',
                 powerswitch=0)
 
 stem1 = StemCfg(uid=1,
                 serial_id='A9005MWF',
                 hostname='optistem',
-                optitrack_addr='239.255.42.99',
+                optitrack_addr='239.255.42.94',
                 optitrack_side='bottom.left',
-                motorid_range=(41, 46),
+                motorid_range=(9, 15),
                 model_file='stem.smodel',
-                zero_pose=(172, 150, 150, 172, 150, 150),
+                zero_pose=(0, 0, 0, 0, 0, 0),
                 angle_ranges=angle_ranges,
                 max_torque=100,
+                powerswitch_mac='00:13:f6:01:52:d6',
                 powerswitch=1)
 
 stem2 = StemCfg(uid=2,
                 serial_id='AH00R9U0',
                 hostname='optistem',
-                optitrack_addr='239.255.42.99',
+                optitrack_addr='239.255.42.94',
                 optitrack_side='upper.right',
-                motorid_range=(91, 96),
+                motorid_range=(9, 15),
                 model_file='stem.smodel',
-                zero_pose=(172, 150, 150, 145, 150, 150),
+                zero_pose=(-3, 0, 0, -3, 0, 0),
                 angle_ranges=angle_ranges,
                 max_torque=100,
+                powerswitch_mac='00:13:f6:01:52:d6',
                 powerswitch=2)
 
 stem3 = StemCfg(uid=3,
                 serial_id='A4012AJS',
                 hostname='optistem',
-                optitrack_addr='239.255.42.99',
+                optitrack_addr='239.255.42.94',
                 optitrack_side='bottom.right',
-                motorid_range=(51, 56),
+                motorid_range=(9, 15),
                 model_file='stem.smodel',
-                zero_pose=(172, 150, 150, 172, 150, 150),
+                zero_pose=(-2, 0, 0, 2, 0, 0),
                 angle_ranges=angle_ranges,
                 max_torque=100,
+                powerswitch_mac='00:13:f6:01:52:d6',
                 powerswitch=3)
 
 # test stem
 stem4 = StemCfg(uid=4,
                 serial_id='A9005MWF',
                 hostname='latistem',
-                optitrack_addr='239.255.42.98',
+                optitrack_addr='239.255.42.94',
                 optitrack_side='right',
                 motorid_range=(90, 96),
                 model_file='stem.smodel',
-                zero_pose=(172, 150, 150, 172, 150, 150),
+                zero_pose=(0, 0, 0, 0, 0, 0),
                 angle_ranges=angle_ranges,
+                powerswitch_mac='00:13:f6:01:52:d6',
+                powerswitch=3,
                 max_torque=100)
 
 stems = [stem0, stem1, stem2, stem3, stem4]

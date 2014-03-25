@@ -1,12 +1,5 @@
 import os
-from setuptools import setup
-
-# Utility function to read the README file.
-# Used for the long_description.  It's nice, because now 1) we have a top level
-# README file and 2) it's easier to type in the README file than to put a raw
-# string in below ...
-def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+from distutils.core import setup
 
 setup(
     name = "surrogates",
@@ -26,8 +19,8 @@ setup(
                                                   'surrogates.stemsim.stemcfg',
                                                   ],
     classifiers=[],
-    package_data={'surrogates.vrepsim.objscene': ['vrep_center_cube.ttt', 'vrep_calibrate.ttt', 'vrep_center_sphere.ttt', 'vrep_other_cube.ttt', 'vrep_cylinder.ttt',
-                                                  'ar.ttt', 'ar_center_cube.ttt', 'ar_center_sphere.ttt', 'ar_cylinder.ttt', 'ar_other_cube.ttt'],
+    package_data={'surrogates.vrepsim.objscene': ['vrep_center_cube.ttt', 'vrep_calibrate.ttt', 'vrep_center_sphere.ttt', 'vrep_other_cube.ttt', 'vrep_cylinder.ttt', 'vrep_center_cylinder.ttt',
+                                                  'ar.ttt', 'ar_center_cube.ttt', 'ar_center_sphere.ttt', 'ar_cylinder.ttt', 'ar_other_cube.ttt', 'ar_center_cylinder.ttt'],
                   'surrogates.stemsim.collider'  : ['stem.smodel'],
                   'surrogates.stemsim.calibration' : ['calib0.data', 'calib1.data', 'calib2.data', 'calib3.data']},
 )

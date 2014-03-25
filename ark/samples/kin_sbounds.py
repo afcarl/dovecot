@@ -1,13 +1,13 @@
 import testenv
 import random
-import treedict
+import forest
 
 from toolbox import gfx
 from surrogates import kinsim
 
 def kin_sbounds():
     """Test the orientation of each joint of the simulation"""
-    cfg = treedict.TreeDict()
+    cfg = forest.Tree()
     cfg.interpol_res = 50
 
     vs = kinsim.KinSim(cfg)

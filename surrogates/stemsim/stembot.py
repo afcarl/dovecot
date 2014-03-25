@@ -1,15 +1,23 @@
 import time
 
+import stemcfg
+import powerswitch as ps
+
 import numpy as np
+
+import pydyn
 
 from .. import prims
 from . import stemcom
 from .collider import maycollide
 from .collider import collider
-from ..vrepsim import objscene
 
 class CollisionError(Exception):
     pass
+
+import pydyn
+
+TORQUE_LIMIT = 10
 
 class StemBot(object):
 
@@ -25,13 +33,24 @@ class StemBot(object):
         # if not and filter_real_execution is True, it will not be executed.
         self._prefilter = cfg.sprims.prefilter
         if self._prefilter:
-            obj_scene = objscene.scenes[self.cfg.sprims.scene]
-            self._collision_filter = maycollide.CollisionFilter(obj_scene.object_pos, obj_scene.object_geom, 11)
+            scene_file = os.path.expanduser(os.path.join(os.path.dirname(__file__), 'objscene', 'vrep_' + self.cfg.sprims.scene + '.ttt'))
+            assert os.path.isfile(scene_file), "scene file {} not found".format(scene_file)
+            with open(scene_file + '.calib', 'rb') as f:
+                calib_data = pickle.load(f)
+            assert self.calib.md5 == md5sum(scene_file), "loaded scene calibration ({}) differs from scene ({})".format(scene_file + '.calib',scene_file)
+            self._collision_filter = maycollide.CollisionFilter(calib_data.positions, calib_data.dimensions, 11)
 
+        self.powerswitch = ps.Eps4m(stemcfg.stems[cfg.stem.uid].powerswitch_mac)
+        self.powerswitch_port = stemcfg.stems[cfg.stem.uid].powerswitch
+        if self.powerswitch.is_off(self.powerswitch_port):
+            self.powerswitch.set_on(self.powerswitch_port)
+            time.sleep(1)
+        while self.powerswitch.is_restarting(self.powerswitch_port):
+            time.sleep(1)
 
         self.stemcom = stemcom.StemCom(cfg, **kwargs)
         if 'angle_ranges' not in self.cfg.mprim:
-            self.cfg.mprim.angle_ranges = self.stemcom.angle_ranges
+            self.cfg.mprim.angle_ranges = self.stemcom.ms.angle_ranges
         self.m_prim = prims.create_mprim(self.cfg.mprim.name, self.cfg)
         self.m_prim.process_context({})
         self.partial_mvt = self.cfg.partial_mvt # when doing test, we do the tests even if they generate collisions:
@@ -81,21 +100,28 @@ class StemBot(object):
             if not self._collision_filter.may_collide(motor_traj):
                 return None, None
 
-        self.stemcom.setup(self.cfg.mprim.init_states)
-        time.sleep(0.1)
 
-        self.max_speed    = 100
-        self.torque_limit =  50
+        try:
+            self.stemcom.setup(self.cfg.mprim.init_states)
+            time.sleep(0.1)
 
-        start_time = time.time()
-        while time.time()-start_time < ts[-1]:
-            self.stemcom.step((ts, motor_traj), start_time)
-        end_time = time.time()
+            self.stemcom.ms.torque_limit = TORQUE_LIMIT
 
-        time.sleep(0.05)
-        self.stemcom.setup(self.cfg.mprim.init_states, blocking=False)
+            start_time = time.time()
+            while time.time()-start_time < ts[-1]:
+                self.stemcom.step((ts, motor_traj), start_time)
+            end_time = time.time()
 
-        return start_time, end_time
+            self.stemcom.setup(self.cfg.mprim.init_states, blocking=False)
+
+            return start_time, end_time
+        except pydyn.MotorError as e:
+            print("MotorError")
+            self.powerswitch.set_off(self.powerswitch_port)
+            import traceback
+            traceback.print_exc()
+            raise e
+
 
     def close(self, rest=True):
         if rest:

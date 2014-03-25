@@ -4,7 +4,7 @@ import sys
 import random
 import time
 
-import treedict
+import forest
 
 import env
 from surrogates.vrepsim import vrepbot

@@ -1,13 +1,13 @@
 import testenv
 from toolbox import gfx
 
-import treedict
+import forest
 from surrogates import vrepsim
 
 def vrep_object():
     """Test the orientation of each joint of the simulation"""
 
-    cfg = treedict.TreeDict()
+    cfg = forest.Tree()
     vs = vrepsim.VRepSim(cfg)
 
     order  = [0.0, 30.0,-80.0, 0.0, 50.0, 0.0]

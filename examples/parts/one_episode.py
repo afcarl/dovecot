@@ -3,7 +3,7 @@ import time
 import random
 import sys
 
-import treedict
+import forest
 
 from toolbox import gfx
 from natnet import FrameBuffer
@@ -15,38 +15,18 @@ from surrogates.stemsim import stembot
 from surrogates.stemsim import optivrepar
 from surrogates.stemsim import stemcfg
 
-cfg = treedict.TreeDict()
+from cfg import cfg0
 
-cfg.stem.dt = 0.01
-cfg.stem.uid = int(sys.argv[1])
-cfg.stem.verbose_com = True
-cfg.stem.verbose_dyn = True
-cfg.hide_vrep = True
-
-cfg.sprims.names     = ['push']
-cfg.sprim.tip        = False
-cfg.sprims.uniformze = False
-
-cfg.mprim.name = 'dmpg'
-cfg.mprim.motor_steps = 500
-cfg.mprim.max_steps   = 500
-cfg.mprim.uniformze   = False
-cfg.mprim.n_basis     = 2
-cfg.mprim.max_speed   = 1.0
-cfg.mprim.end_time    = 1.45
-
-cfg.mprim.init_states   = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-cfg.mprim.target_states = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-
-stem = stemcfg.stems[cfg.stem.uid]
+cfg0.stem.uid = int(sys.argv[1])
+stem = stemcfg.stems[cfg0.stem.uid]
 M_trans = calibration.load_calibration(stem)
 print("{}launching serial... {}".format(gfx.purple, gfx.end))
-sb = stembot.StemBot(cfg)
-vs = stemsensors.VrepSensors(cfg)
+sb = stembot.StemBot(cfg0)
+vs = stemsensors.VrepSensors(cfg0)
 
 fb = FrameBuffer(40.0, addr=stem.optitrack_addr)
 print("{}launching vrep... {}".format(gfx.cyan, gfx.end))
-ovar = optivrepar.OptiVrepAR(cfg,verbose=False)
+ovar = optivrepar.OptiVrepAR(cfg0,verbose=False)
 
 total = 1 if len(sys.argv) <= 2 else int(sys.argv[2])
 count = 0

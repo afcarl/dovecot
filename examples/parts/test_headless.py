@@ -5,16 +5,16 @@ import random
 random.seed(3344242)
 import time
 
-import treedict
+import forest
 
 import env
 from surrogates.vrepsim import vrepbot
-from test_launch_vrep import cfg
+from cfg import cfg0
 
-cfg.vrep.headless = False
+cfg0.vrep.headless = True
 
 if __name__ == "__main__":
-    vrepb = vrepbot.VRepBot(cfg)
+    vrepb = vrepbot.VRepBot(cfg0)
 
     total = 10
     cols  = 0

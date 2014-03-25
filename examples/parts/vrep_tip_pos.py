@@ -4,13 +4,14 @@ import random
 import os
 import numpy as np
 
-import treedict
+import forest
 
 import env
 from surrogates.vrepsim import vrepbot
 from surrogates import prims
 
-cfg = treedict.TreeDict()
+cfg = forest.Tree()
+cfg._branch('vrep')
 cfg.vrep.ppf         = 10
 
 if os.uname()[0] == 'Darwin':
@@ -20,10 +21,12 @@ else:
 cfg.vrep.load            = True
 cfg.vrep.headless        = False
 
+cfg._branch('sprims')
 cfg.sprims.names = ['push']
 cfg.sprims.uniformze = False
 cfg.sprims.tip = True
 
+cfg._branch('mprim')
 cfg.mprim.name = 'dmpg'
 cfg.mprim.motor_steps = 1000
 cfg.mprim.max_steps   = 1000
@@ -31,6 +34,8 @@ cfg.mprim.uniformze   = False
 cfg.mprim.n_basis     = 2
 cfg.mprim.max_speed   = 1.0
 cfg.mprim.end_time    = 2.0
+
+cfg.vrep.calibrdir = '~/l2l-files/'
 
 cfg.mprim.init_states   = [-30.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 cfg.mprim.target_states = [  0.0, 0.0, 0.0, 0.0, 0.0, 0.0]

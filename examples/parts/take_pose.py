@@ -16,7 +16,7 @@ ms.compliant = False
 # for m in ms.motors:
 #     m.request_write('torque_enable', True)
 time.sleep(0.1)
-ms.max_speed  = 100
+ms.moving_speed  = 100
 ms.torque_limit = 100
 ms.pose = (20.0, 10.0, 10.0, 10.0, 10.0, 10.0)
 time.sleep(1.0)

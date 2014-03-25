@@ -1,4 +1,7 @@
 from __future__ import division, print_function
+import os
+import cPickle
+
 import numpy as np
 
 def _detect_gaps(trajectory):
