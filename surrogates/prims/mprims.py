@@ -15,7 +15,7 @@ mprims = {}
 def create_mprim(name, cfg):
     motor_class = mprims[name]
     motor_prim = motor_class(cfg)
-    if cfg.mprim.uniformze:
+    if cfg.mprim.uniformize:
         motor_prim = Uniformize(motor_prim)
     return motor_prim
 

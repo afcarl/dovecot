@@ -13,6 +13,8 @@ desc._isinstance('partial_mvt', bool)
 
     # Hardware stem config
 desc._branch('stem')
+# the stem number
+desc._isinstance('stem.uid', numbers.Integral)
 # FIXME meaning ?
 desc._isinstance('stem.dt', numbers.Real)
 # FIXME diff between the two ?
@@ -88,3 +90,6 @@ desc._isinstance('mprim.init_states', collections.Iterable)
 
 # target position of the stem
 desc._isinstance('mprim.target_states', collections.Iterable)
+
+desc._describe('mprim.angle_ranges', instanceof=collections.Iterable,
+               docstring='The range of the angles of the joints around the zero position the motor primitives bounds its values into')
