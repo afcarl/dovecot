@@ -1,7 +1,7 @@
 import env
 import random
 import numpy as np
-from surrogates.prims import dmp as pydmp
+from dovecot.prims import dmp as pydmp
 
 res = 5
 

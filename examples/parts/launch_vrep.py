@@ -4,7 +4,7 @@ import forest
 import os
 
 import env
-from surrogates.vrepsim import vrepbot
+from dovecot.vrepsim import vrepbot
 
 from cfg import cfg0
 

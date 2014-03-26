@@ -7,7 +7,7 @@ import time
 import forest
 
 import env
-from surrogates.vrepsim import vrepbot
+from dovecot.vrepsim import vrepbot
 
 from test_vrepbot import cfg
 cfg.vrep.ppf = 5

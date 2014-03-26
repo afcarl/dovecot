@@ -7,8 +7,8 @@ import numpy as np
 import forest
 
 import env
-from surrogates.vrepsim import vrepbot
-from surrogates import prims
+from dovecot.vrepsim import vrepbot
+from dovecot import prims
 
 cfg = forest.Tree()
 cfg._branch('vrep')

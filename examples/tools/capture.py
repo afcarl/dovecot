@@ -5,7 +5,7 @@ import sys
 import forest
 
 import env
-from surrogates.stemsim import stemcom
+from dovecot.stemsim import stemcom
 
 cfg = forest.Tree()
 cfg._branch('stem')

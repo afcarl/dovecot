@@ -4,7 +4,7 @@ import random
 import sys
 
 import env
-from surrogates.stemsim import episode
+from dovecot.stemsim import episode
 import cfg
 
 cfg_run = cfg.cfg

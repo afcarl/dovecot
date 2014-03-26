@@ -6,7 +6,7 @@ import sys
 import forest
 
 import env
-from surrogates.stemsim import stembot
+from dovecot.stemsim import stembot
 
 from cfg import cfg0
 

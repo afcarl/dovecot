@@ -5,11 +5,11 @@ import math
 import pydyn
 
 import env
-from surrogates.stemsim import stemcfg
-from surrogates.stemsim import stemcom
-from surrogates.stemsim.collider import stem_bodytree
-from surrogates.stemsim.collider import display
-from surrogates.stemsim.collider import collider
+from dovecot.stemsim import stemcfg
+from dovecot.stemsim import stemcom
+from dovecot.stemsim.collider import stem_bodytree
+from dovecot.stemsim.collider import display
+from dovecot.stemsim.collider import collider
 
 from cfg import cfg0
 

@@ -7,7 +7,7 @@ import time
 import forest
 
 import env
-from surrogates.vrepsim import vrepbot
+from dovecot.vrepsim import vrepbot
 
 cfg = forest.Tree()
 cfg._branch('vrep')

@@ -1,7 +1,7 @@
 import forest
 
 import env
-from surrogates.cfgdesc import desc
+from dovecot.cfgdesc import desc
 
 cfg0 = desc._copy(deep=True)
 

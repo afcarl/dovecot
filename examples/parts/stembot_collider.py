@@ -11,7 +11,7 @@ import random
 import forest
 
 import env
-from surrogates.stemsim import stembot
+from dovecot.stemsim import stembot
 
 import cfg
 

@@ -4,7 +4,7 @@ import time
 
 from pydyn import MotorSet
 import env
-from surrogates.stemsim import stemcfg
+from dovecot.stemsim import stemcfg
 
 stem = stemcfg.stems[int(sys.argv[1])]
 stem.cycle_usb()

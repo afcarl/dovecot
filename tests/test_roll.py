@@ -1,5 +1,4 @@
-from __future__ import print_function, division
-
+from __future__ import print_function, division, absolute_import
 import unittest
 import random
 import math
@@ -9,7 +8,7 @@ import numpy as np
 from dynamics.fwdkin import matrices
 
 import env
-from surrogates.prims.s_roll import Roll
+from dovecot.prims.s_roll import Roll
 
 class TestRoll(unittest.TestCase):
 
@@ -32,3 +31,6 @@ class TestRoll(unittest.TestCase):
         effect = roll.process_sensors(sensors_data)
         self.assertEqual(effect[1], 1.0)
         self.assertTrue(abs(effect[0] - 1.0) < 0.02)
+
+if __name__ == '__main__':
+    unittest.main()

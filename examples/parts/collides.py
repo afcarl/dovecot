@@ -4,8 +4,8 @@ import sys, time
 import pydyn
 
 import env
-from surrogates.stemsim.collider import collider
-from surrogates.stemsim import stemcfg
+from dovecot.stemsim.collider import collider
+from dovecot.stemsim import stemcfg
 
 scfg = stemcfg.stems[int(sys.argv[1])]
 stem = pydyn.MotorSet(serial_id=scfg.serial_id, motor_range=scfg.motorid_range, verbose=True)
