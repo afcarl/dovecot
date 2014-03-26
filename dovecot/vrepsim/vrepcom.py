@@ -17,18 +17,17 @@ class VRepCom(object):
     Communication with a V-REP simulation
     """
 
-    def __init__(self, cfg, port=1984, verbose=False, calcheck=True):
+    def __init__(self, cfg, verbose=False, calcheck=True):
         self.cfg = cfg
         self.connected = False
         self.verbose = verbose
         self.ppf  = cfg.vrep.ppf
-        self.port = port
         if not calcheck:
             assert not cfg.sprims.prefilter, 'Can\'t skip the calibration check and prefilter collisions. Choose.'
 
         self.vrep_proc = None
         self.mac_folder = os.path.expanduser(cfg.vrep.mac_folder)
-        port = self.launch_sim()
+        self.port = self.launch_sim()
 
         self.vrep = pyvrep.PyVrep()
 
@@ -53,7 +52,6 @@ class VRepCom(object):
         # port = random.randint(0, 1000000000)
         # while os.path.exists('/tmp/vrep{}'.format(port)):
         #     port = random.randint(0, 1000000000)
-        port = 1984
         lognumber = random.randint(0, 1000000000)
         logname = '/tmp/vreplog{}'.format(lognumber)
 
@@ -83,9 +81,7 @@ class VRepCom(object):
         for line in output.split('\n'):
             if string.find(line, prefix) == 0:
                 port = int(line[len(prefix):])
-        print("found port {}".format(port))
-
-        self.port = port
+                print("found port {}".format(port))
         return port
 
     def flush_proc(self):

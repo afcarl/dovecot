@@ -9,10 +9,11 @@ from ...cfgdesc import desc
 
 cfg = desc._copy(deep=True)
 cfg.vrep.ppf         = 10
-cfg.vrep.headless    = True
+cfg.vrep.headless    = False
 cfg.vrep.vglrun      = False
 cfg.vrep.calibrdir   = '~/.dovecot/tttcal/'
-cfg.vrep.mac_folder  = '/Applications/V-REP/v_rep/bin'
+#cfg.vrep.mac_folder  = '/Applications/V-REP/v_rep/bin'
+cfg.vrep.mac_folder  ='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS'
 cfg.vrep.load        = True
 cfg.sprims.prefilter = False
 
@@ -31,7 +32,7 @@ def process_scene(name, ar=True, calibrate=True):
 def compare_calib_data(ar_calib, v_calib):
     assert ar_calib.dimensions == v_calib.dimensions, "Toy dimensions error..."
     assert ar_calib.mass       == v_calib.mass      , "Toy mass error..."
-    assert ar_calib.positions  == v_calib.positions , "Toy position error..."
+    assert ar_calib.position  == v_calib.position , "Toy position error..."
 
 def calibrate_scene(com):
     toy_h    = com.vrep.simGetObjectHandle("toy")
