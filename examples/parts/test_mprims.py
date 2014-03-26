@@ -2,7 +2,7 @@ import numpy as np
 import random
 
 import env
-from surrogates import prims
+from dovecot import prims
 from cfg import cfg0
 
 mprims = prims.create_mprim(cfg0.mprim.name, cfg0)

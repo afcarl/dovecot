@@ -3,7 +3,7 @@ import forest
 import time
 
 import env
-from surrogates.stemsim import stemcom
+from dovecot.stemsim import stemcom
 from cfg import cfg0
 
 cfg = forest.Tree()

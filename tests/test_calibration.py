@@ -1,5 +1,4 @@
-from __future__ import print_function, division
-
+from __future__ import print_function, division, absolute_import
 import unittest
 import random
 import numpy as np
@@ -7,7 +6,7 @@ import numpy as np
 from numpy import cos, sin
 
 import env
-from surrogates.stemsim import opti_calibr
+from dovecot.calibration.triocal import opti_calibr
 
 class TestCalibration(unittest.TestCase):
 
@@ -58,3 +57,6 @@ class TestCalibration(unittest.TestCase):
             rmse = np.sqrt(err/A.shape[0])
 
             self.assertTrue(rmse < 1e-10)
+
+if __name__ == '__main__':
+    unittest.main()

@@ -1,5 +1,4 @@
-from __future__ import print_function
-
+from __future__ import print_function, division, absolute_import
 import sys
 import random
 import time
@@ -7,7 +6,7 @@ import time
 import forest
 
 import env
-from surrogates.vrepsim import vrepbot
+from dovecot.vrepsim import vrepbot
 
 from test_vrepbot import cfg
 cfg.vrep.ppf = 5

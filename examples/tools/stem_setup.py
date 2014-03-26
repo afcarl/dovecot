@@ -6,7 +6,7 @@ from toolbox import gfx
 from pydyn import MotorSet
 
 import env
-from surrogates.stemsim import stemcfg
+from dovecot.stemsim import stemcfg
 
 uid = int(sys.argv[1])
 stem = stemcfg.stems[uid]

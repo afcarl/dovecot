@@ -1,7 +1,7 @@
 import math
 
 import env
-from surrogates.vrepsim import vrepcom
+from dovecot.vrepsim import vrepcom
 
 n_steps = 500
 pos   = [(0.1 * e) * math.pi / 180.0 for e in range(n_steps)]

@@ -9,24 +9,24 @@ from toolbox import gfx
 from natnet import FrameBuffer
 
 import env
-from surrogates.stemsim import calibration
-from surrogates.stemsim import stemsensors
-from surrogates.stemsim import stembot
-from surrogates.stemsim import optivrepar
-from surrogates.stemsim import stemcfg
+from dovecot.stemsim import triopost
+from dovecot.stemsim import stemsensors
+from dovecot.stemsim import stembot
+from dovecot.vrepsim import vrepcom
+from dovecot.stemsim import stemcfg
 
 from cfg import cfg0
 
 cfg0.stem.uid = int(sys.argv[1])
 stem = stemcfg.stems[cfg0.stem.uid]
-M_trans = calibration.load_calibration(stem)
+M_trans = triopost.load_triomatrix(stem)
 print("{}launching serial... {}".format(gfx.purple, gfx.end))
 sb = stembot.StemBot(cfg0)
 vs = stemsensors.VrepSensors(cfg0)
 
 fb = FrameBuffer(40.0, addr=stem.optitrack_addr)
 print("{}launching vrep... {}".format(gfx.cyan, gfx.end))
-ovar = optivrepar.OptiVrepAR(cfg0,verbose=False)
+ovar = vrepcom.OptiVrepCom(cfg0,verbose=False)
 
 total = 1 if len(sys.argv) <= 2 else int(sys.argv[2])
 count = 0
@@ -55,13 +55,13 @@ try:
             count += 1
 
             # fill gaps
-            opti_traj = calibration.transform.fill_gaps(opti_traj)
-            vrep_traj = calibration.transform.opti2vrep(opti_traj, M_trans)
+            opti_traj = triopost.fill_gaps(opti_traj)
+            vrep_traj = triopost.opti2vrep(opti_traj, M_trans)
 
             print("{}executing movement in vrep...{}".format(gfx.cyan, gfx.end))
 
             # execute in vrep
-            object_sensors, joint_sensors, tip_sensors = ovar.execute(vrep_traj)
+            object_sensors, joint_sensors, tip_sensors = ovar.run_simulation(vrep_traj, None)
 
             # produce sensory feedback
             effect = vs.process_sensors(object_sensors, joint_sensors, tip_sensors)

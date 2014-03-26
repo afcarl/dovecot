@@ -4,7 +4,7 @@ import time
 
 from pydyn import MotorSet
 import env
-from surrogates.stemsim import stemcfg
+from dovecot.stemsim import stemcfg
 
 uid = None if len(sys.argv) == 1 else int(sys.argv[1])
 

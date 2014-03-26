@@ -1,5 +1,4 @@
-from __future__ import print_function, division
-
+from __future__ import print_function, division, absolute_import
 import unittest
 import random
 import numpy as np
@@ -7,8 +6,8 @@ import numpy as np
 from numpy import cos, sin
 
 import env
-from surrogates.stemsim.collider import maycollide
-from surrogates.vrepsim import objscene
+from dovecot.collider import maycollide
+from dovecot import ttts
 
 class TestMayCollide(unittest.TestCase):
 
@@ -18,4 +17,5 @@ class TestMayCollide(unittest.TestCase):
 
         print(cf.tip((0.0,)*6))
 
-
+if __name__ == '__main__':
+    unittest.main()

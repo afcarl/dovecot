@@ -4,7 +4,7 @@ import time
 
 from pydyn import MotorSet
 import env
-from surrogates.stemsim import stemcfg
+from dovecot.stemsim import stemcfg
 
 uid = None if len(sys.argv) == 1 else int(sys.argv[1])
 
@@ -20,5 +20,5 @@ def change(id_change):
             m.id = id_change[1]
             time.sleep(1.0)
 
-#change((51, 10))
+change((1, 13))
 #change((52, 11))

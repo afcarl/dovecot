@@ -1,6 +1,6 @@
 import env
 import numpy as np
-from surrogates.prims import dmp as pydmp
+from dovecot.prims import dmp as pydmp
 
 res = 5
 
@@ -20,7 +20,7 @@ for slope in np.linspace(-400.0, 400.0, num=res):
                 dmp.lwr_meta_params(1)
                 dmp.lwr_model_params(slopes = [slope], offsets = [offset], centers = [center], widths = [width])
                 ts, xs, xds = dmp.trajectory()
-                
+
                 x_max = max(x_max, max(xs))
                 x_min = min(x_min, min(xs))
 
