@@ -34,11 +34,8 @@ class VRepCom(object):
         self.scene = None
 
         if cfg.vrep.load:
-            self.load()
+            self.load(calcheck=calcheck)
 
-        if calcheck:
-            self.caldata = ttts.TTTCalibrationData(cfg.vrep.scene, cfg.vrep.calibrdir)
-            self.caldata.load()
 
     def __del__(self):
         self.close(kill=True)
@@ -89,18 +86,20 @@ class VRepCom(object):
             self.vrep_proc.stdout.read()
             self.vrep_proc.stderr.read()
 
-    def load(self, scene=None, script="Flower", ar=False):
+    def load(self, script="Flower", ar=False, calcheck=True):
         """
 
         :param ar:  if True, load augmented reality scene, else, vrep ones.
         """
+        self.scene_name = '{}_{}'.format({True:'ar', False:'vrep'}[ar], self.cfg.sprims.scene)
+
+        if calcheck:
+            self.caldata = ttts.TTTCalibrationData(self.scene_name, cfg.vrep.calibrdir)
+            self.caldata.load()
+
         if not self.connected:
             self.vrep.connect(self.port)
             self.connected = True
-
-        self.scene_name = scene
-        if self.scene_name is None:
-            self.scene_name = '{}_{}'.format({True:'ar', False:'vrep'}[ar], self.cfg.sprims.scene)
 
         scene_filepath = ttts.TTTFile(self.scene_name).filepath
         assert os.path.isfile(scene_filepath), "scene file {} not found".format(scene_filepath)
