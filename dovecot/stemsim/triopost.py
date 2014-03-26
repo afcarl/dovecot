@@ -49,6 +49,6 @@ def opti2vrep(opti_traj, M):
     return vrep_traj
 
 def load_triomatrix(stemcfg):
-    with open(os.path.abspath(os.path.join(__file__, '..')) + '/../calibration/' + stemcfg.calib_file, 'r') as f:
+    with open(os.path.abspath(os.path.join(__file__, '..')) + '/../calibration/triocal/' + stemcfg.calib_file, 'r') as f:
         m = cPickle.load(f)
     return m

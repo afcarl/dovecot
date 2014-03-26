@@ -16,7 +16,7 @@ from . import stemcom
 class CollisionError(Exception):
     pass
 
-TORQUE_LIMIT = 10
+TORQUE_LIMIT = 50
 
 class StemBot(object):
 

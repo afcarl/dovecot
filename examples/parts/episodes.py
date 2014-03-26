@@ -7,7 +7,7 @@ import env
 from dovecot.stemsim import episode
 import cfg
 
-cfg_run = cfg.cfg
+cfg_run = cfg.cfg0
 cfg_run.mprim.n_basis = 2
 cfg_run.stem.uid  = int(sys.argv[1])
 

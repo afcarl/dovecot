@@ -12,7 +12,7 @@ import env
 from dovecot.stemsim import triopost
 from dovecot.stemsim import stemsensors
 from dovecot.stemsim import stembot
-from dovecot.stemsim import optivrepar
+from dovecot.vrepsim import vrepcom
 from dovecot.stemsim import stemcfg
 
 from cfg import cfg0
@@ -26,7 +26,7 @@ vs = stemsensors.VrepSensors(cfg0)
 
 fb = FrameBuffer(40.0, addr=stem.optitrack_addr)
 print("{}launching vrep... {}".format(gfx.cyan, gfx.end))
-ovar = optivrepar.OptiVrepAR(cfg0,verbose=False)
+ovar = vrepcom.OptiVrepCom(cfg0,verbose=False)
 
 total = 1 if len(sys.argv) <= 2 else int(sys.argv[2])
 count = 0
@@ -61,7 +61,7 @@ try:
             print("{}executing movement in vrep...{}".format(gfx.cyan, gfx.end))
 
             # execute in vrep
-            object_sensors, joint_sensors, tip_sensors = ovar.execute(vrep_traj)
+            object_sensors, joint_sensors, tip_sensors = ovar.run_simulation(vrep_traj, None)
 
             # produce sensory feedback
             effect = vs.process_sensors(object_sensors, joint_sensors, tip_sensors)

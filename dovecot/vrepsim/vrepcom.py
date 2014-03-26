@@ -94,7 +94,7 @@ class VRepCom(object):
         self.scene_name = '{}_{}'.format({True:'ar', False:'vrep'}[ar], self.cfg.sprims.scene)
 
         if calcheck:
-            self.caldata = ttts.TTTCalibrationData(self.scene_name, cfg.vrep.calibrdir)
+            self.caldata = ttts.TTTCalibrationData(self.scene_name, self.cfg.vrep.calibrdir)
             self.caldata.load()
 
         if not self.connected:
@@ -176,9 +176,8 @@ class VRepCom(object):
 
 class OptiVrepCom(VRepCom):
 
-    def _prepare_trajectory(self, trajectory, max_step=None):
-        """#TODO what does this do ?"""
-        assert len(trajectory) > 0
+    def _prepare_traj(self, trajectory, max_step=None):
+        assert len(trajectory) > 0, "Trajectory to prepare is empty."
 
         ts_ref = trajectory[0][0]
         new_traj = []
@@ -191,8 +190,8 @@ class OptiVrepCom(VRepCom):
 
         ts, pos_raw = zip(*new_traj)
         traj_x, traj_y, traj_z = zip(*pos_raw)
-        return list(traj_x, traj_y, traj_z)
+        return list(traj_x + traj_y + traj_z)
 
-    def load(self, scene=None, script="Flower", ar=False):
-        super(self.__class__, self).load(scene, script, True)
+    def load(self, script="marker", ar=True, calcheck=True):
+        super(self.__class__, self).load(script, ar, calcheck)
 

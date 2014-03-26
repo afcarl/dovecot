@@ -10,7 +10,8 @@ from pydyn.msets import MotorSet
 from . import stemcfg
 
 defcfg = forest.Tree()
-defcfg['stem.motor_range'] = (0, 253)
+"""#TODO Why this ?"""
+#defcfg['stem.motor_range'] = (0, 253)
 defcfg['stem.verbose_dyn'] = True
 
 class RangedMotorSet(MotorSet):

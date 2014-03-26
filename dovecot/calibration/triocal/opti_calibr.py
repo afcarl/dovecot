@@ -74,7 +74,7 @@ def vrep_capture(poses):
     cfg.vrep.load            = True
     cfg.vrep.headless        = True
 
-    cfg.vrep.calibrdir = '~./dovecot/tttcal/'
+    cfg.vrep.calibrdir = '~/.dovecot/tttcal/'
     cfg.sprims.scene = 'calibrate'
     cfg.sprims.names = ['push']
     cfg.sprims.uniformize = False

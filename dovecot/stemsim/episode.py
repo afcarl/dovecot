@@ -42,7 +42,7 @@ class Episode(object):
 
         cfg.vrep.load = False # FIXME probably not the most elegant
         self.ovar = vrepcom.OptiVrepCom(cfg, verbose=verbose)
-        self.ovar.load(cfg.sprims.scene, 'marker', ar=True)
+        self.ovar.load(script="marker", ar=True)
 
         self.exhibit_prims()
 
@@ -95,6 +95,7 @@ class Episode(object):
                 print("{}executing movement in vrep...{}".format(gfx.cyan, gfx.end))
 
             # execute in vrep
+            """#TODO max_steps set to None ??"""
             object_sensors, joint_sensors, tip_sensors = self.ovar.run_simulation(vrep_traj, None)
 
             # produce sensory feedback
@@ -114,7 +115,7 @@ class Episode(object):
             if tries == 0:
                 print('{}caught marker error...                   {}'.format(gfx.red, gfx.end))
                 time.sleep(0.1)
-                self.fb = FrameBuffer(40.0, addr=self.stem.optitrack_addr)
+                self.fb = natnet.FrameBuffer(FB_DURATION, addr=self.stem.optitrack_addr)
                 return self.execute_order(order, tries=1)
             else:
                 raise OrderNotExecutableError
