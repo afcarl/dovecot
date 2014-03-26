@@ -8,7 +8,7 @@ import forest
 from toolbox import gfx
 import natnet
 
-from .. import stemcom
+from ...stemsim import stemcom
 from ...vrepsim import vrepbot
 from ... import prims
 
@@ -74,7 +74,7 @@ def vrep_capture(poses):
     cfg.vrep.load            = True
     cfg.vrep.headless        = True
 
-    cfg.vrep.calibrdir = '~/l2l-files/'
+    cfg.vrep.calibrdir = '~./dovecot/tttcal/'
     cfg.sprims.scene = 'calibrate'
     cfg.sprims.names = ['push']
     cfg.sprims.uniformize = False
@@ -84,7 +84,7 @@ def vrep_capture(poses):
     cfg.mprim.name = 'dmpg25'
     cfg.mprim.motor_steps = 1000
     cfg.mprim.max_steps   = 1000
-    cfg.mprim.uniformze   = False
+    cfg.mprim.uniformize  = False
     cfg.mprim.n_basis     = 2
     cfg.mprim.max_speed   = 1.0
     cfg.mprim.end_time    = 2.0

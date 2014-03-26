@@ -19,12 +19,12 @@ cfg.vrep.headless = False
 
 cfg._branch('sprims')
 cfg.sprims.names = ['push']
-cfg.sprims.uniformze = False
+cfg.sprims.uniformize = False
 cfg._branch('mprim')
 cfg.mprim.name = 'dmpg'
 cfg.mprim.motor_steps = 500
 cfg.mprim.max_steps   = 500
-cfg.mprim.uniformze   = False
+cfg.mprim.uniformize   = False
 cfg.mprim.n_basis     = 2
 cfg.mprim.max_speed   = 1.0
 cfg.mprim.end_time    = 1.25

@@ -15,6 +15,7 @@ ms = MotorSet(serial_id=stem.serial_id, motor_range=stem.motorid_range, timeout=
 ms.zero_pose = stem.zero_pose
 
 ms.moving_speed = 100
+ms.max_torque   = 100
 ms.torque_limit = 100
 ms.pose = (0.0,)*6
 

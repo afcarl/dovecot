@@ -31,7 +31,7 @@ def process_scene(name, ar=True, calibrate=True):
 def compare_calib_data(ar_calib, v_calib):
     assert ar_calib.dimensions == v_calib.dimensions, "Toy dimensions error..."
     assert ar_calib.mass       == v_calib.mass      , "Toy mass error..."
-    assert ar_calib.positions  == v_calib.positions , "Toy position error..."
+    assert ar_calib.position   == v_calib.position  , "Toy position error..."
 
 def calibrate_scene(com):
     toy_h    = com.vrep.simGetObjectHandle("toy")
