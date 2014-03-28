@@ -9,7 +9,7 @@ from ...cfgdesc import desc
 
 cfg = desc._copy(deep=True)
 cfg.vrep.ppf         = 10
-cfg.vrep.headless    = False
+cfg.vrep.headless    = True
 cfg.vrep.vglrun      = False
 cfg.vrep.calibrdir   = '~/.dovecot/tttcal/'
 #cfg.vrep.mac_folder  = '/Applications/V-REP/v_rep/bin'
