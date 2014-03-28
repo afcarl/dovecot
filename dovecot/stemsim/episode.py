@@ -103,7 +103,8 @@ class Episode(object):
             vrep_time = time.time() - start_vrep
             #print("{}order:{} {}".format(gfx.purple, gfx.end, gfx.ppv(order)))
             if self.verbose:
-                print("{}effect:{} {} (stem: {:.1f}, vrep: {:.1f})".format(gfx.cyan, gfx.end, gfx.ppv(effect), stem_time, vrep_time))
+                print("{}effect:{} {} (stem: {:.1f}, vrep: {:.1f})".format(gfx.cyan, 
+                      gfx.end, gfx.ppv(effect, fmt=' .8f'), stem_time, vrep_time))
 
             return effect
 

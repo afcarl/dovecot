@@ -7,9 +7,15 @@ import env
 from dovecot.stemsim import episode
 import cfg
 
+DEBUG = True
+
 cfg_run = cfg.cfg0
 cfg_run.mprim.n_basis = 2
 cfg_run.stem.uid  = int(sys.argv[1])
+
+if DEBUG:
+    cfg_run.vrep.headless = False
+    cfg_run.vrep.ppf = 1
 
 episodes_count  = 1 if len(sys.argv) <= 2 else int(sys.argv[2])
 collisions      = 0

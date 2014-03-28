@@ -1,6 +1,7 @@
 from __future__ import print_function, division, absolute_import
 import time
 import os
+import sys
 
 import numpy as np
 import forest
@@ -137,7 +138,14 @@ def opti_capture(poses, stemcfg, fb=None):
         pdata = fb.tracking_slice(start, end)
         fb.stop()
         fb.join()
-        mean_p.append(np.mean([p[1] for p in pdata], axis=0))
+        m = np.mean([p[1] for p in pdata], axis=0)
+        if len(mean_p) > 0:
+            if np.linalg.norm(m - mean_p[-1]) < 0.05:
+                print("{}error{}: the stem is not moving enough, is it the right marker ?".format(gfx.bred, gfx.end))
+                stem_com.rest()
+                time.sleep(1.0)
+                sys.exit(1)
+        mean_p.append(m)
 
 
     stem_com.rest()
