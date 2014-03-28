@@ -120,8 +120,22 @@ stem3 = StemCfg(uid=3,
                 powerswitch_mac='00:13:f6:01:52:d6',
                 powerswitch=3)
 
-# test stem
+# this is the fifth stem
 stem4 = StemCfg(uid=4,
+                serial_id='A4012AJS',
+                hostname='optistem',
+                optitrack_addr='239.255.42.94',
+                optitrack_side='bottom.right',
+                motorid_range=(9, 15),
+                model_file='stem.smodel',
+                zero_pose=(-2, 0, 0, -9, 0, 0),
+                angle_ranges=angle_ranges,
+                max_torque=100,
+                powerswitch_mac='00:13:f6:01:52:d6',
+                powerswitch=3)
+
+# test stem
+stem5 = StemCfg(uid=5,
                 serial_id='A9005MWF',
                 hostname='latistem',
                 optitrack_addr='239.255.42.94',
