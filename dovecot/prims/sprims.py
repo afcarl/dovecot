@@ -14,6 +14,7 @@ def create_sprim(name, cfg):
         sensory_prim = Uniformize(sensory_prim)
     return sensory_prim
 
+
 class SensoryPrimitive(object):
 
     def __init__(self, cfg):
@@ -41,6 +42,7 @@ def enforce_bounds(data, bounds):
 
 def isobarycenter(bounds):
     return tuple((b+a)/2.0 for a, b in bounds)
+
 
 class Uniformize(SensoryPrimitive):
 

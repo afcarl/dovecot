@@ -21,7 +21,7 @@ def cycle_usb(serial_id):
     if os.uname()[0] == 'Linux':
         syspath = usb_syspath()[serial_id]
         sysloc  = os.path.basename(syspath)
-        execute.execute('sudo ~/cycle_usb.sh {}'.format(sysloc), quiet=True)
+        execute.execute('sudo ~/cycle_usb.sh {}'.format(sysloc), print_cmd=False, print_output=False)
     else:
         raise OSError("cycle_usb is not supported yet on your platform !")
 
