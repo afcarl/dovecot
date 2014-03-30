@@ -1,11 +1,13 @@
 """
 Computing motor primitives from high-level orders.
 """
-
+from __future__ import print_function, division, absolute_import
 import math
+
 import numpy as np
 
 from . import dmp
+
 
 def enforce_bounds(data, bounds):
     return tuple(min(bi_max, max(bi_min, d_i)) for di, (bi_min, bi_max) in zip(data, bounds))

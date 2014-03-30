@@ -1,11 +1,12 @@
-from __future__ import division, print_function
+from __future__ import print_function, division, absolute_import
 
 import numpy as np
 
 from toolbox import dist
 from dynamics.fwdkin import matrices
 
-import sprims
+from . import sprims
+
 
 def unit_vector(vector):
     """ Returns the unit vector of the vector.  """

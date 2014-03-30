@@ -1,6 +1,11 @@
+from __future__ import print_function, division, absolute_import
+
 import numpy as np
+
 from toolbox import dist
-import sprims
+
+from . import sprims
+
 
 class Push(sprims.SensoryPrimitive):
 

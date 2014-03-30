@@ -4,8 +4,10 @@
     dmp.lwr_meta_params(2)
     dmp.lwr_model_params(slopes = [0.0, -500.0], offsets = [-500.0, 0.0], centers = [0.0, 0.5], widths = [1.0, 1.0])
 """
+from __future__ import print_function, division, absolute_import
 
 import numpy as np
+
 import libpydmp as pydmp
 
 

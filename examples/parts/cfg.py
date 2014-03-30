@@ -21,13 +21,13 @@ cfg0.vrep.mac_folder   = '/Applications/V-REP/v_rep/bin' # only for mac
 cfg0.sprims.names      = ['push']
 cfg0.sprims.tip        = False
 cfg0.sprims.uniformize = False
-cfg0.sprims.prefilter  = False
+cfg0.sprims.prefilter  = True
 cfg0.sprims.scene      = 'center_cube'
 
 cfg0.mprim.name        = 'dmpg25'
 cfg0.mprim.motor_steps = 500
 cfg0.mprim.max_steps   = 500
-cfg0.mprim.uniformize   = False
+cfg0.mprim.uniformize  = False
 cfg0.mprim.n_basis     = 2
 cfg0.mprim.max_speed   = 1.0
 cfg0.mprim.end_time    = 1.15

@@ -7,7 +7,7 @@ import env
 from dovecot.stemsim import episode
 import cfg
 
-DEBUG = True
+DEBUG = False
 
 cfg_run = cfg.cfg0
 cfg_run.mprim.n_basis = 2
