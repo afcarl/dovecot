@@ -7,6 +7,9 @@ from . import vrepcom
 
 from ..collider import maycollide
 
+
+MARKER_SIZE = 11
+
 class OrderNotExecutableError(Exception):
     pass
 
@@ -14,13 +17,11 @@ class VRepBot(object):
 
     def __init__(self, cfg):
         self.cfg = cfg
-        if 'angle_ranges' not in self.cfg.mprim:
-            self.cfg.mprim.angle_ranges = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0, 120.0), (99.0, 99.0), (99.0, 99.0)) # FIXME magic numbers.
         self.setup_prims()
         self.vrepcom = vrepcom.VRepCom(cfg)
 
         if cfg.sprims.prefilter:
-            self._collision_filter = maycollide.CollisionFilter(self.vrepcom.caldata.position, self.vrepcom.caldata.dimensions, 11) # FIXME 11 ?
+            self._collision_filter = maycollide.CollisionFilter(self.vrepcom.caldata.position, self.vrepcom.caldata.dimensions, MARKER_SIZE)
 
         self.OrderNotExecutableError = OrderNotExecutableError
 

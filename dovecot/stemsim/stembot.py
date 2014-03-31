@@ -32,7 +32,7 @@ class StemBot(object):
         # if not and filter_real_execution is True, it will not be executed.
         self._prefilter = cfg.sprims.prefilter
         if self._prefilter:
-            caldata = ttts.TTTCalibrationData(cfg.sprims.scene, cfg.vrep.calibrdir)
+            caldata = ttts.TTTCalibrationData('ar_'+cfg.sprims.scene, cfg.vrep.calibrdir)
             caldata.load()
             self._collision_filter = maycollide.CollisionFilter(caldata.position, caldata.dimensions, 11)
 

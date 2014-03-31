@@ -52,7 +52,7 @@ def calibrate_scene(com):
     scene_filepath = ttts.TTTFile(com.scene_name).filepath
     assert os.path.isfile(scene_filepath), 'error: scene file {} not found'.format(scene_filepath)
     caldata = ttts.TTTCalibrationData(com.scene_name, com.cfg.vrep.calibrdir)
-    caldata.populate(toy_mass, dimensions, position)
+    caldata.populate(toy_mass, position, dimensions)
     caldata.save()
 
     return caldata

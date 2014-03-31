@@ -19,7 +19,8 @@ class CollisionFilter(object):
         if len(obj_geom) == 3: # cube
             obj_radius = math.sqrt(sorted(obj_geom)[2]**2 + sorted(obj_geom)[1]**2)
 
-        self.min_d_sq = 1.2*((obj_radius + marker_radius)**2)
+        #print(obj_geom, obj_radius, marker_radius)
+        self.min_d_sq = 1.1*((obj_radius + marker_radius)**2)
         self.obj_pos = obj_pos
         self.stem_model = smodel.SymbolicModel.from_file(os.path.abspath(os.path.join(__file__, '..')) + '/' + 'stem.smodel')
 
@@ -30,8 +31,8 @@ class CollisionFilter(object):
             orientation = [1.0, -1.0, -1.0, 1.0, 1.0, 1.0]
             pose_r = [math.radians(p*o) for p, o in zip(pose, orientation)]
             tip_pos = self.tip(pose_r)
-            # print(gfx.ppv(pose), gfx.ppv(tip_pos), gfx.ppv(self.obj_pos))
-            # print('{:.1f} {:.1f}'.format(toolbox.dist_sq(tip_pos, self.obj_pos), self.min_d_sq))
+            #print(gfx.ppv(pose), gfx.ppv(tip_pos), gfx.ppv(self.obj_pos))
+            #print('{:.1f} {:.1f}'.format(toolbox.dist_sq(tip_pos, self.obj_pos), self.min_d_sq))
             if toolbox.dist_sq(tip_pos, self.obj_pos) < self.min_d_sq:
                 return True
         return False

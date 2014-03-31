@@ -35,7 +35,7 @@ class Episode(object):
             print("{}launching serial... {}".format(gfx.purple, gfx.end))
         self.sb = stembot.StemBot(cfg)
         if self.verbose:
-            print("{}launching optitrack cature on {}... {}".format(gfx.purple, self.stem.optitrack_addr, gfx.end))
+            print("{}launching optitrack capture on {}... {}".format(gfx.purple, self.stem.optitrack_addr, gfx.end))
         self.fb = natnet.FrameBuffer(FB_DURATION, addr=self.stem.optitrack_addr)
         if self.verbose:
             print("{}launching vrep... {}".format(gfx.cyan, gfx.end))
