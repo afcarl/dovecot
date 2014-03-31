@@ -67,7 +67,7 @@ class VRepCom(object):
             raise OSError
         print(cmd)
         self.vrep_proc = subprocess.Popen(cmd, stdout=None, stderr=None,
-                                shell=True, preexec_fn=os.setsid)
+                                shell=True)
         # self.vrep_proc = subprocess.Popen(cmd, stdout=open(os.devnull, 'wb'), stderr=None,
         #                         shell=True, preexec_fn=os.setsid)
         time.sleep(1)
@@ -85,7 +85,7 @@ class VRepCom(object):
                     port = line[len(prefix):]
                     port_found = True
                     print("found port {}".format(port))
-            time.sleep(1)
+            time.sleep(2)
         return port
 
     def flush_proc(self):
