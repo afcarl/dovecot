@@ -11,6 +11,7 @@ import pyvrep
 
 from .. import ttts
 
+CONNECTION_TIMEOUT = 120
 
 class VRepCom(object):
     """
@@ -69,16 +70,22 @@ class VRepCom(object):
                                 shell=True, preexec_fn=os.setsid)
         # self.vrep_proc = subprocess.Popen(cmd, stdout=open(os.devnull, 'wb'), stderr=None,
         #                         shell=True, preexec_fn=os.setsid)
-        time.sleep(10)
+        time.sleep(1)
 
-        with open(logname, 'r') as f:
-            output = f.read()
+        port_found = False
+        start_time = time.time()
+        while(not port_found and time.time() - start_time < CONNECTION_TIMEOUT):
+            print("trying to read {}".format(logname))
+            with open(logname, 'r') as f:
+                output = f.read()
 
-        prefix = 'INFO : network use endPoint ipc:///tmp/vrep'
-        for line in output.split('\n'):
-            if string.find(line, prefix) == 0:
-                port = int(line[len(prefix):])
-                print("found port {}".format(port))
+            prefix = 'INFO : network use endPoint ipc:///tmp/vrep_'
+            for line in output.split('\n'):
+                if string.find(line, prefix) == 0:
+                    port = line[len(prefix):]
+                    port_found = True
+                    print("found port {}".format(port))
+            time.sleep(1)
         return port
 
     def flush_proc(self):
@@ -98,7 +105,7 @@ class VRepCom(object):
             self.caldata.load()
 
         if not self.connected:
-            self.vrep.connect(self.port)
+            self.vrep.connect_str(self.port)
             self.connected = True
 
         scene_filepath = ttts.TTTFile(self.scene_name).filepath
