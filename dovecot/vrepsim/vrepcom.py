@@ -50,7 +50,9 @@ class VRepCom(object):
         # port = random.randint(0, 1000000000)
         # while os.path.exists('/tmp/vrep{}'.format(port)):
         #     port = random.randint(0, 1000000000)
-        lognumber = random.randint(0, 1000000000)
+        rand_log = random.Random()
+        rand_log.seed(time.time())
+        lognumber = rand_log.randint(0, 1000000000)
         logname = '/tmp/vreplog{}'.format(lognumber)
 
         if os.uname()[0] == "Linux":

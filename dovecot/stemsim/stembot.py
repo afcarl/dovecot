@@ -36,7 +36,7 @@ class StemBot(object):
             caldata.load()
             self._collision_filter = maycollide.CollisionFilter(caldata.position, caldata.dimensions, 11)
 
-        self.powerswitch = ps.Eps4m(stemcfg.stems[cfg.stem.uid].powerswitch_mac)
+        self.powerswitch = ps.Eps4m(mac_address=stemcfg.stems[cfg.stem.uid].powerswitch_mac, load_config=True)
         self.powerswitch_port = stemcfg.stems[cfg.stem.uid].powerswitch
         if self.powerswitch.is_off(self.powerswitch_port):
             self.powerswitch.set_on(self.powerswitch_port)
