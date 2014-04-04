@@ -11,9 +11,9 @@ cfg0.stem.dt = 0.01
 
 cfg0.stem.verbose_com  = True
 cfg0.stem.verbose_dyn  = True
-cfg0.vrep.headless     = True
+cfg0.vrep.headless     = False
 cfg0.vrep.vglrun       = False
-cfg0.vrep.ppf          = 200
+cfg0.vrep.ppf          = 1
 cfg0.vrep.load         = True
 cfg0.vrep.mac_folder   = '/Applications/V-REP/v_rep/bin' # only for mac
 #cfg0.vrep.mac_folder  = '/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS'
@@ -36,6 +36,10 @@ cfg0.mprim.init_states   = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 cfg0.mprim.target_states = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
 cfg0.vrep.calibrdir = '~/.dovecot/tttcal/'
+
+cfg0.logger.write_delay = 10 # seconds
+cfg0.logger.folder = '~/.dovecot/logger/'
+cfg0.logger.file_name = 'examples_' 
 
 cfg1 = cfg0._copy(deep=True)
 """#TODO can't create new leaf 'scene' in a strict tree without a type or validation function declared"""
