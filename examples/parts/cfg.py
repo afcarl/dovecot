@@ -34,6 +34,8 @@ cfg0.mprim.end_time    = 1.15
 
 cfg0.mprim.init_states   = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 cfg0.mprim.target_states = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+cfg0.mprim.angle_ranges  = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0, 120.0), (99.0, 99.0), (99.0, 99.0))
+
 
 cfg0.vrep.calibrdir = '~/.dovecot/tttcal/'
 

@@ -36,9 +36,9 @@ class VRepBot(object):
     def setup_prims(self):
         self.s_prims = [prims.create_sprim(sprim_name, self.cfg) for sprim_name in self.cfg.sprims.names]
         self.m_prim = prims.create_mprim(self.cfg.mprim.name, self.cfg)
-        self.context = {'x_bounds': (-3.0, 3.0),
-                        'y_bounds': (-3.0, 3.0),
-                        'z_bounds': ( 1.4, 3.3)}
+        self.context = {'x_bounds': (-300.0, 300.0),
+                        'y_bounds': (-300.0, 300.0),
+                        'z_bounds': ( 140.0, 330.0)}
         self.m_prim.process_context(self.context)
         self.process_context()
 
@@ -76,8 +76,8 @@ class VRepBot(object):
 
         assert len(object_sensors) % (3+4) == 0
         n = int(len(object_sensors)/7)
-        positions    = tuple(tuple(object_sensors[7*i   :7*i+ 3]) for i in range(n))
-        quaternions  = tuple(tuple(object_sensors[7*i+ 3:7*i+ 7]) for i in range(n))
+        positions    = tuple(tuple(100.0*object_sensors[7*i   :7*i+ 3]) for i in range(n))
+        quaternions  = tuple(tuple(      object_sensors[7*i+ 3:7*i+ 7]) for i in range(n))
 
         self.channels = {}
         self.channels['object_pos']   = positions

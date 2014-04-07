@@ -92,6 +92,7 @@ def vrep_capture(poses):
 
     cfg.mprim.init_states   = [-30.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     cfg.mprim.target_states = [  0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    cfg.mprim.angle_ranges  = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0, 120.0), (99.0, 99.0), (99.0, 99.0))
 
     sb = vrepbot.VRepBot(cfg)
 
