@@ -61,7 +61,7 @@ desc._isinstance('sprims.prefilter', bool)
 
 
 
-    # Motor primitives
+ 	# Motor primitives
 desc._branch('mprim')
 
 # name of the motor primitive
@@ -93,3 +93,15 @@ desc._isinstance('mprim.target_states', collections.Iterable)
 
 desc._describe('mprim.angle_ranges', instanceof=collections.Iterable,
                docstring='The range of the angles of the joints around the zero position the motor primitives bounds its values into')
+
+# logger
+desc._branch('logger')
+
+# log folder
+desc._isinstance('logger.folder', str)
+
+# log filename
+desc._isinstance('logger.file_name', str)
+
+# logger write delay
+desc._isinstance('logger.write_delay', numbers.Integral)

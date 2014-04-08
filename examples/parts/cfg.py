@@ -39,6 +39,10 @@ cfg0.mprim.angle_ranges  = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0,
 
 cfg0.vrep.calibrdir = '~/.dovecot/tttcal/'
 
+cfg0.logger.write_delay = 10 # seconds
+cfg0.logger.folder = '~/.dovecot/logger/'
+cfg0.logger.file_name = 'examples_' 
+
 cfg1 = cfg0._copy(deep=True)
 """#TODO can't create new leaf 'scene' in a strict tree without a type or validation function declared"""
 #cfg1.vrep.scene       = 'vrep_cylinder.ttt'
