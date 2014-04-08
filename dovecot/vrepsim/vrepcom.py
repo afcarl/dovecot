@@ -107,7 +107,8 @@ class VRepCom(object):
             self.caldata.load()
 
         if not self.connected:
-            assert self.vrep.connect_str(self.port)
+            if not self.vrep.connect_str(self.port):
+                raise IOError("Unable to connect to vrep")
             self.connected = True
 
         scene_filepath = ttts.TTTFile(self.scene_name).filepath
