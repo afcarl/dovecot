@@ -98,6 +98,9 @@ desc._describe('mprim.angle_ranges', instanceof=collections.Iterable,
 desc._branch('logger')
 
 # log folder
+desc._isinstance('logger.enabled', bool)
+
+# log folder
 desc._isinstance('logger.folder', str)
 
 # log filename

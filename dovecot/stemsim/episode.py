@@ -32,8 +32,10 @@ class Episode(object):
 
         atexit.register(self.close)
 
-        self.logger = logger.Logger(file_name=self.cfg.logger.file_name, folder=self.cfg.logger.folder, write_delay=self.cfg.logger.write_delay)
-        self.logger.start()
+        self.use_logger = self.cfg.logger.enabled
+        if self.use_logger:
+            self.logger = logger.Logger(file_name=self.cfg.logger.file_name, folder=self.cfg.logger.folder, write_delay=self.cfg.logger.write_delay)
+            self.logger.start()
 
         if self.verbose:
             print("{}launching serial... {}".format(gfx.purple, gfx.end))
@@ -65,8 +67,9 @@ class Episode(object):
     def execute_order(self, order, tries=0):
         try:
 
-            data_log = {}
-            data_log['order'] = order    
+            if self.use_logger:
+                data_log = {}
+                data_log['order'] = order    
 
             if self.verbose:
                 print("{}executing movement on stem...{}".format(gfx.purple, gfx.end), end='\r')
@@ -82,8 +85,9 @@ class Episode(object):
             if (start, end) == (None, None):
                 return self.vs.null_feedback
 
-            order_time = end - start
-            data_log['order_time'] = order_time
+            if self.use_logger:
+                order_time = end - start
+                data_log['order_time'] = order_time
 
             if self.verbose:
                 print('')
@@ -95,7 +99,8 @@ class Episode(object):
             # get optitrack trajectory
             opti_traj = self.fb.tracking_slice(start, end)
 
-            data_log['opti_traj'] = opti_traj
+            if self.use_logger:
+                data_log['opti_traj'] = opti_traj
 
             # fill gaps
             try:
@@ -112,22 +117,25 @@ class Episode(object):
             """#TODO max_steps set to None ??"""
             object_sensors, joint_sensors, tip_sensors = self.ovar.run_simulation(vrep_traj, None)
 
-            data_log['object_sensors'] = object_sensors
-            data_log['joint_sensors'] = joint_sensors
-            data_log['tip_sensors'] = tip_sensors
+            if self.use_logger:
+                data_log['object_sensors'] = object_sensors
+                data_log['joint_sensors'] = joint_sensors
+                data_log['tip_sensors'] = tip_sensors
 
             # produce sensory feedback
             effect = self.vs.process_sensors(object_sensors, joint_sensors, tip_sensors)
             vrep_time = time.time() - start_vrep
 
-            data_log['vrep_time'] = vrep_time
+            if self.use_logger:
+                data_log['vrep_time'] = vrep_time
 
             #print("{}order:{} {}".format(gfx.purple, gfx.end, gfx.ppv(order)))
             if self.verbose:
                 print("{}effect:{} {} (stem: {:.1f}, vrep: {:.1f})".format(gfx.cyan, 
                       gfx.end, gfx.ppv(effect, fmt=' .8f'), stem_time, vrep_time))
 
-            self.logger.log(data_log)
+            if self.use_logger:
+                self.logger.log(data_log)
 
             return effect
 
