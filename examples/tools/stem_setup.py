@@ -5,12 +5,21 @@ import sys
 from toolbox import gfx
 from pydyn import MotorSet
 
+import powerswitch
 import env
 from dovecot.stemsim import stemcfg
 
 uid = int(sys.argv[1])
 stem = stemcfg.stems[uid]
 stem.cycle_usb()
+
+ps = powerswitch.Eps4m(mac_address=stemcfg.stems[stem.uid].powerswitch_mac, load_config=True)
+ps_port = stemcfg.stems[stem.uid].powerswitch
+if ps.is_off(ps_port):
+    ps.set_on(ps_port)
+    time.sleep(1)
+while ps.is_restarting(ps_port):
+    time.sleep(1)
 
 ms = MotorSet(serial_id=stem.serial_id, motor_range=stem.motorid_range, verbose=True)
 #ms.zero_pose    = stem.zero_pose

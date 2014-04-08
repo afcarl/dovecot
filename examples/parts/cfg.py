@@ -11,9 +11,9 @@ cfg0.stem.dt = 0.01
 
 cfg0.stem.verbose_com  = True
 cfg0.stem.verbose_dyn  = True
-cfg0.vrep.headless     = True
+cfg0.vrep.headless     = False
 cfg0.vrep.vglrun       = False
-cfg0.vrep.ppf          = 200
+cfg0.vrep.ppf          = 1
 cfg0.vrep.load         = True
 cfg0.vrep.mac_folder   = '/Applications/V-REP/v_rep/bin' # only for mac
 #cfg0.vrep.mac_folder  = '/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS'

@@ -13,7 +13,7 @@ from cfg import cfg0
 cfg0.stem.uid = int(sys.argv[1])
 sb = stembot.StemBot(cfg0, timeout=10)
 
-total = 50
+total = 10000
 count = 0
 
 start = time.time()
