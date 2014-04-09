@@ -39,7 +39,7 @@ cfg0.mprim.angle_ranges  = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0,
 
 cfg0.vrep.calibrdir = '~/.dovecot/tttcal/'
 
-cfg0.logger.enabled = False
+cfg0.logger.enabled = True
 cfg0.logger.write_delay = 10 # seconds
 cfg0.logger.folder = '~/.dovecot/logger/'
 cfg0.logger.file_name = 'examples_' 

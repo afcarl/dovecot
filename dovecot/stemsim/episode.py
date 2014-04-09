@@ -121,6 +121,7 @@ class Episode(object):
                 data_log['object_sensors'] = object_sensors
                 data_log['joint_sensors'] = joint_sensors
                 data_log['tip_sensors'] = tip_sensors
+                data_log['vrep_traj'] = vrep_traj
 
             # produce sensory feedback
             effect = self.vs.process_sensors(object_sensors, joint_sensors, tip_sensors)
@@ -128,6 +129,7 @@ class Episode(object):
 
             if self.use_logger:
                 data_log['vrep_time'] = vrep_time
+                data_log['effect'] = effect
 
             #print("{}order:{} {}".format(gfx.purple, gfx.end, gfx.ppv(order)))
             if self.verbose:
