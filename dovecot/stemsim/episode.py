@@ -115,13 +115,14 @@ class Episode(object):
 
             # execute in vrep
             """#TODO max_steps set to None ??"""
-            object_sensors, joint_sensors, tip_sensors = self.ovar.run_simulation(vrep_traj, None)
+            object_sensors, joint_sensors, tip_sensors, collide_data = self.ovar.run_simulation(vrep_traj, None)
 
             if self.use_logger:
                 data_log['object_sensors'] = object_sensors
                 data_log['joint_sensors'] = joint_sensors
                 data_log['tip_sensors'] = tip_sensors
                 data_log['vrep_traj'] = vrep_traj
+                data_log['collide_data'] = collide_data
 
             # produce sensory feedback
             effect = self.vs.process_sensors(object_sensors, joint_sensors, tip_sensors)
@@ -165,6 +166,6 @@ class Episode(object):
         except Exception:
             pass
         try:
-            self.ovar.close()
+            self.ovar.close(kill=True)
         except Exception:
             pass

@@ -10,6 +10,7 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib import cm
+from itertools import product, combinations
 
 from dovecot.logger import logger
 
@@ -38,6 +39,13 @@ def show_opti_traj(datas):
 def show_vrep_traj(datas):
 	fig = plt.figure()
 	ax = fig.gca(projection='3d')
+	# cube
+	r = [-1, 1]
+	for s, e in combinations(np.array(list(product(r,r,r))), 2):
+		if np.sum(np.abs(s-e)) == r[1]-r[0]:
+			ax.plot(*zip(s,e), color="b")
+
+	# collide data
 	for data in datas:
 		xs, ys, zs = [], [], []
 		t_stamp = data['timestamp']
@@ -51,6 +59,16 @@ def show_vrep_traj(datas):
 			ax.plot(xs, ys, zs, c='r')
 		else:
 			ax.plot(xs, ys, zs, c='b')
+	ax.legend()
+	plt.show()
+
+def show_collide_data(datas):
+	fig = plt.figure()
+	ax = fig.add_subplot(111, projection='3d')
+	for data in datas:
+		col = data['datas']['collide_data']
+		if len(col) == 3:
+			ax.scatter(col[0], col[1], col[2], c='r', marker='o')
 	ax.legend()
 	plt.show()
 
@@ -68,7 +86,8 @@ dispatch = {
     'joint_sensors': not_implemented,
     'order': not_implemented,
     'effect': not_implemented,
-    'vrep_traj': show_vrep_traj
+    'vrep_traj': show_vrep_traj,
+    'collide_data' : show_collide_data
 }
 
 def main():

@@ -10,7 +10,9 @@ if (simGetScriptExecutionCount()==0) then
 	--
 	r_pos_old = simGetObjectPosition(handle_marker, -1)
 	t_pos_old = {marker_trajectory[1], marker_trajectory[1 + trajectory_sim_steps], marker_trajectory[1 + 2 * trajectory_sim_steps]}
-
+	-- collide
+	collide = false
+	collide_data = {}
 	-- will be return
 	object_sensors = {}
 	-- constants def
@@ -75,8 +77,34 @@ if(current_step < trajectory_sim_steps) then
 	simAddForceAndTorque(handle_marker, force, nil)
 	r_pos_old = r_pos
 	t_pos_old = t_pos
+
+	if(collide == false) then
+		col, data = simCheckCollisionEx(handle_toy, handle_marker)
+		if (col > 0) then
+			data_tmp = {0.0, 0.0, 0.0}
+			for j = 1, col do
+				x1 = data[(j - 1) * 6 + 1]
+				y1 = data[(j - 1) * 6 + 2]
+				z1 = data[(j - 1) * 6 + 3]
+				x2 = data[(j - 1) * 6 + 4]
+				y2 = data[(j - 1) * 6 + 5]
+				z2 = data[(j - 1) * 6 + 6]
+				data_tmp[1] = data_tmp[1] + ((x1 + x2) / 2)
+				data_tmp[2] = data_tmp[2] + ((y1 + y2) / 2)
+				data_tmp[3] = data_tmp[3] + ((z1 + z2) / 2)
+			end
+
+			table.insert(collide_data, data_tmp[1] / col)
+			table.insert(collide_data, data_tmp[2] / col)
+			table.insert(collide_data, data_tmp[3] / col)
+			
+			collide = true
+		end
+	end
+
 else
 	simSetScriptSimulationParameter(sim_handle_self, "Object_Sensors", simPackFloats(object_sensors))
+	simSetScriptSimulationParameter(sim_handle_self, "Collide_Data", simPackFloats(collide_data))
 	-- pause simulation
 	simPauseSimulation()
 end
