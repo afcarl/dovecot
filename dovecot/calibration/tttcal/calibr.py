@@ -33,11 +33,13 @@ def compare_calib_data(ar_calib, v_calib):
     assert ar_calib.dimensions == v_calib.dimensions, "Toy dimensions error..."
     assert ar_calib.mass       == v_calib.mass      , "Toy mass error..."
     assert ar_calib.position  == v_calib.position , "Toy position error..."
+    assert ar_calib.position_world  == v_calib.position_world , "Toy position error..."
 
 def calibrate_scene(com):
     toy_h    = com.vrep.simGetObjectHandle("toy")
     base_h   = com.vrep.simGetObjectHandle("dummy_ref_base")
     toy_pos  = com.vrep.simGetObjectPosition(toy_h, base_h)
+    toy_pos_world  = com.vrep.simGetObjectPosition(toy_h, -1)
     min_x    = com.vrep.simGetObjectFloatParameter(toy_h, 21)[0] * 100
     max_x    = com.vrep.simGetObjectFloatParameter(toy_h, 24)[0] * 100
     min_y    = com.vrep.simGetObjectFloatParameter(toy_h, 22)[0] * 100
@@ -48,11 +50,12 @@ def calibrate_scene(com):
 
     dimensions = [max_x - min_x, max_y - min_y, max_z - min_z]
     position  = [100 * e for e in toy_pos]
+    position_world  = [100 * e for e in toy_pos_world]
 
     scene_filepath = ttts.TTTFile(com.scene_name).filepath
     assert os.path.isfile(scene_filepath), 'error: scene file {} not found'.format(scene_filepath)
     caldata = ttts.TTTCalibrationData(com.scene_name, com.cfg.vrep.calibrdir)
-    caldata.populate(toy_mass, position, dimensions)
+    caldata.populate(toy_mass, position, dimensions, toy_pos_world)
     caldata.save()
 
     return caldata

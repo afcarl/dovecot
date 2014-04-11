@@ -22,7 +22,7 @@ cfg0.sprims.names      = ['push']
 cfg0.sprims.tip        = False
 cfg0.sprims.uniformize = False
 cfg0.sprims.prefilter  = True
-cfg0.sprims.scene      = 'center_cylinder'
+cfg0.sprims.scene      = 'center_cube'
 
 cfg0.mprim.name        = 'dmpg25'
 cfg0.mprim.motor_steps = 500

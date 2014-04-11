@@ -48,12 +48,14 @@ class TTTCalibrationData(object):
         self.md5        = None
         self.mass       = None
         self.position   = None
+        self.position_world   = None
         self.dimensions = None
 
-    def populate(self, mass, position, dimensions):
+    def populate(self, mass, position, dimensions, position_world):
         self.md5 = md5sum(self.ttt_filepath)
         self.mass = mass
         self.position = position
+        self.position_world = position_world
         self.dimensions = dimensions
 
     def save(self):
@@ -79,6 +81,7 @@ class TTTCalibrationData(object):
         self.dimensions = caldata.dimensions
         self.mass       = caldata.mass
         self.position   = caldata.position
+        self.position_world   = caldata.position_world
 
     def __repr__(self):
         s  = 'ttt_file: {}, md5: {}\n'.format(self.ttt_filepath, self.md5)
