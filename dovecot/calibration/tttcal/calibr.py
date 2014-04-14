@@ -2,6 +2,7 @@ from __future__ import print_function, division, absolute_import
 import os
 
 import forest
+from toolbox import gfx
 
 from ...vrepsim import vrepcom
 from ... import ttts
@@ -30,10 +31,10 @@ def process_scene(name, ar=True, calibrate=True):
     return com.caldata
 
 def compare_calib_data(ar_calib, v_calib):
-    assert ar_calib.dimensions == v_calib.dimensions, "Toy dimensions error..."
-    assert ar_calib.mass       == v_calib.mass      , "Toy mass error..."
-    assert ar_calib.position  == v_calib.position , "Toy position error..."
-    assert ar_calib.position_world  == v_calib.position_world , "Toy position error..."
+    assert ar_calib.dimensions     == v_calib.dimensions     , "Toy dimensions error..."
+    assert ar_calib.mass           == v_calib.mass           , "Toy mass error..."
+    assert ar_calib.position       == v_calib.position       , "Toy position error..."
+    #assert ar_calib.position_world == v_calib.position_world , "Toy position error..."
 
 def calibrate_scene(com):
     toy_h    = com.vrep.simGetObjectHandle("toy")
@@ -53,12 +54,14 @@ def calibrate_scene(com):
     position_world  = [100 * e for e in toy_pos_world]
 
     scene_filepath = ttts.TTTFile(com.scene_name).filepath
-    assert os.path.isfile(scene_filepath), 'error: scene file {} not found'.format(scene_filepath)
-    caldata = ttts.TTTCalibrationData(com.scene_name, com.cfg.vrep.calibrdir)
-    caldata.populate(toy_mass, position, dimensions, toy_pos_world)
-    caldata.save()
-
-    return caldata
+    if not os.path.isfile(scene_filepath):
+        print('{}error{}: scene file {} not found'.format(gfx.red, gfx.end, scene_filepath))
+        return None
+    else:
+        caldata = ttts.TTTCalibrationData(com.scene_name, com.cfg.vrep.calibrdir)
+        caldata.populate(toy_mass, position, dimensions, toy_pos_world)
+        caldata.save()
+        return caldata
 
 
 def calibr(names):
@@ -76,7 +79,8 @@ def calibr(names):
         if ar_calib != None and v_calib != None:
             try:
                 compare_calib_data(ar_calib, v_calib)
-            except AssertionError:
+            except AssertionError as e:
+                print(e)
                 print(ar_calib)
                 print(v_calib)
                 print('Calibration datas are not the same for file : vrep_{}.ttt and ar_{}.ttt'.format(name, name))
