@@ -1,6 +1,8 @@
 import forest
 import traceback
 
+import sys
+
 from dovecot.calibration import tttcal
 
 names=['center_cube',
@@ -11,4 +13,8 @@ names=['center_cube',
        'calibrate',
       ]
 
-tttcal.calibrate(names)
+if len(sys.argv) == 2:
+	name = [sys.argv[1]]
+	tttcal.calibrate(name)
+else:
+	tttcal.calibrate(names)

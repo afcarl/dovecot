@@ -169,6 +169,7 @@ class VRepCom(object):
             print("Getting resulting parameters.")
 
         object_sensors = np.array(self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "Object_Sensors"))
+        collide_data = np.array(self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "Collide_Data"))
 
         if self.cfg.sprims.tip:
             tip_sensors = self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "Tip_Sensors")
@@ -181,7 +182,7 @@ class VRepCom(object):
             print("End of simulation.")
 
         joint_sensors = None
-        return (object_sensors, joint_sensors, tip_sensors)
+        return (object_sensors, joint_sensors, tip_sensors, collide_data)
 
 
 class OptiVrepCom(VRepCom):

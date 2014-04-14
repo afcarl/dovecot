@@ -112,7 +112,8 @@ class VRepBot(object):
         motor_traj_2 = list(zip(*tuple(np.degrees(t_i[0]) for t_i in motor_traj)))
         if not self.check_object_collision(motor_traj_2):
             return (0.0,)*len(self.s_feats)
-        sensors_data = self.vrepcom.run_simulation(motor_traj, max_steps)
+        object_sensors, joint_sensors, tip_sensors, collide_data = self.vrepcom.run_simulation(motor_traj, max_steps)
+        sensors_data = (object_sensors, joint_sensors, tip_sensors)
         return self.process_sensors(*sensors_data)
 
     def close(self):
