@@ -12,7 +12,7 @@ DEBUG = False
 cfg_run = cfg.cfg0
 cfg_run.mprim.n_basis = 2
 cfg_run.stem.uid  = int(sys.argv[1])
-cfg_run.logger.file_name = cfg_run.logger.file_name + str(cfg_run.stem.uid)
+cfg_run.logger.filename = cfg_run.logger.filename + str(cfg_run.stem.uid)
 
 if DEBUG:
     cfg_run.vrep.headless = False

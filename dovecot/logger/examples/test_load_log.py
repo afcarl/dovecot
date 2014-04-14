@@ -4,6 +4,6 @@
 
 import logger
 
-l = logger.Logger(file_name="test", write_delay=5)
+l = logger.Logger(filename="test", write_delay=5)
 print l.load()
 

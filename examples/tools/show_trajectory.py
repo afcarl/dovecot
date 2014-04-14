@@ -16,8 +16,8 @@ from dovecot.logger import logger
 def not_implemented(datas):
 	print "Plot for these data is not implemented yet."
 
-def load_file(folder, file_name):
-	l = logger.Logger(folder=folder, file_name=file_name)
+def load_file(folder, filename):
+	l = logger.Logger(folder=folder, filename=filename)
 	return l.load()
 
 def show_opti_traj(datas):
@@ -30,7 +30,7 @@ def show_opti_traj(datas):
 		for traj in opti_traj:
 			 xs.append(traj[1][0])
 			 ys.append(traj[1][1])
-			 zs.append(traj[1][2])		
+			 zs.append(traj[1][2])
 		ax.plot(xs, ys, zs) #, label='parametric curve' + str(t_stamp))
 	ax.legend("opti_traj")
 	plt.show()

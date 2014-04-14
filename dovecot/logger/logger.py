@@ -31,8 +31,8 @@ def exit_function(logger):
 
 class Logger(object):
     """This describe a logger system able to write data in a file"""
-    def __init__(self, file_name, folder=DF_FOLDER, write_delay=DF_DELAY, verbose=False):
-        self.file_name = file_name
+    def __init__(self, filename, folder=DF_FOLDER, write_delay=DF_DELAY, verbose=False):
+        self.filename = filename
         self.folder = os.path.expanduser(folder)
         self.write_delay = write_delay
         self.verbose = verbose
@@ -65,7 +65,7 @@ class Logger(object):
         self.lock.acquire()
         if self.datas:
             start = time.time()
-            file_path = self.folder + '/' + self.file_name + '.bz2'
+            file_path = self.folder + '/' + self.filename + '.bz2'
             if not os.path.isfile(file_path):
                 with open(file_path, 'wb') as f_path:
                     f_path.write(bz2.compress('',9))
@@ -85,7 +85,7 @@ class Logger(object):
     def _load(self):
         """Allows to reload datas written in the log file"""
         loaded_datas = []
-        file_path = self.folder + '/' + self.file_name + '.bz2'
+        file_path = self.folder + '/' + self.filename + '.bz2'
         if os.path.exists(file_path):
             with open(file_path, 'rb') as f_path:
                 try:

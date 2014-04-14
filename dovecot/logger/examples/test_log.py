@@ -5,7 +5,7 @@
 import logger
 import time
 
-l = logger.Logger(file_name="test", write_delay=5)
+l = logger.Logger(filename="test", write_delay=5)
 l.start()
 l.log({'a' : 1})
 l.log({'b' : 2})

@@ -1,4 +1,4 @@
-import collections
+    import collections
 import numbers
 
 import forest
@@ -104,7 +104,7 @@ desc._isinstance('logger.enabled', bool)
 desc._isinstance('logger.folder', str)
 
 # log filename
-desc._isinstance('logger.file_name', str)
+desc._isinstance('logger.filename', str)
 
 # logger write delay
 desc._isinstance('logger.write_delay', numbers.Integral)

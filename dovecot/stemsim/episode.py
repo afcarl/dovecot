@@ -34,7 +34,7 @@ class Episode(object):
 
         self.use_logger = self.cfg.logger.enabled
         if self.use_logger:
-            self.logger = logger.Logger(file_name=self.cfg.logger.file_name, folder=self.cfg.logger.folder, write_delay=self.cfg.logger.write_delay)
+            self.logger = logger.Logger(filename=self.cfg.logger.filename, folder=self.cfg.logger.folder, write_delay=self.cfg.logger.write_delay)
             self.logger.start()
 
         if self.verbose:
@@ -69,7 +69,7 @@ class Episode(object):
 
             if self.use_logger:
                 data_log = {}
-                data_log['order'] = order    
+                data_log['order'] = order
 
             if self.verbose:
                 print("{}executing movement on stem...{}".format(gfx.purple, gfx.end), end='\r')
@@ -133,7 +133,7 @@ class Episode(object):
 
             #print("{}order:{} {}".format(gfx.purple, gfx.end, gfx.ppv(order)))
             if self.verbose:
-                print("{}effect:{} {} (stem: {:.1f}, vrep: {:.1f})".format(gfx.cyan, 
+                print("{}effect:{} {} (stem: {:.1f}, vrep: {:.1f})".format(gfx.cyan,
                       gfx.end, gfx.ppv(effect, fmt=' .8f'), stem_time, vrep_time))
 
             if self.use_logger:
