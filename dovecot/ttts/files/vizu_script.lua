@@ -1,0 +1,123 @@
+if (simGetScriptExecutionCount()==0) then
+
+	-- somes funtions
+	function error(message)
+		simAddStatusbarMessage(message)
+		simPauseSimulation()
+	end
+
+	-- structures or something like that
+	points  = {}
+	points_coordinates = {}
+	points_count = {}
+
+	lines = {}
+	lines_coordinates = {}
+	lines_count = {}
+
+	max_count = 0
+
+	-- parameters
+	data = simUnpackFloats(simGetScriptSimulationParameter(sim_handle_self, "Data"))
+	keep_toy = simUnpackFloats(simGetScriptSimulationParameter(sim_handle_self, "Keep_Toy"))
+	if (keep_toy[1] == 0) then
+		handle_toy = simGetObjectHandle("toy")
+		simRemoveObject(handle_toy)
+	end
+	-- unpacking data
+	offset = 1 -- table index start at 1, first value is number of messages
+	for i = 1, data[1] do
+		-- object parameters
+		message_size = data[offset + 1]
+		type = data[offset + 2]
+		color = {data[offset + 3], data[offset + 4], data[offset + 5]}
+		size = data[offset + 6]
+		num_coordinates = data[offset + 7]
+		offset = offset + 8
+		if (type == 0) then -- points
+			obj_p = simAddDrawingObject(sim_drawing_points, size, 0, -1, num_coordinates / 3, color, nil, nil, nil)
+			if not(obj_p == -1) then
+				table.insert(points, obj_p)
+				obj_p_c = {}
+				for j = offset, offset + num_coordinates do
+					table.insert(obj_p_c, data[j])
+				end
+				table.insert(points_coordinates, obj_p_c)
+				table.insert(points_count, num_coordinates / 3)
+				max_count = math.max(max_count, num_coordinates / 3)
+			else
+				error("ERROR while creating points set...")
+			end
+		elseif (type == 1) then -- lines
+			obj_l = simAddDrawingObject(sim_drawing_lines, size, 0, -1, num_coordinates / 6, color, nil, nil, nil)
+			if not(obj_l == -1) then
+				table.insert(lines, obj_l)
+				obj_p_l = {}
+				for j = offset, offset + num_coordinates do
+					table.insert(obj_p_l, data[j])
+				end
+				table.insert(lines_coordinates, obj_p_l)
+				table.insert(lines_count, num_coordinates / 6)
+				max_count = math.max(max_count, num_coordinates / 6)
+			else
+				error("ERROR while creating points set...")
+			end
+		else
+			error("ERROR : type is enknow...")
+		end
+		offset = offset + num_coordinates - 1
+	end
+	total_points = 0
+	total_lines = 0
+	drawn_points = 0
+	drawn_lines = 0
+	for i = 1, #points do
+		total_points = total_points + points_count[i]
+	end
+	for i = 1, #lines do
+		total_lines = total_lines + lines_count[i]
+	end
+end
+
+-- main code
+simHandleChildScript(sim_handle_all_except_explicit)
+count = simGetScriptExecutionCount()
+if (count > 0) then
+	if (count > max_count + 1) then
+		simAddStatusbarMessage("Drawn lines : "..drawn_lines)
+		simAddStatusbarMessage("Total lines to draw : "..total_lines)
+		simAddStatusbarMessage("Drawn points : "..drawn_points)
+		simAddStatusbarMessage("Total points to draw : "..total_points)
+		simPauseSimulation()
+	else
+		-- points
+		for i = 1 , #points do
+			if (count <= points_count[i]) then
+				coord = {}
+				table.insert(coord, points_coordinates[i][3 * (count - 1) + 1])
+				table.insert(coord, points_coordinates[i][3 * (count - 1) + 2])
+				table.insert(coord, points_coordinates[i][3 * (count - 1) + 3])
+				simAddDrawingObjectItem(points[i], coord)
+				drawn_points = drawn_points + 1
+			end
+		end
+		-- points
+		for i = 1 , #lines do
+			if (count <= lines_count[i]) then
+				coord = {}
+				table.insert(coord, lines_coordinates[i][6 * (count - 1) + 1])
+				table.insert(coord, lines_coordinates[i][6 * (count - 1) + 2])
+				table.insert(coord, lines_coordinates[i][6 * (count - 1) + 3])
+				table.insert(coord, lines_coordinates[i][6 * (count - 1) + 4])
+				table.insert(coord, lines_coordinates[i][6 * (count - 1) + 5])
+				table.insert(coord, lines_coordinates[i][6 * (count - 1) + 6])
+				simAddDrawingObjectItem(lines[i], coord)
+				drawn_lines = drawn_lines + 1
+			end
+		end
+	end
+end
+
+if (simGetSimulationState()==sim_simulation_advancing_lastbeforestop) then
+	-- Put some restoration code here
+end
