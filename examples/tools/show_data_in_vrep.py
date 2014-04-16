@@ -58,16 +58,15 @@ def show_traj_data(datas):
             coordinates.append(traj[1][1])
             coordinates.append(traj[1][2])
         if len(col_XYZ) == 3:
-            com.add_curve([0, 0, 1], 1, coordinates, 1)
+            com.add_curve([0, 0, 1, 1], 1, coordinates, 1)
         else:
-            com.add_curve([0, 1, 0], 1, coordinates, 10)
+            com.add_curve([0, 1, 0, 1], 1, coordinates, 10)
     com.draw(ppf=1)
 
 def show_collide_data(datas):
     com = start_com(datas)
     coordinates = []
     trajs = []
-    count = 0
     for data in datas:
         col_XYZ = data['datas']['collide_data']
         r_traj = data['datas']['tip_sensors']
@@ -77,11 +76,8 @@ def show_collide_data(datas):
             coordinates.append(col_XYZ[2])
             for coord in r_traj:
                 trajs.append(coord)
-            com.add_curve([0, 0, 1], 2, trajs, 4)
-            count += 1
-            if count > 0:
-                break
-    com.add_spheres_set([0, 1, 0], 0.1, coordinates)
+            com.add_curve([0, 0, 1, 0.5], 2, trajs, 4)
+    com.add_spheres_set([0, 1, 0, 1], 0.045, coordinates)
     com.draw(ppf=200)
 
 def list_all_keyword(datas):

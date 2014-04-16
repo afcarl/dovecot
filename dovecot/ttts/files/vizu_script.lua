@@ -10,14 +10,17 @@ if (simGetScriptExecutionCount()==0) then
 	points  = {}
 	points_coordinates = {}
 	points_count = {}
+	points_transparency = {}
 
 	lines = {}
 	lines_coordinates = {}
 	lines_count = {}
+	lines_transparency = {}
 
 	spheres = {}
 	spheres_coordinates = {}
 	spheres_count = {}
+	spheres_transparency = {}
 
 	max_count = 0
 
@@ -35,11 +38,12 @@ if (simGetScriptExecutionCount()==0) then
 		message_size = data[offset + 1]
 		type = data[offset + 2]
 		color = {data[offset + 3], data[offset + 4], data[offset + 5]}
-		size = data[offset + 6]
-		num_coordinates = data[offset + 7]
-		offset = offset + 8
+		transparency = data[offset + 6]
+		size = data[offset + 7]
+		num_coordinates = data[offset + 8]
+		offset = offset + 9
 		if (type == 0) then -- points
-			obj_p = simAddDrawingObject(sim_drawing_points, size, 0, -1, num_coordinates / 3, color, nil, nil, nil)
+			obj_p = simAddDrawingObject(sim_drawing_points, size + sim_drawing_itemtransparency, 0, -1, num_coordinates / 3, color, nil, nil, nil)
 			if not(obj_p == -1) then
 				table.insert(points, obj_p)
 				obj_p_c = {}
@@ -48,12 +52,13 @@ if (simGetScriptExecutionCount()==0) then
 				end
 				table.insert(points_coordinates, obj_p_c)
 				table.insert(points_count, num_coordinates / 3)
+				table.insert(points_transparency, transparency)
 				max_count = math.max(max_count, num_coordinates / 3)
 			else
 				error("ERROR while creating points set...")
 			end
 		elseif (type == 1) then -- lines
-			obj_l = simAddDrawingObject(sim_drawing_lines, size, 0, -1, num_coordinates / 6, color, nil, nil, nil)
+			obj_l = simAddDrawingObject(sim_drawing_lines + sim_drawing_itemtransparency, size, 0, -1, num_coordinates / 6, color, nil, nil, nil)
 			if not(obj_l == -1) then
 				table.insert(lines, obj_l)
 				obj_p_l = {}
@@ -62,12 +67,13 @@ if (simGetScriptExecutionCount()==0) then
 				end
 				table.insert(lines_coordinates, obj_p_l)
 				table.insert(lines_count, num_coordinates / 6)
+				table.insert(lines_transparency, transparency)
 				max_count = math.max(max_count, num_coordinates / 6)
 			else
 				error("ERROR while creating points set...")
 			end
 		elseif (type == 2) then -- spheres
-			obj_s = simAddDrawingObject(sim_drawing_spherepoints, size, 0, -1, num_coordinates / 3, color, nil, nil, nil)
+			obj_s = simAddDrawingObject(sim_drawing_spherepoints + sim_drawing_itemtransparency, size, 0, -1, num_coordinates / 3, color, nil, nil, nil)
 			if not(obj_s == -1) then
 				table.insert(spheres, obj_s)
 				obj_p_s = {}
@@ -76,6 +82,7 @@ if (simGetScriptExecutionCount()==0) then
 				end
 				table.insert(spheres_coordinates, obj_p_s)
 				table.insert(spheres_count, num_coordinates / 3)
+				table.insert(spheres_transparency, transparency)
 				max_count = math.max(max_count, num_coordinates / 3)
 			else
 				error("ERROR while creating spheres set...")
@@ -122,6 +129,7 @@ if (count > 0) then
 				table.insert(coord, points_coordinates[i][3 * (count - 1) + 1])
 				table.insert(coord, points_coordinates[i][3 * (count - 1) + 2])
 				table.insert(coord, points_coordinates[i][3 * (count - 1) + 3])
+				table.insert(coord, points_transparency[i])
 				simAddDrawingObjectItem(points[i], coord)
 				drawn_points = drawn_points + 1
 			end
@@ -136,6 +144,7 @@ if (count > 0) then
 				table.insert(coord, lines_coordinates[i][6 * (count - 1) + 4])
 				table.insert(coord, lines_coordinates[i][6 * (count - 1) + 5])
 				table.insert(coord, lines_coordinates[i][6 * (count - 1) + 6])
+				table.insert(coord, lines_transparency[i])
 				simAddDrawingObjectItem(lines[i], coord)
 				drawn_lines = drawn_lines + 1
 			end
@@ -147,6 +156,7 @@ if (count > 0) then
 				table.insert(coord, spheres_coordinates[i][3 * (count - 1) + 1])
 				table.insert(coord, spheres_coordinates[i][3 * (count - 1) + 2])
 				table.insert(coord, spheres_coordinates[i][3 * (count - 1) + 3])
+				table.insert(coord, spheres_transparency[i])
 				simAddDrawingObjectItem(spheres[i], coord)
 				drawn_spheres = drawn_spheres + 1
 			end

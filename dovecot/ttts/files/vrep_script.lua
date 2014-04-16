@@ -12,10 +12,10 @@ if (simGetScriptExecutionCount() == 0) then
 	simAddStatusbarMessage("Getting handles... done.")
 
 	simAddStatusbarMessage("Getting scripts parameters...")
-	
+
 	Trajectory = simUnpackFloats(simGetScriptSimulationParameter(sim_handle_self, "Trajectory"))
 	simSetScriptSimulationParameter(sim_handle_self, "Trajectory", "")
-	
+
 	motors_sim_steps = math.floor(Trajectory[1])
 	max_sim_steps    = math.floor(Trajectory[2])
 	max_speed        = Trajectory[3]
@@ -42,7 +42,7 @@ end
 -- during the simulation
 if (simGetScriptExecutionCount() > 0) then
 	simHandleChildScript(sim_handle_all_except_explicit) -- make sure children are executed !
-	
+
 	pt = simGetObjectPosition(tip, -1)
 	for i = 1, 3 do table.insert(tip_sensors, pt[i]) end
 
@@ -51,7 +51,7 @@ if (simGetScriptExecutionCount() > 0) then
 
 	qc = simGetObjectQuaternion(toy, -1)
 	for i = 1, 4 do table.insert(object_sensors, qc[i]) end
-	
+
 	--lvc, avc = simGetObjectVelocity(toy)
 	--for i = 1, 3 do table.insert(object_sensors, lvc[i]) end
 	--for i = 1, 3 do table.insert(object_sensors, avc[i]) end
@@ -75,23 +75,7 @@ if (simGetScriptExecutionCount() > 0) then
 	if(collide == false) then
 		col, data = simCheckCollisionEx(toy, tip)
 		if (col > 0) then
-			data_tmp = {0.0, 0.0, 0.0}
-			for j = 1, col do
-				x1 = data[(j - 1) * 6 + 1]
-				y1 = data[(j - 1) * 6 + 2]
-				z1 = data[(j - 1) * 6 + 3]
-				x2 = data[(j - 1) * 6 + 4]
-				y2 = data[(j - 1) * 6 + 5]
-				z2 = data[(j - 1) * 6 + 6]
-				data_tmp[1] = data_tmp[1] + ((x1 + x2) / 2)
-				data_tmp[2] = data_tmp[2] + ((y1 + y2) / 2)
-				data_tmp[3] = data_tmp[3] + ((z1 + z2) / 2)
-			end
-
-			table.insert(collide_data, data_tmp[1] / col)
-			table.insert(collide_data, data_tmp[2] / col)
-			table.insert(collide_data, data_tmp[3] / col)
-			
+			for i = 1, 3 do table.insert(collide_data, pt[i]) end
 			collide = true
 		end
 	end

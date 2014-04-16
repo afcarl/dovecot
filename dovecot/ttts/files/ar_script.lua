@@ -83,23 +83,7 @@ if(current_step < trajectory_sim_steps) then
 	if(collide == false) then
 		col, data = simCheckCollisionEx(handle_toy, handle_marker)
 		if (col > 0) then
-			data_tmp = {0.0, 0.0, 0.0}
-			for j = 1, col do
-				x1 = data[(j - 1) * 6 + 1]
-				y1 = data[(j - 1) * 6 + 2]
-				z1 = data[(j - 1) * 6 + 3]
-				x2 = data[(j - 1) * 6 + 4]
-				y2 = data[(j - 1) * 6 + 5]
-				z2 = data[(j - 1) * 6 + 6]
-				data_tmp[1] = data_tmp[1] + ((x1 + x2) / 2)
-				data_tmp[2] = data_tmp[2] + ((y1 + y2) / 2)
-				data_tmp[3] = data_tmp[3] + ((z1 + z2) / 2)
-			end
-
-			table.insert(collide_data, data_tmp[1] / col)
-			table.insert(collide_data, data_tmp[2] / col)
-			table.insert(collide_data, data_tmp[3] / col)
-
+			for i = 1, 3 do table.insert(collide_data, r_pos[i]) end
 			collide = true
 		end
 	end

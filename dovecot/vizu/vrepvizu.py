@@ -12,7 +12,7 @@ import pyvrep
 
 OBJECT_TYPE = {'point' : 0, 'line' : 1, 'sphere' : 2}
 OBJECT_SIZE = {'point' : 3, 'line' : 6, 'sphere' : 3}
-HEADER_SIZE = 6
+HEADER_SIZE = 7
 
 SIM_PAUSED = pyvrep.constants.sim_simulation_paused
 
@@ -93,7 +93,7 @@ class VizuVrep(vrepcom.VRepCom):
             Add a set ob object to draw
             coordinates : (x1, y1, z1, ...)
         """
-        if len(color) != 3:
+        if len(color) != 4:
             raise ValueError("Error in color components...")
         if len(coordinates) % OBJECT_SIZE[obj_type] != 0:
             raise ValueError("Error in coordinates...")
@@ -110,7 +110,7 @@ class VizuVrep(vrepcom.VRepCom):
     def add_points_set(self, color, size, coordinates):
         """
             Add a set of points
-            color = (r, g, b)
+            color = (r, g, b, a)
             size = s
             coordinates = (x, y, z, x, y, z, x, ...)
         """
@@ -119,7 +119,7 @@ class VizuVrep(vrepcom.VRepCom):
     def add_spheres_set(self, color, size, coordinates):
         """
             Add a set of spheres
-            color = (r, g, b)
+            color = (r, g, b, a)
             size = s
             coordinates = (x, y, z, x, y, z, x, ...)
         """
@@ -128,7 +128,7 @@ class VizuVrep(vrepcom.VRepCom):
     def add_lines_set(self, color, size, coordinates):
         """
             Add a set of lines
-            color = (r, g, b)
+            color = (r, g, b, a)
             size = s
             coordinates = (x00, y00, z00, x01, y01, z01,
                            x10, y10, z10, x11, y11, z11, etc)
@@ -138,7 +138,7 @@ class VizuVrep(vrepcom.VRepCom):
     def add_curve(self, color, size, coordinates, sample_level):
         """
             Add a curve
-            color = (r, g, b)
+            color = (r, g, b, a)
             size = s
             coordinates = (at least, on couple x,y,z
         """
@@ -161,8 +161,6 @@ class VizuVrep(vrepcom.VRepCom):
             time.sleep(0.0001) # probably useless; let's be defensive.
             if self.vrep.simGetSimulationState() == SIM_PAUSED:
                 wait = False
-        raw_input("Press Enter to quit Vrep...")
+        raw_input("Press Enter to stop Vrep...")
         self.vrep.simStopSimulation()
 
-    def stop(self):
-        self.vrep.simStopSimulation()
