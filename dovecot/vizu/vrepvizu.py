@@ -161,8 +161,8 @@ class VizuVrep(vrepcom.VRepCom):
             time.sleep(0.0001) # probably useless; let's be defensive.
             if self.vrep.simGetSimulationState() == SIM_PAUSED:
                 wait = False
-        #raw_input("Press Enter to quit Vrep...")
-        #self.vrep.simStopSimulation()
+        raw_input("Press Enter to quit Vrep...")
+        self.vrep.simStopSimulation()
 
     def stop(self):
         self.vrep.simStopSimulation()
