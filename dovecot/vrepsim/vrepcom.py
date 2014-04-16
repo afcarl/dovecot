@@ -173,6 +173,8 @@ class VRepCom(object):
 
         if self.cfg.sprims.tip:
             tip_sensors = self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "Tip_Sensors")
+        else:
+            tip_sensors = self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "Marker_Trajectory")
 
         # assert len(positions) == len(quaternions) == len(velocities)
 

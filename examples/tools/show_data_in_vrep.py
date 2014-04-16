@@ -52,28 +52,37 @@ def show_traj_data(datas):
         coordinates = []
         t_stamp = data['timestamp']
         vrep_traj = data['datas']['vrep_traj']
-        effect = data['datas']['effect']
+        col_XYZ = data['datas']['collide_data']
         for traj in vrep_traj:
             coordinates.append(traj[1][0])
             coordinates.append(traj[1][1])
             coordinates.append(traj[1][2])
-        if effect[2] > 0:
-            com.add_curve([1, 0, 0], 1, coordinates, 10)
+        if len(col_XYZ) == 3:
+            com.add_curve([0, 0, 1], 1, coordinates, 1)
         else:
-            com.add_curve([0, 0, 1], 1, coordinates, 10)
+            com.add_curve([0, 1, 0], 1, coordinates, 10)
     com.draw(ppf=1)
 
 def show_collide_data(datas):
     com = start_com(datas)
     coordinates = []
+    trajs = []
+    count = 0
     for data in datas:
         col_XYZ = data['datas']['collide_data']
+        r_traj = data['datas']['tip_sensors']
         if len(col_XYZ) == 3:
             coordinates.append(col_XYZ[0])
             coordinates.append(col_XYZ[1])
             coordinates.append(col_XYZ[2])
-    com.add_points_set([0, 1, 0], 3, coordinates)
-    com.draw(ppf=1)
+            for coord in r_traj:
+                trajs.append(coord)
+            com.add_curve([0, 0, 1], 2, trajs, 4)
+            count += 1
+            if count > 0:
+                break
+    com.add_spheres_set([0, 1, 0], 0.1, coordinates)
+    com.draw(ppf=200)
 
 def list_all_keyword(datas):
     print("All valid keywords :")

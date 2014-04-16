@@ -1,5 +1,5 @@
 if (simGetScriptExecutionCount()==0) then
-	
+
 
 	--
 	handle_marker = simGetObjectHandle("marker")
@@ -15,6 +15,7 @@ if (simGetScriptExecutionCount()==0) then
 	collide_data = {}
 	-- will be return
 	object_sensors = {}
+	marker_real_trajectory = {}
 	-- constants def
 	k = 100.0 -- spring constant
 	m = 0.100 -- grams ?
@@ -36,7 +37,7 @@ if (simGetScriptExecutionCount()==0) then
 		a_x_old = real_pos_old[1]
 		a_y_old = real_pos_old[2]
 		a_z_old = real_pos_old[3]
-		
+
 		b_x_old = target_pos_old[1]
 		b_y_old = target_pos_old[2]
 		b_z_old = target_pos_old[3]
@@ -72,6 +73,7 @@ for i = 1, 3 do table.insert(object_sensors, avc[i]) end
 
 if(current_step < trajectory_sim_steps) then
 	r_pos = simGetObjectPosition(handle_marker, -1)
+	for i = 1, 3 do table.insert(marker_real_trajectory, r_pos[i]) end
 	t_pos = {marker_trajectory[current_step + 1], marker_trajectory[current_step + 1 + trajectory_sim_steps], marker_trajectory[current_step + 1 + 2 * trajectory_sim_steps]}
 	force = computeForceAndTorque(r_pos, t_pos, r_pos_old, t_pos_old)
 	simAddForceAndTorque(handle_marker, force, nil)
@@ -97,7 +99,7 @@ if(current_step < trajectory_sim_steps) then
 			table.insert(collide_data, data_tmp[1] / col)
 			table.insert(collide_data, data_tmp[2] / col)
 			table.insert(collide_data, data_tmp[3] / col)
-			
+
 			collide = true
 		end
 	end
@@ -105,6 +107,7 @@ if(current_step < trajectory_sim_steps) then
 else
 	simSetScriptSimulationParameter(sim_handle_self, "Object_Sensors", simPackFloats(object_sensors))
 	simSetScriptSimulationParameter(sim_handle_self, "Collide_Data", simPackFloats(collide_data))
+	simSetScriptSimulationParameter(sim_handle_self, "Marker_Trajectory", simPackFloats(marker_real_trajectory))
 	-- pause simulation
 	simPauseSimulation()
 end

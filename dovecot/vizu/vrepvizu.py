@@ -10,8 +10,8 @@ from ..vrepsim import vrepcom
 from .. import ttts
 import pyvrep
 
-OBJECT_TYPE = {'point' : 0, 'line' : 1}
-OBJECT_SIZE = {'point' : 3, 'line' : 6}
+OBJECT_TYPE = {'point' : 0, 'line' : 1, 'sphere' : 2}
+OBJECT_SIZE = {'point' : 3, 'line' : 6, 'sphere' : 3}
 HEADER_SIZE = 6
 
 SIM_PAUSED = pyvrep.constants.sim_simulation_paused
@@ -116,6 +116,15 @@ class VizuVrep(vrepcom.VRepCom):
         """
         self._add_set('point', color, size, coordinates)
 
+    def add_spheres_set(self, color, size, coordinates):
+        """
+            Add a set of spheres
+            color = (r, g, b)
+            size = s
+            coordinates = (x, y, z, x, y, z, x, ...)
+        """
+        self._add_set('sphere', color, size, coordinates)
+
     def add_lines_set(self, color, size, coordinates):
         """
             Add a set of lines
@@ -152,5 +161,8 @@ class VizuVrep(vrepcom.VRepCom):
             time.sleep(0.0001) # probably useless; let's be defensive.
             if self.vrep.simGetSimulationState() == SIM_PAUSED:
                 wait = False
-        raw_input("Press Enter to quit Vrep...")
+        #raw_input("Press Enter to quit Vrep...")
+        #self.vrep.simStopSimulation()
+
+    def stop(self):
         self.vrep.simStopSimulation()

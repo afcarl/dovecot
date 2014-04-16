@@ -15,6 +15,10 @@ if (simGetScriptExecutionCount()==0) then
 	lines_coordinates = {}
 	lines_count = {}
 
+	spheres = {}
+	spheres_coordinates = {}
+	spheres_count = {}
+
 	max_count = 0
 
 	-- parameters
@@ -62,6 +66,20 @@ if (simGetScriptExecutionCount()==0) then
 			else
 				error("ERROR while creating points set...")
 			end
+		elseif (type == 2) then -- spheres
+			obj_s = simAddDrawingObject(sim_drawing_spherepoints, size, 0, -1, num_coordinates / 3, color, nil, nil, nil)
+			if not(obj_s == -1) then
+				table.insert(spheres, obj_s)
+				obj_p_s = {}
+				for j = offset, offset + num_coordinates do
+					table.insert(obj_p_s, data[j])
+				end
+				table.insert(spheres_coordinates, obj_p_s)
+				table.insert(spheres_count, num_coordinates / 3)
+				max_count = math.max(max_count, num_coordinates / 3)
+			else
+				error("ERROR while creating spheres set...")
+			end
 		else
 			error("ERROR : type is enknow...")
 		end
@@ -69,13 +87,18 @@ if (simGetScriptExecutionCount()==0) then
 	end
 	total_points = 0
 	total_lines = 0
+	total_spheres = 0
 	drawn_points = 0
 	drawn_lines = 0
+	drawn_spheres = 0
 	for i = 1, #points do
 		total_points = total_points + points_count[i]
 	end
 	for i = 1, #lines do
 		total_lines = total_lines + lines_count[i]
+	end
+	for i = 1, #spheres do
+		total_spheres = total_spheres + spheres_count[i]
 	end
 end
 
@@ -88,6 +111,8 @@ if (count > 0) then
 		simAddStatusbarMessage("Total lines to draw : "..total_lines)
 		simAddStatusbarMessage("Drawn points : "..drawn_points)
 		simAddStatusbarMessage("Total points to draw : "..total_points)
+		simAddStatusbarMessage("Drawn spheres : "..drawn_spheres)
+		simAddStatusbarMessage("Total spheres to draw : "..total_spheres)
 		simPauseSimulation()
 	else
 		-- points
@@ -101,7 +126,7 @@ if (count > 0) then
 				drawn_points = drawn_points + 1
 			end
 		end
-		-- points
+		-- lines
 		for i = 1 , #lines do
 			if (count <= lines_count[i]) then
 				coord = {}
@@ -113,6 +138,17 @@ if (count > 0) then
 				table.insert(coord, lines_coordinates[i][6 * (count - 1) + 6])
 				simAddDrawingObjectItem(lines[i], coord)
 				drawn_lines = drawn_lines + 1
+			end
+		end
+		-- spheres
+		for i = 1 , #spheres do
+			if (count <= spheres_count[i]) then
+				coord = {}
+				table.insert(coord, spheres_coordinates[i][3 * (count - 1) + 1])
+				table.insert(coord, spheres_coordinates[i][3 * (count - 1) + 2])
+				table.insert(coord, spheres_coordinates[i][3 * (count - 1) + 3])
+				simAddDrawingObjectItem(spheres[i], coord)
+				drawn_spheres = drawn_spheres + 1
 			end
 		end
 	end
