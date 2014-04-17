@@ -13,8 +13,8 @@ cfg.vrep.ppf         = 10
 cfg.vrep.headless    = True
 cfg.vrep.vglrun      = False
 cfg.vrep.calibrdir   = '~/.dovecot/tttcal/'
-#cfg.vrep.mac_folder  = '/Applications/V-REP/v_rep/bin'
-cfg.vrep.mac_folder  ='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS'
+cfg.vrep.mac_folder  = '/Applications/V-REP/v_rep/bin'
+#cfg.vrep.mac_folder  ='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS'
 cfg.vrep.load        = True
 cfg.sprims.prefilter = False
 
@@ -34,11 +34,13 @@ def compare_calib_data(ar_calib, v_calib):
     assert ar_calib.dimensions     == v_calib.dimensions     , "Toy dimensions error..."
     assert ar_calib.mass           == v_calib.mass           , "Toy mass error..."
     assert ar_calib.position       == v_calib.position       , "Toy position error..."
+    assert ar_calib.dimensions_m   == v_calib.dimensions_m   , "Marker dimensions error..."
     #assert ar_calib.position_world == v_calib.position_world , "Toy position error..."
 
 def calibrate_scene(com):
     toy_h    = com.vrep.simGetObjectHandle("toy")
     base_h   = com.vrep.simGetObjectHandle("dummy_ref_base")
+    marker = com.vrep.simGetObjectHandle("marker")
     toy_pos  = com.vrep.simGetObjectPosition(toy_h, base_h)
     toy_pos_world  = com.vrep.simGetObjectPosition(toy_h, -1)
     min_x    = com.vrep.simGetObjectFloatParameter(toy_h, 21)[0] * 100
@@ -48,8 +50,15 @@ def calibrate_scene(com):
     min_z    = com.vrep.simGetObjectFloatParameter(toy_h, 23)[0] * 100
     max_z    = com.vrep.simGetObjectFloatParameter(toy_h, 26)[0] * 100
     toy_mass = com.vrep.simGetObjectFloatParameter(toy_h, 3005)[0] * 100
+    min_x_m    = com.vrep.simGetObjectFloatParameter(toy_h, 21)[0] * 100
+    max_x_m    = com.vrep.simGetObjectFloatParameter(toy_h, 24)[0] * 100
+    min_y_m    = com.vrep.simGetObjectFloatParameter(toy_h, 22)[0] * 100
+    max_y_m    = com.vrep.simGetObjectFloatParameter(toy_h, 25)[0] * 100
+    min_z_m    = com.vrep.simGetObjectFloatParameter(toy_h, 23)[0] * 100
+    max_z_m    = com.vrep.simGetObjectFloatParameter(toy_h, 26)[0] * 100
 
     dimensions = [max_x - min_x, max_y - min_y, max_z - min_z]
+    dimensions_m = [max_x_m - min_x_m, max_y_m - min_y_m, max_z_m - min_z_m]
     position  = [100 * e for e in toy_pos]
     position_world  = [100 * e for e in toy_pos_world]
 
@@ -59,7 +68,7 @@ def calibrate_scene(com):
         return None
     else:
         caldata = ttts.TTTCalibrationData(com.scene_name, com.cfg.vrep.calibrdir)
-        caldata.populate(toy_mass, position, dimensions, toy_pos_world)
+        caldata.populate(toy_mass, position, dimensions, toy_pos_world, dimensions_m)
         caldata.save()
         return caldata
 

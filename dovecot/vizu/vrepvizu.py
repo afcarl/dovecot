@@ -5,16 +5,19 @@ from __future__ import print_function, division, absolute_import
 
 import time
 import os
+import random
 
 from ..vrepsim import vrepcom
 from .. import ttts
 import pyvrep
 
-OBJECT_TYPE = {'point' : 0, 'line' : 1, 'sphere' : 2}
-OBJECT_SIZE = {'point' : 3, 'line' : 6, 'sphere' : 3}
+OBJECT_TYPE = {'point' : 0, 'line' : 1, 'sphere' : 2, 'curve' : 1}
+OBJECT_SIZE = {'point' : 3, 'line' : 6, 'sphere' : 3, 'curve' : 3}
 HEADER_SIZE = 7
 
 SIM_PAUSED = pyvrep.constants.sim_simulation_paused
+
+DEFAULT_TRANSPARENCY = 0
 
 def sample_data(data, sample_level):
     """
@@ -54,6 +57,10 @@ def sample_curve_coordinates(coordinates, sample_level):
         curve_coordinates.append(zs_sampled[i])
     return curve_coordinates
 
+def get_random_color(transparency):
+    random.seed(time.time())
+    return [random.random(), random.random(), random.random(), transparency]
+
 class VizuVrep(vrepcom.VRepCom):
     """
         This class connect itself to Vrep and print data
@@ -62,6 +69,7 @@ class VizuVrep(vrepcom.VRepCom):
     def __init__(self, cfg, verbose=False, calcheck=False):
         super(self.__class__, self).__init__(cfg, verbose=False, calcheck=False)
         self.data = [float(0)]
+        self.current_color = get_random_color(DEFAULT_TRANSPARENCY)
 
     def load(self, script="vizu", calcheck=False):
         """
@@ -88,19 +96,23 @@ class VizuVrep(vrepcom.VRepCom):
         self.vrep.simLoadScene(scene_filepath)
         self.handle_script = self.vrep.simGetScriptHandle(script)
 
+    def update_current_color(self, transparency=0):
+        self.current_color = get_random_color(transparency)
+
     def _add_set(self, obj_type, color, size, coordinates):
         """
             Add a set ob object to draw
             coordinates : (x1, y1, z1, ...)
         """
-        if len(color) != 4:
-            raise ValueError("Error in color components...")
+        if color != None:
+            if len(color) != 4:
+                raise ValueError("Error in color components...")
         if len(coordinates) % OBJECT_SIZE[obj_type] != 0:
-            raise ValueError("Error in coordinates...")
+            raise ValueError("Error in coordinates : {} / {}".format(len(coordinates), OBJECT_SIZE[obj_type]))
         self.data[0] += 1.0
         self.data.append(float(HEADER_SIZE + len(coordinates)))
         self.data.append(float(OBJECT_TYPE[obj_type]))
-        for comp in color:
+        for comp in {not None:color, None:self.current_color}[color]:
             self.data.append(float(comp))
         self.data.append(float(size))
         self.data.append(float(len(coordinates)))
@@ -142,7 +154,7 @@ class VizuVrep(vrepcom.VRepCom):
             size = s
             coordinates = (at least, on couple x,y,z
         """
-        self._add_set('line', color, size,
+        self._add_set('curve', color, size,
                       sample_curve_coordinates(coordinates, sample_level))
 
     def draw(self, keep_toy=True, ppf=200):

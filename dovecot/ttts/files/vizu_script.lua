@@ -43,7 +43,7 @@ if (simGetScriptExecutionCount()==0) then
 		num_coordinates = data[offset + 8]
 		offset = offset + 9
 		if (type == 0) then -- points
-			obj_p = simAddDrawingObject(sim_drawing_points, size + sim_drawing_itemtransparency, 0, -1, num_coordinates / 3, color, nil, nil, nil)
+			obj_p = simAddDrawingObject(sim_drawing_points + sim_drawing_itemtransparency, size, 0, -1, num_coordinates / 3, color, nil, nil, nil)
 			if not(obj_p == -1) then
 				table.insert(points, obj_p)
 				obj_p_c = {}

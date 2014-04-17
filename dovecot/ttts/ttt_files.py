@@ -50,13 +50,15 @@ class TTTCalibrationData(object):
         self.position       = None
         self.position_world = None
         self.dimensions     = None
+        self.dimensions_m   = None
 
-    def populate(self, mass, position, dimensions, position_world):
+    def populate(self, mass, position, dimensions, position_world, dimensions_m):
         self.md5 = md5sum(self.ttt_filepath)
         self.mass = mass
         self.position = position
         self.position_world = position_world
         self.dimensions = dimensions
+        self.dimensions_m = dimensions_m
 
     def save(self):
         with open(self.cal_filepath, 'w+') as f:
@@ -79,6 +81,7 @@ class TTTCalibrationData(object):
         assert caldata.md5 == self.md5, "loaded scene calibration ({}) differs from scene ({})".format(self.cal_filepath, self.ttt_filepath)
 
         self.dimensions     = caldata.dimensions
+        self.dimensions_m     = caldata.dimensions_m
         self.mass           = caldata.mass
         self.position       = caldata.position
         self.position_world = caldata.position_world
@@ -86,7 +89,7 @@ class TTTCalibrationData(object):
     def __repr__(self):
         s  = 'ttt_file: {}, md5: {}\n'.format(self.ttt_filepath, self.md5)
         s += 'cal_file: {}\n'.format(self.cal_filepath)
-        s += 'mass: {}, pos: {}, world_pos:{}, dim: {}\n'.format(self.mass, self.position, self.position_world, self.dimensions)
+        s += 'mass: {}, pos: {}, world_pos:{}, dim: {}, dime_marker: {}\n'.format(self.mass, self.position, self.position_world, self.dimensions, self.dimensions_m)
         return s
 
 

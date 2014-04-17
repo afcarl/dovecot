@@ -6,9 +6,10 @@
 """
 from __future__ import print_function, division
 import sys
+import random
+import time
 
 import forest
-
 from dovecot.vrepsim import vrepcom
 from dovecot.cfgdesc import desc
 from dovecot.logger import logger
@@ -65,19 +66,23 @@ def show_traj_data(datas):
 
 def show_collide_data(datas):
     com = start_com(datas)
-    coordinates = []
-    trajs = []
     for data in datas:
+        coordinates = []
+        trajs = []
         col_XYZ = data['datas']['collide_data']
         r_traj = data['datas']['tip_sensors']
+        move = data['datas']['object_sensors']
         if len(col_XYZ) == 3:
             coordinates.append(col_XYZ[0])
             coordinates.append(col_XYZ[1])
             coordinates.append(col_XYZ[2])
             for coord in r_traj:
                 trajs.append(coord)
-            com.add_curve([0, 0, 1, 0.5], 2, trajs, 4)
-    com.add_spheres_set([0, 1, 0, 1], 0.045, coordinates)
+            com.add_curve(None, 2, trajs, 4)
+            if len(move) >= 26:
+                com.add_curve(None, 2, [move[0], move[1], move[2], move[-13], move[-12], move[-11]], 1)
+            com.add_spheres_set(None, 0.045, coordinates)
+            com.update_current_color()
     com.draw(ppf=200)
 
 def list_all_keyword(datas):
