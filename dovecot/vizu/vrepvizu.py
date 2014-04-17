@@ -70,6 +70,7 @@ class VizuVrep(vrepcom.VRepCom):
         super(self.__class__, self).__init__(cfg, verbose=False, calcheck=False)
         self.data = [float(0)]
         self.current_color = get_random_color(DEFAULT_TRANSPARENCY)
+        self.caldata = None
 
     def load(self, script="vizu", calcheck=False):
         """
