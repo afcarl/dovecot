@@ -21,7 +21,7 @@ DEFAULT_TRANSPARENCY = 0
 
 def sample_data(data, sample_level):
     """
-        sampel data using the given sample level
+        sample data using the given sample level
     """
     if sample_level < 1:
         raise ValueError(sample_level)
@@ -104,6 +104,13 @@ class VizuVrep(vrepcom.VRepCom):
         """
             Add a set ob object to draw
             coordinates : (x1, y1, z1, ...)
+
+            The final frame sent to Vrep will look like this:
+            [total num messages | size message 1 | [message 1]...[size message n-1 | [message n-1]]
+
+            A message look like this :
+            [object type | color : r,g,b,a | size coordinates | coordinates (x,y,z),(x,y,z)...]
+
         """
         if color != None:
             if len(color) != 4:
