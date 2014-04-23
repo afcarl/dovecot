@@ -8,6 +8,7 @@ Copyright (c) 2014 INRIA. All rights reserved.
 """
 
 import time
+import copy
 import cPickle
 import os
 import atexit
@@ -31,11 +32,12 @@ def exit_function(logger):
 
 class Logger(object):
     """This describe a logger system able to write data in a file"""
-    def __init__(self, filename, folder=DF_FOLDER, write_delay=DF_DELAY, verbose=False):
+    def __init__(self, filename, folder=DF_FOLDER, write_delay=DF_DELAY, verbose=False, ignored=()):
         self.filename = filename
         self.folder = os.path.expanduser(folder)
         self.write_delay = write_delay
         self.verbose = verbose
+        self.ignored = ignored
         if not os.path.exists(self.folder):
             os.makedirs(self.folder)
         self.datas = []
@@ -53,11 +55,14 @@ class Logger(object):
 
     def log(self, data, timestamp=True):
         """Adds data to log"""
+        data_c = copy.copy(data)
+        for key in self.ignored:
+            data_c.pop(key, None)
         self.lock.acquire()
         if timestamp:
-            self.datas.append({'timestamp' : time.time(), 'datas' : data})
+            self.datas.append({'timestamp' : time.time(), 'datas' : data_c})
         else:
-            self.datas.append({'datas' : data})
+            self.datas.append({'datas' : data_c})
         self.lock.release()
 
     def save(self):

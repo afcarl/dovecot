@@ -43,6 +43,7 @@ cfg0.logger.enabled = True
 cfg0.logger.write_delay = 10 # seconds
 cfg0.logger.folder = '~/.dovecot/logger/'
 cfg0.logger.filename = 'examples_'
+cfg0.logger.ignored = ['opti_traj', 'vrep_traj']
 
 cfg1 = cfg0._copy(deep=True)
 """#TODO can't create new leaf 'scene' in a strict tree without a type or validation function declared"""

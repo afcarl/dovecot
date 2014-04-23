@@ -108,3 +108,6 @@ desc._isinstance('logger.filename', str)
 
 # logger write delay
 desc._isinstance('logger.write_delay', numbers.Integral)
+
+# logger ignored
+desc._isinstance('logger.ignored', collections.Iterable)

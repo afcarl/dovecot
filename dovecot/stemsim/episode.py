@@ -34,7 +34,10 @@ class Episode(object):
 
         self.use_logger = self.cfg.logger.enabled
         if self.use_logger:
-            self.logger = logger.Logger(filename=self.cfg.logger.filename, folder=self.cfg.logger.folder, write_delay=self.cfg.logger.write_delay)
+            self.logger = logger.Logger(filename=self.cfg.logger.filename,
+                                        folder=self.cfg.logger.folder,
+                                        write_delay=self.cfg.logger.write_delay,
+                                        ignored=self.cfg.logger.ignored)
             self.logger.start()
 
         if self.verbose:
