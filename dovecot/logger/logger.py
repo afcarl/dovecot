@@ -53,16 +53,20 @@ class Logger(object):
         self.writter.daemon = True
         self.writter.start()
 
-    def log(self, data, timestamp=True):
+    def log(self, data, timestamp=True, step=None):
         """Adds data to log"""
         data_c = copy.copy(data)
         for key in self.ignored:
             data_c.pop(key, None)
         self.lock.acquire()
+        log_dict = {'datas' : data_c}
         if timestamp:
-            self.datas.append({'timestamp' : time.time(), 'datas' : data_c})
+            log_dict['timestamp'] = time.time()
+        if step is not None:
+            self.datas += (step - len(self.datas) + 1) * [None]
         else:
-            self.datas.append({'datas' : data_c})
+            self.datas += [None]
+        self.datas[step] = log_dict
         self.lock.release()
 
     def save(self):
