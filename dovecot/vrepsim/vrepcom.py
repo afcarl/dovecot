@@ -57,7 +57,7 @@ class VRepCom(object):
 
         if os.uname()[0] == "Linux":
             if self.cfg.vrep.headless:
-                cmd = "xvfb-run vrep >> {}".format(logname)
+                cmd = "xvfb-run -a vrep >> {}".format(logname)
             else:
                 if self.cfg.vrep.vglrun:
                     cmd = "vglrun vrep >> {}".format(logname)

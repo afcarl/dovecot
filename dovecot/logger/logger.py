@@ -65,6 +65,7 @@ class Logger(object):
         if step is not None:
             self.datas += (step - len(self.datas) + 1) * [None]
         else:
+            step = len(self.datas)
             self.datas += [None]
         self.datas[step] = log_dict
         self.lock.release()
