@@ -54,6 +54,6 @@ attach(7, ( 60.011, 40, 50), (-67, 0, 0), meta='motor5', groups=[ref6_group, tip
 
 # Tip
 attach(7, (40.012,  5,  5), (-20, 0, 0), meta='marker_stem', groups=[tip_group])
-attach(7, (11.013, 11, 11), (  0, 0, 0), meta='marker', groups=[tip_group])
+attach(7, (22.013, 22, 22), (  0, 0, 0), meta='marker', groups=[tip_group])
 
 bt.update((0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
