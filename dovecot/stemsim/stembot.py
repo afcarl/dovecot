@@ -77,7 +77,7 @@ class StemBot(object):
 
         # check for collisions beforehand
         for i, pose in enumerate(motor_traj):
-            if i % 5 == 0: # every 50ms.
+            if i % 3 == 0: # every 50ms.
                 if len(collider.collide(pose)) > 0:
                     if partial_mvt:
                         return ts[:i-10], motor_traj[:i-10]
