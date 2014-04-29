@@ -25,7 +25,7 @@ class VRepBot(object):
 
         self.OrderNotExecutableError = OrderNotExecutableError
 
-        elf.use_logger = self.cfg.logger.enabled
+        self.use_logger = self.cfg.logger.enabled
         if self.use_logger:
             self.logger = logger.Logger(filename=self.cfg.logger.filename, folder=self.cfg.logger.folder,
                                         write_delay=self.cfg.logger.write_delay, ignored=self.cfg.logger.ignored)
