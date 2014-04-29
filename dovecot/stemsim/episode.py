@@ -67,7 +67,12 @@ class Episode(object):
         self.m_feats = self.sb.m_feats
         self.m_bounds = self.sb.m_bounds
 
-    def execute_order(self, order, tries=3):
+    def execute_order(self, order, meta=None, tries=3):
+        try:
+            t = meta.get('t', None)
+        except TypeError:
+            t = None
+
         try:
 
             if self.use_logger:
@@ -142,14 +147,14 @@ class Episode(object):
                       gfx.end, gfx.ppv(effect, fmt=' .8f'), stem_time, vrep_time))
 
             if self.use_logger:
-                self.logger.log(data_log)
+                self.logger.log(data_log, step=t)
 
             return effect
 
         except stembot.CollisionError:
             if tries > 0:
                 self.fb.stop_tracking()
-                return self.execute_order(order, tries=tries-1)
+                return self.execute_order(order, meta=meta, tries=tries-1)
             else:
                 self.fb.stop_tracking()
                 raise OrderNotExecutableError
@@ -159,7 +164,7 @@ class Episode(object):
                 print('{}caught marker error...                   {}'.format(gfx.red, gfx.end))
                 time.sleep(0.1)
                 self.fb = natnet.FrameBuffer(FB_DURATION, addr=self.stem.optitrack_addr)
-                return self.execute_order(order, tries=tries-1)
+                return self.execute_order(order, meta=meta, tries=tries-1)
             else:
                 raise OrderNotExecutableError
 

@@ -135,7 +135,7 @@ class VRepCom(object):
             traj += pos_v
         return traj
 
-    def run_simulation(self, trajectory, max_steps):
+    def run_simulation(self, trajectory, max_steps, t=None):
         """
             Trajectory is a list 6 pairs of vectors, each of the same length.
             For each pair:

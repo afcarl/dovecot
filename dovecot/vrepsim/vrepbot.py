@@ -107,12 +107,16 @@ class VRepBot(object):
                 return False
         return True
 
-    def execute_order(self, order):
+    def execute_order(self, order, meta=None):
+        try:
+            t = meta.get('t', None)
+        except (TypeError, KeyError):
+            t = None
         motor_traj, max_steps = self.m_prim.process_order(order)
         motor_traj_2 = list(zip(*tuple(np.degrees(t_i[0]) for t_i in motor_traj)))
         if not self.check_object_collision(motor_traj_2):
             return (0.0,)*len(self.s_feats)
-        object_sensors, joint_sensors, tip_sensors, collide_data = self.vrepcom.run_simulation(motor_traj, max_steps)
+        object_sensors, joint_sensors, tip_sensors, collide_data = self.vrepcom.run_simulation(motor_traj, max_steps, t=t)
         sensors_data = (object_sensors, joint_sensors, tip_sensors)
         return self.process_sensors(*sensors_data)
 
