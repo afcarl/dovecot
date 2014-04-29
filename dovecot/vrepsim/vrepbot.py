@@ -25,6 +25,12 @@ class VRepBot(object):
 
         self.OrderNotExecutableError = OrderNotExecutableError
 
+        elf.use_logger = self.cfg.logger.enabled
+        if self.use_logger:
+            self.logger = logger.Logger(filename=self.cfg.logger.filename, folder=self.cfg.logger.folder,
+                                        write_delay=self.cfg.logger.write_delay, ignored=self.cfg.logger.ignored)
+            self.logger.start()
+
     @property
     def m_feats(self):
         return self.m_prim.m_feats
@@ -112,13 +118,28 @@ class VRepBot(object):
             t = meta.get('t', None)
         except (TypeError, KeyError):
             t = None
+
+        if self.use_logger:
+            data_log = {}
+            data_log['order'] = order
+            data_log['scene'] = 'vrep_{}'.format(self.cfg.sprims.scene)
+
         motor_traj, max_steps = self.m_prim.process_order(order)
         motor_traj_2 = list(zip(*tuple(np.degrees(t_i[0]) for t_i in motor_traj)))
         if not self.check_object_collision(motor_traj_2):
             return (0.0,)*len(self.s_feats)
         object_sensors, joint_sensors, tip_sensors, collide_data = self.vrepcom.run_simulation(motor_traj, max_steps, t=t)
+
+        if self.use_logger:
+            data_log['motor_traj'] = motor_traj
+            data_log['object_sensors'] = object_sensors
+            data_log['joint_sensors'] = joint_sensors
+            data_log['tip_sensors'] = tip_sensors
+            data_log['collide_data'] = collide_data
+            self.logger.log(data_log, step=t)
+
         sensors_data = (object_sensors, joint_sensors, tip_sensors)
         return self.process_sensors(*sensors_data)
 
     def close(self):
-        self.vrepcom.close(kill=False)
+        self.vrepcom.close(kill=True)
