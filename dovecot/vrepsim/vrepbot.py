@@ -121,4 +121,4 @@ class VRepBot(object):
         return self.process_sensors(*sensors_data)
 
     def close(self):
-        self.vrepcom.close()
+        self.vrepcom.close(kill=False)
