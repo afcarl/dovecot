@@ -70,7 +70,7 @@ class Episode(object):
     def execute_order(self, order, meta=None, tries=3):
         try:
             t = meta.get('t', None)
-        except TypeError:
+        except (TypeError, AttributeError):
             t = None
 
         try:

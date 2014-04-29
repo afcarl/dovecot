@@ -116,7 +116,7 @@ class VRepBot(object):
     def execute_order(self, order, meta=None):
         try:
             t = meta.get('t', None)
-        except (TypeError, KeyError):
+        except (KeyError, AttributeError):
             t = None
 
         motor_traj, max_steps = self.m_prim.process_order(order)
