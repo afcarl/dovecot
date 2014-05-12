@@ -1,5 +1,5 @@
 from __future__ import print_function, division, absolute_import
-import os
+import os, sys
 import time
 
 import numpy as np
@@ -87,10 +87,10 @@ class StemCom(object):
         start = time.time()
         if blocking:
             while max(abs(p - tg) for p, tg in zip(self.ms.pose, pose)) > 3 and time.time() - start < 10:
-#                self.ms.moving_speed = (min(50, sp + 5) for sp in self.ms.moving_speed)
                 time.sleep(0.02)
-#        else:
-#            self.ms.moving_speed = 50
+
+            if max(abs(p - tg) for p, tg in zip(self.ms.pose, pose)) > 6:
+                sys.exit(1)
 
 
     def rest(self):

@@ -159,14 +159,15 @@ class Episode(object):
                 self.fb.stop_tracking()
                 raise OrderNotExecutableError
 
-        except natnet.MarkerError:
+        except natnet.MarkerError as e:
             if tries > 0:
                 print('{}caught marker error...                   {}'.format(gfx.red, gfx.end))
+                print('{}{}{}'.format(gfx.red, e, gfx.end))
                 time.sleep(0.1)
                 self.fb = natnet.FrameBuffer(FB_DURATION, addr=self.stem.optitrack_addr)
                 return self.execute_order(order, meta=meta, tries=tries-1)
             else:
-                raise OrderNotExecutableError
+                raise OrderNotExecutableError('{}'.format(e))
 
     def close(self):
         try:

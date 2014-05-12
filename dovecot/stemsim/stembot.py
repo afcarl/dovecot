@@ -16,7 +16,7 @@ from . import stemcom
 class CollisionError(Exception):
     pass
 
-TORQUE_LIMIT = 50
+TORQUE_LIMIT = [50, 50, 50, 70, 50, 50]
 
 class StemBot(object):
 
@@ -49,8 +49,8 @@ class StemBot(object):
             self.cfg.mprim.angle_ranges = self.stemcom.ms.angle_ranges
         self.m_prim = prims.create_mprim(self.cfg.mprim.name, self.cfg)
         self.m_prim.process_context({})
-        self.partial_mvt = self.cfg.partial_mvt # when doing test, we do the tests even if they generate collisions:
-                                          # we stop just before the collision
+        self.partial_mvt = self.cfg.partial_mvt # do the movement even if they generate collisions:
+                                                # we stop just before the collision
 
     @property
     def m_feats(self):
@@ -60,7 +60,7 @@ class StemBot(object):
     def m_bounds(self):
         return self.m_prim.m_bounds
 
-    def create_trajectory(self, order, partial_mvt=False):
+    def create_trajectory(self, order):
         """ For an order vector, produce a trajectory
 
             If the order induce a collision with the robot or the static environment,
@@ -79,7 +79,7 @@ class StemBot(object):
         for i, pose in enumerate(motor_traj):
             if i % 3 == 0: # every 50ms.
                 if len(collider.collide(pose)) > 0:
-                    if partial_mvt:
+                    if self.partial_mvt:
                         return ts[:i-10], motor_traj[:i-10]
 
                     raise CollisionError
@@ -90,7 +90,7 @@ class StemBot(object):
 
     def execute_order(self, order):
 
-        ts, motor_traj = self.create_trajectory(order, partial_mvt=self.partial_mvt)
+        ts, motor_traj = self.create_trajectory(order)
 
         if self._prefilter:
             if not self._collision_filter.may_collide(motor_traj):
@@ -98,9 +98,10 @@ class StemBot(object):
 
 
         try:
-            self.stemcom.setup(self.cfg.mprim.init_states)
+            self.stemcom.setup(self.cfg.mprim.init_states, blocking=True)
             time.sleep(0.1)
 
+            assert all(not c for c in self.stemcom.ms.compliant)
             self.stemcom.ms.torque_limit = TORQUE_LIMIT
 
             start_time = time.time()

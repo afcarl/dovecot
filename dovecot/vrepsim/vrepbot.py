@@ -6,6 +6,7 @@ from .. import prims
 from . import vrepcom
 
 from ..collider import maycollide
+from ..logger import logger
 
 
 MARKER_SIZE = 11
