@@ -6,6 +6,7 @@
 """
 from __future__ import print_function, division
 import sys
+import os
 import random
 import time
 
@@ -21,13 +22,15 @@ cfg.vrep.ppf         = 200
 cfg.vrep.headless    = True
 cfg.vrep.vglrun      = False
 cfg.vrep.calibrdir   = '~/.dovecot/tttcal/'
-cfg.vrep.mac_folder  = '/Applications/V-REP/v_rep/bin'
+cfg.vrep.mac_folder  = '/Applications/VRep/vrep.app/Contents/MacOS/'
 #cfg.vrep.mac_folder  ='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS'
 cfg.vrep.load        = True
 cfg.sprims.prefilter = False
 cfg.logger.folder = '~/.dovecot/logger/'
 
-def load_file(folder, filename):
+def load_file(filename, folder=None):
+    if folder is None:
+        folder, filename = os.path.split(filename)
     l = logger.Logger(folder=folder, filename=filename)
     return l.load()
 
@@ -49,19 +52,22 @@ def start_com(datas):
 
 def show_traj_data(datas):
     com = start_com(datas)
-    for data in datas:
+    for data in datas[:25]:
         coordinates = []
         t_stamp = data['timestamp']
-        vrep_traj = data['datas']['vrep_traj']
+        vrep_traj = data['datas']['tip_sensors']
         col_XYZ = data['datas']['collide_data']
-        for traj in vrep_traj:
-            coordinates.append(traj[1][0])
-            coordinates.append(traj[1][1])
-            coordinates.append(traj[1][2])
-        if len(col_XYZ) == 3:
-            com.add_curve([0, 0, 1, 1], 1, coordinates, 1)
-        else:
-            com.add_curve([0, 1, 0, 1], 1, coordinates, 10)
+        for coord in vrep_traj:
+            trajs.append(coord)
+        com.add_curve(None, 2, trajs, 4)
+        # for traj in vrep_traj:
+        #     coordinates.append(traj[1][0])
+        #     coordinates.append(traj[1][1])
+        #     coordinates.append(traj[1][2])
+        # if len(col_XYZ) == 3:
+        #     com.add_curve([0, 0, 1, 1], 1, coordinates, 1)
+        # else:
+        #     com.add_curve([0, 1, 0, 1], 1, coordinates, 10)
     com.draw(ppf=1)
 
 def show_collide_data(datas):
@@ -109,21 +115,27 @@ def main():
     if len(sys.argv) != 3:
         print("usage : python {} <log name> --list".format(sys.argv[0]))
     else:
-        folder = cfg.logger.folder
         fname = sys.argv[1]
         option = sys.argv[2]
-        datas = load_file(folder, fname)
+
+        folder = None
+        if not os.path.isabs(fname):
+            folder = cfg.logger.folder
+        datas = load_file(fname, folder=folder)
+
         if option == "--list":
-            list_all_keyword(datas)
-        elif option.startswith("--"):
-            print("error : {} is not a valid option".format(option))
-            print("usage : python {} <log name> --list".format(sys.argv[0]))
-        else:
-            print("Showing vrep plot for \"{}\"".format(sys.argv[2]))
-            try:
-                dispatch[option](datas)
-            except KeyError:
-                print("{} is not a valid keyword.".format(option))
+#            list_all_keyword(datas)
+            print(datas[0]['datas'].keys())
+        show_traj_data(datas)
+        # elif option.startswith("--"):
+        #     print("error : {} is not a valid option".format(option))
+        #     print("usage : python {} <log name> --list".format(sys.argv[0]))
+        # else:
+        #     print("Showing vrep plot for \"{}\"".format(sys.argv[2]))
+        #     try:
+        #         dispatch[option](datas)
+        #     except KeyError:
+        #         print("{} is not a valid keyword.".format(option))
 
 if __name__ == '__main__':
     main()
