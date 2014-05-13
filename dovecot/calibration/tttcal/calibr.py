@@ -15,7 +15,8 @@ cfg.vrep.ppf         = 10
 cfg.vrep.headless    = True
 cfg.vrep.vglrun      = False
 cfg.vrep.calibrdir   = '~/.dovecot/tttcal/'
-cfg.vrep.mac_folder  = '/Applications/V-REP/v_rep/bin'
+cfg.vrep.mac_folder  = '/Applications/VRep/vrep.app/Contents/MacOS/'
+
 #cfg.vrep.mac_folder  ='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS'
 cfg.vrep.load        = True
 cfg.sprims.prefilter = False
