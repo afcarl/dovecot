@@ -65,7 +65,7 @@ class Roll(sprims.SensoryPrimitive):
             angle += dangle
             last_u = x_rot
 
-        return (angle, 0.0 if angle == 0.0 else 1.0)
+        return (angle, 0.0 if angle < 1e-2 else 50.0)
 
     @property
     def s_units(self):
@@ -103,7 +103,7 @@ class Spin(Roll):
             angle += dangle
             last_u = x_rot
 
-        return (angle, 0.0 if angle == 0.0 else 1.0)
+        return (angle, 0.0 if angle < 1e-2 else 50.0)
 
 
 sprims.sprims['spin'] = Spin
@@ -126,7 +126,12 @@ class RollSpin(sprims.SensoryPrimitive):
     def process_sensors(self, sensors_data):
         effect_spin = self.spin.process_sensors(sensors_data)
         effect_roll = self.roll.process_sensors(sensors_data)
-        return effect_spin[:-1]+effect_roll
+        if effect_spin[-1] == effect_roll[-1] == 0.0:
+            effect = effect_spin[:-1] + effect_roll[:-1] + (0.0,)
+        else:
+            effect = effect_spin[:-1] + effect_roll[:-1] + (50.0,)
+
+        return effect
 
     @property
     def s_units(self):
