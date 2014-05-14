@@ -29,9 +29,9 @@ def sample_data(data, sample_level):
     filtered_data += [data[-1]]
     sampled_data = []
     for i in range(len(filtered_data) - 1):
-        if filtered_data[i + 1] != filtered_data[i]:
-            sampled_data.append(filtered_data[i])
-            sampled_data.append(filtered_data[i + 1])
+        #if filtered_data[i + 1] != filtered_data[i]:
+        sampled_data.append(filtered_data[i])
+        sampled_data.append(filtered_data[i + 1])
     return sampled_data
 
 def sample_curve_coordinates(coordinates, sample_level):
@@ -49,7 +49,7 @@ def sample_curve_coordinates(coordinates, sample_level):
     ys_sampled = sample_data(y_s, sample_level)
     zs_sampled = sample_data(z_s, sample_level)
     assert len(xs_sampled) == len(ys_sampled) == len(zs_sampled), \
-        'Error in sampled data.'
+        'Error in sampled data : {} {} {}.'.format(len(xs_sampled), len(ys_sampled), len(zs_sampled))
     curve_coordinates = []
     for i in range(len(xs_sampled)):
         curve_coordinates.append(xs_sampled[i])
@@ -112,15 +112,16 @@ class VizuVrep(vrepcom.VRepCom):
             [object type | color : r,g,b,a | size coordinates | coordinates (x,y,z),(x,y,z)...]
 
         """
-        if color != None:
-            if len(color) != 4:
-                raise ValueError("Error in color components...")
+        if color is None:
+            color = self.current_color
+        if len(color) != 4:
+            raise ValueError("Error in color components...")
         if len(coordinates) % OBJECT_SIZE[obj_type] != 0:
             raise ValueError("Error in coordinates : {} / {}".format(len(coordinates), OBJECT_SIZE[obj_type]))
         self.data[0] += 1.0
         self.data.append(float(HEADER_SIZE + len(coordinates)))
         self.data.append(float(OBJECT_TYPE[obj_type]))
-        for comp in {not None:color, None:self.current_color}[color]:
+        for comp in color:
             self.data.append(float(comp))
         self.data.append(float(size))
         self.data.append(float(len(coordinates)))
@@ -162,8 +163,9 @@ class VizuVrep(vrepcom.VRepCom):
             size = s
             coordinates = (at least, on couple x,y,z
         """
-        self._add_set('curve', color, size,
-                      sample_curve_coordinates(coordinates, sample_level))
+        if len(coordinates) != 0:
+            self._add_set('curve', color, size,
+                          sample_curve_coordinates(coordinates, sample_level))
 
     def draw(self, keep_toy=True, ppf=200):
         """

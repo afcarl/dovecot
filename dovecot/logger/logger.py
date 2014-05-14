@@ -55,6 +55,7 @@ class Logger(object):
 
     def log(self, data, timestamp=True, step=None):
         """Adds data to log"""
+        assert step is not None, "fix log call"
         data_c = copy.copy(data)
         for key in self.ignored:
             data_c.pop(key, None)
@@ -63,11 +64,8 @@ class Logger(object):
         if timestamp:
             log_dict['timestamp'] = time.time()
         if step is not None:
-            self.datas += (step - len(self.datas) + 1) * [None]
-        else:
-            step = len(self.datas)
-            self.datas += [None]
-        self.datas[step] = log_dict
+            log_dict['step'] = step
+        self.datas.append(log_dict)
         self.lock.release()
 
     def save(self):
@@ -83,7 +81,7 @@ class Logger(object):
             loaded_datas = self._load()
             for data in self.datas:
                 loaded_datas.append(data)
-            self.datas[:] = []
+            self.datas = []
             data_bz2 = cPickle.dumps(loaded_datas, cPickle.HIGHEST_PROTOCOL)
             with open(file_path, 'wb') as f_path:
                 f_path.write(bz2.compress(data_bz2, 9))
@@ -96,6 +94,7 @@ class Logger(object):
         """Allows to reload datas written in the log file"""
         loaded_datas = []
         file_path = self.folder + '/' + self.filename + '.bz2'
+        print(file_path)
         if os.path.exists(file_path):
             with open(file_path, 'rb') as f_path:
                 try:
@@ -108,9 +107,17 @@ class Logger(object):
                         print "Error while unpickling..."
         return loaded_datas
 
-    def load(self):
+    def load(self, filter_it=False):
         self.lock.acquire()
         loaded_datas = self._load()
+        if filter_it:
+            ld = copy.copy(loaded_datas)
+            d = {}
+            for e in ld:
+                if e is not None:
+                    d[e['step']] = e
+            a = sorted(d.items)
+            loaded_datas = [e[1] for e in a]
         self.lock.release()
         return loaded_datas
 

@@ -39,9 +39,9 @@ def process_scene(name, ar=False, calibrate=True, vizu_s=False):
     return com.caldata
 
 def compare_calib_data(ar_calib, v_calib, vizu_calib):
-    assert ar_calib.mass == v_calib.mass == vizu_calib.mass, "Toy mass error..."
-    assert ar_calib.dimensions == v_calib.dimensions == vizu_calib.dimensions, "Toy dimensions error..."
-    assert ar_calib.position == v_calib.position == vizu_calib.position, "Toy position error..."
+    assert round(ar_calib.mass, 4) == round(v_calib.mass, 4) == round(vizu_calib.mass, 4), "Toy mass error..."
+    assert [round(e, 4) for e in ar_calib.dimensions] == [round(e, 4) for e in v_calib.dimensions] == [round(e, 4) for e in vizu_calib.dimensions], "Toy dimensions error..."
+    assert [round(e, 4) for e in ar_calib.position] == [round(e, 4) for e in v_calib.position] == [round(e, 4) for e in vizu_calib.position], "Toy position error..."
     if len(ar_calib.dimensions_m) == len(v_calib.dimensions_m):
         assert ar_calib.dimensions_m   == v_calib.dimensions_m   , "Marker dimensions error..."
     #assert ar_calib.position_world == v_calib.position_world , "Toy position error..."
