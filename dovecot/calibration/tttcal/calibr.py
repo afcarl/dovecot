@@ -21,7 +21,7 @@ cfg.vrep.mac_folder  = '/Applications/VRep/vrep.app/Contents/MacOS/'
 cfg.vrep.load        = True
 cfg.sprims.prefilter = False
 
-def process_scene(name, ar=True, calibrate=True, vizu_s=False):
+def process_scene(name, ar=False, calibrate=True, vizu_s=False):
     """Calibrate or check scene"""
     cfg.sprims.scene = name
     if not vizu_s:
@@ -90,15 +90,15 @@ def calibr(names):
         ar_calib, v_calib, vizu_calib = None, None, None
         try:
             v_calib = process_scene(name, ar=False, calibrate=True)
-        except IOError as e:
+        except (IOError, AssertionError) as e:
             print(e)
         try:
             ar_calib = process_scene(name, ar=True, calibrate=True)
-        except IOError as e:
+        except (IOError, AssertionError) as e:
             print(e)
         try:
             vizu_calib = process_scene(name, ar=False, calibrate=True, vizu_s=True)
-        except IOError as e:
+        except (IOError, AssertionError) as e:
             print(e)
 
         if ar_calib != None and v_calib != None and vizu_calib != None:
