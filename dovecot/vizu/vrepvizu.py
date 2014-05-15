@@ -19,6 +19,8 @@ SIM_PAUSED = pyvrep.constants.sim_simulation_paused
 
 DEFAULT_TRANSPARENCY = 0
 
+random.seed(0)
+
 def sample_data(data, sample_level):
     """
         sample data using the given sample level
@@ -58,7 +60,7 @@ def sample_curve_coordinates(coordinates, sample_level):
     return curve_coordinates
 
 def get_random_color(transparency):
-    random.seed(time.time())
+    #random.seed(time.time())
     return [random.random(), random.random(), random.random(), transparency]
 
 class VizuVrep(vrepcom.VRepCom):
