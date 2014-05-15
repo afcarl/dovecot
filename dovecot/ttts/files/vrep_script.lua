@@ -89,7 +89,7 @@ if (simGetScriptExecutionCount() > 0) then
 			end
 
 			for i = 1, 3 do table.insert(collide_data, pt[i]) end
-			for i = 1, 3 do table.insert(collide_data, data_tmp[i] / col)
+			for i = 1, 3 do table.insert(collide_data, data_tmp[i] / col) end
 			collide = true
 		end
 	end

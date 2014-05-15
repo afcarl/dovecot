@@ -97,7 +97,7 @@ if(current_step < trajectory_sim_steps) then
 			end
 
 			for i = 1, 3 do table.insert(collide_data, r_pos[i]) end
-			for i = 1, 3 do table.insert(collide_data, data_tmp[i] / col)
+			for i = 1, 3 do table.insert(collide_data, data_tmp[i] / col) end
 			collide = true
 		end
 	end
