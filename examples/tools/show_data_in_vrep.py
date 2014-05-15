@@ -17,7 +17,9 @@ from dovecot.logger import logger
 from dovecot import ttts
 from dovecot.vizu import VizuVrep
 
-COLLIDE_COLOR = [0, 0, 0, 0.7]
+VECT_C = [0.85, 0.356, 0.31, 0]
+MARKER_C = [0.325, 0.46, 0.478, 0]
+OBJ_C = [0.752, 0.16, 0.258, 0]
 
 cfg = desc._copy(deep=True)
 cfg.vrep.ppf         = 200
@@ -28,7 +30,8 @@ cfg.vrep.calibrdir   = '~/.dovecot/tttcal/'
 cfg.vrep.mac_folder  ='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS'
 cfg.vrep.load        = True
 cfg.sprims.prefilter = False
-cfg.logger.folder = '~/.dovecot/logger/'
+#cfg.logger.folder = '~/.dovecot/logger/'
+cfg.logger.folder = '/Users/pfudal/Stuff/Fabien/dovecot/examples/tools/LOGS/'
 
 def filter_data(datas):
     d = []
@@ -52,6 +55,7 @@ def start_com(datas):
         for data in datas:
             if data != None:
                 scene = data['datas']['scene']
+                print(scene)
                 break
         if scene.startswith('ar_'):
             cfg.sprims.scene = scene[3:]
@@ -64,30 +68,32 @@ def start_com(datas):
 
 def show_traj_data(datas):
     com = start_com(datas)
-    for data in datas[:10]:
-        coordinates = []
+    for data in datas[0:1]:
         trajs = []
-        t_stamp = data['timestamp']
         move = data['datas']['object_sensors']
         vrep_traj = data['datas']['tip_sensors']
         col_XYZ = data['datas']['collide_data']
         for coord in vrep_traj:
             trajs.append(coord)
-        # for traj in vrep_traj:
-        #     coordinates.append(traj[0])
-        #     coordinates.append(traj[1])
-        #     coordinates.append(traj[2])
-        if len(col_XYZ) == 3:
-            # com.add_lines_set(None, 2, trajs)
-            com.add_curve(None, 2, vrep_traj, 4)
-            # com.add_curve(None, 1, coordinates, 1)
-            if len(move) >= 26:
-                com.add_curve(None, 2, [move[0], move[1], move[2], move[-13], move[-12], move[-11]], 1)
-        com.update_current_color()
-    com.draw(ppf=1)
+        if len(col_XYZ) >= 3:
+            coordinates = []
+            coordinates.append(col_XYZ[0])
+            coordinates.append(col_XYZ[1])
+            coordinates.append(col_XYZ[2])
+            com.add_spheres_set(MARKER_C, 0.045, coordinates)
+
+            #com.add_lines_set(MARKER_C, 2, trajs)
+            com.add_curve(MARKER_C, 2, vrep_traj, 4)
+            if len(move) >= 14:
+                com.add_curve(VECT_C, 2, [move[0], move[1], move[2], move[-7], move[-6], move[-5]], 1)
+                for i in range(0, len(move), 7 * 15):
+                    com.add_spheres_set(OBJ_C, 0.045, [move[i], move[i+1], move[i+2]])
+            com.update_current_color()
+    com.draw(ppf=200)
+    return data
 
 def show_collide_data(datas):
-    com = start_com(datas)
+    #com = start_com(datas)
     for data in datas:
         col_XYZ = data['datas']['collide_data']
         if len(col_XYZ) == 3:
@@ -95,9 +101,9 @@ def show_collide_data(datas):
             coordinates.append(col_XYZ[0])
             coordinates.append(col_XYZ[1])
             coordinates.append(col_XYZ[2])
-            # com.add_spheres_set(COLLIDE_COLOR, 0.045, coordinates)
-            com.add_points_set(COLLIDE_COLOR, 2, coordinates)
-            # com.update_current_color() # same color for each point
+            com.add_spheres_set(COLLIDE_COLOR, 0.045, coordinates)
+            #com.add_points_set(COLLIDE_COLOR, 2, coordinates)
+            com.update_current_color() # same color for each point
     com.draw(ppf=200)
 
 def list_all_keyword(datas):
@@ -121,9 +127,22 @@ dispatch = {
 }
 
 def main():
+    if len(sys.argv) != 2:
+        print("args1 = log file")
+        exit(1)
+    datas = sys.argv[1]
+
+    folder = None
+    if not os.path.isabs(datas):
+        folder = cfg.logger.folder
+    datas_datas = filter_data(load_file(datas, folder=folder))
+
+    show_traj_data(datas_datas)
+
+def main_2():
     if len(sys.argv) != 2: #3
         # print("usage : python {} <log name> --list".format(sys.argv[0]))
-        rint("usage : python {} <log name>".format(sys.argv[0]))
+        print("usage : python {} <log name>".format(sys.argv[0]))
     else:
         fname = sys.argv[1]
         #option = sys.argv[2]
