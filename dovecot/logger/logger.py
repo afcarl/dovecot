@@ -94,7 +94,6 @@ class Logger(object):
         """Allows to reload datas written in the log file"""
         loaded_datas = []
         file_path = self.folder + '/' + self.filename + '.bz2'
-        print(file_path)
         if os.path.exists(file_path):
             with open(file_path, 'rb') as f_path:
                 try:
