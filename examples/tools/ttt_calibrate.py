@@ -6,12 +6,12 @@ import sys
 from dovecot.calibration import tttcal
 
 names=[
-       # 'center_cube',
-       # 'center_cylinder',
-       # 'center_sphere',
-       # 'other_cube',
-       # 'cylinder',
-       # 'calibrate',
+       'center_cube',
+       'center_cylinder',
+       'center_sphere',
+       'other_cube',
+       'cylinder',
+       'calibrate',
        'center_tinycube',
        'center_tinysphere',
        'center_tinycylinder',
