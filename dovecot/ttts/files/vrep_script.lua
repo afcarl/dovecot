@@ -8,7 +8,7 @@ if (simGetScriptExecutionCount() == 0) then
 	handles[5] = simGetObjectHandle("vx28_5")
 	handles[6] = simGetObjectHandle("vx28_6")
 	toy = simGetObjectHandle("toy")
-	tip  = simGetObjectHandle("tip")
+	tip  = simGetObjectHandle("marker")
 	simAddStatusbarMessage("Getting handles... done.")
 
 	simAddStatusbarMessage("Getting scripts parameters...")
