@@ -3,11 +3,12 @@ from __future__ import print_function, division, absolute_import
 import numpy as np
 
 from toolbox import dist
+import environments
 
 from . import sprims
 
 
-class Push(sprims.SensoryPrimitive):
+class Push(environments.SensoryPrimitive):
 
     def __init__(self, cfg):
         #self.object_name = cfg.sprimitive.push.object_name
@@ -19,8 +20,9 @@ class Push(sprims.SensoryPrimitive):
         return (self.object_name + '_pos',)
 
     def process_context(self, context):
-        self.s_bounds = (tuple(context['x_bounds']), tuple(context['y_bounds']), (0.0, 1000.0))
-        self.real_s_bounds = self.s_bounds
+        self.s_channels = [Channel('x', bounds=tuple(context['x_bounds']), unit='mm'),
+                           Channel('y', bounds=tuple(context['y_bounds']), unit='mm'),
+                           Channel('push_saliency', bounds=(0.0, 1000.0), fixed=1000.0)]
 
     def process_sensors(self, sensors_data):
         pos_array = sensors_data[self.object_name + '_pos']
@@ -30,8 +32,5 @@ class Push(sprims.SensoryPrimitive):
 
         return (pos_b[0]-pos_a[0], pos_b[1]-pos_a[1]) + (collision,)
 
-    @property
-    def s_units(self):
-        return ('mm', 'mm', None)
 
 sprims.sprims['push'] = Push

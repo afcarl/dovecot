@@ -5,40 +5,31 @@ import atexit
 
 from toolbox import gfx
 import natnet
+import environment
 
-from ..vrepsim import vrepcom
+from ..vrepsim import sim_env
 from ..logger import logger
 from . import triopost
-from . import stemsensors
 from . import stembot
 from . import stemcfg
 
 # trio framebuffer buffer duration in seconds.
 FB_DURATION = 40.0
 
-class OrderNotExecutableError(Exception):
-    pass
 
-class Episode(object):
+class HardwareEnvironment(sim_env.SimulationEnvironment):
 
     def __init__(self, cfg, verbose=True, optitrack=True):
-        self.cfg = cfg
+        super(Episode, self).__init__(cfg)
+
         self.verbose = verbose
         self.optitrack = optitrack
 
-        self.stem = stemcfg.stems[self.cfg.stem.uid]
+        self.stem = stemcfg.execute.hards[self.cfg.execute.hard.uid]
         self.M_trans = triopost.load_triomatrix(self.stem)
         self.vs = stemsensors.VrepSensors(self.cfg)
 
         atexit.register(self.close)
-
-        self.use_logger = self.cfg.logger.enabled
-        if self.use_logger:
-            self.logger = logger.Logger(filename=self.cfg.logger.filename,
-                                        folder=self.cfg.logger.folder,
-                                        write_delay=self.cfg.logger.write_delay,
-                                        ignored=self.cfg.logger.ignored)
-            self.logger.start()
 
         if self.verbose:
             print("{}launching serial... {}".format(gfx.purple, gfx.end))
@@ -49,29 +40,16 @@ class Episode(object):
         if self.verbose:
             print("{}launching vrep... {}".format(gfx.cyan, gfx.end))
 
-        cfg.vrep.load = False # FIXME probably not the most elegant
-        self.ovar = vrepcom.OptiVrepCom(cfg, verbose=verbose)
-        self.ovar.load(script="marker", ar=True)
+        cfg.execute.simu.load = False # FIXME probably not the most elegant
 
         self.exhibit_prims()
 
-        self.OrderNotExecutableError = OrderNotExecutableError
 
-    def exhibit_prims(self):
-        self.s_feats  = self.vs.s_feats
-        self.s_bounds = self.vs.s_bounds
-        self.s_fixed  = self.vs.s_fixed
-        self.s_units  = self.vs.s_units
-        self.real_s_bounds = self.vs.real_s_bounds
+    def _execute_raw(self, motor_command, meta=None):
 
-        self.m_feats = self.sb.m_feats
-        self.m_bounds = self.sb.m_bounds
-
-    def execute_order(self, order, meta=None, tries=3):
-        try:
-            t = meta.get('t', None)
-        except (TypeError, AttributeError):
-            t = None
+        meta = {} if meta is None else meta
+        tries = meta.get('tries', 3)
+        t     = meta.get('t', None)
 
         try:
 
@@ -85,9 +63,10 @@ class Episode(object):
             sys.stdout.flush()
 
             start_stem = time.time()
-             # execute movement on stem
+
+            # execute movement on stem
             self.fb.track(self.stem.optitrack_side)
-            start, end = self.sb.execute_order(order)
+            start, end = self.sb._execute(motor_command)
 
             self.fb.stop_tracking()
 
@@ -105,6 +84,7 @@ class Episode(object):
             print('time slice: {:.1f}'.format(end-start))
 
             start_vrep = time.time()
+
             # get optitrack trajectory
             opti_traj = self.fb.tracking_slice(start, end)
 
@@ -128,10 +108,10 @@ class Episode(object):
 
             if self.use_logger:
                 data_log['object_sensors'] = object_sensors
-                data_log['joint_sensors'] = joint_sensors
-                data_log['tip_sensors'] = tip_sensors
-                data_log['vrep_traj'] = vrep_traj
-                data_log['collide_data'] = collide_data
+                data_log['joint_sensors']  = joint_sensors
+                data_log['tip_sensors']    = tip_sensors
+                data_log['vrep_traj']      = vrep_traj
+                data_log['collide_data']   = collide_data
 
             # produce sensory feedback
             effect = self.vs.process_sensors(object_sensors, joint_sensors, tip_sensors)
@@ -139,7 +119,7 @@ class Episode(object):
 
             if self.use_logger:
                 data_log['vrep_time'] = vrep_time
-                data_log['effect'] = effect
+                data_log['effect']    = effect
 
             #print("{}order:{} {}".format(gfx.purple, gfx.end, gfx.ppv(order)))
             if self.verbose:
@@ -154,10 +134,11 @@ class Episode(object):
         except stembot.CollisionError:
             if tries > 0:
                 self.fb.stop_tracking()
-                return self.execute_order(order, meta=meta, tries=tries-1)
+                meta['tries'] -= 1
+                return self._execute(motor_command, meta=meta)
             else:
                 self.fb.stop_tracking()
-                raise OrderNotExecutableError
+                raise self.OrderNotExecutableError
 
         except natnet.MarkerError as e:
             if tries > 0:
@@ -165,9 +146,10 @@ class Episode(object):
                 print('{}{}{}'.format(gfx.red, e, gfx.end))
                 time.sleep(0.1)
                 self.fb = natnet.FrameBuffer(FB_DURATION, addr=self.stem.optitrack_addr)
-                return self.execute_order(order, meta=meta, tries=tries-1)
+                meta['tries'] -= 1
+                return self._execute(motor_command, meta=meta)
             else:
-                raise OrderNotExecutableError('{}'.format(e))
+                raise self.OrderNotExecutableError('{}'.format(e))
 
     def close(self):
         try:

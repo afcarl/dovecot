@@ -4,8 +4,9 @@ import numpy as np
 
 from toolbox import dist
 from dynamics.fwdkin import matrices
+import environments
 
-from . import sprims
+from .. import sprims
 
 
 def unit_vector(vector):
@@ -33,21 +34,19 @@ def angle_between(v1, v2):
     return angle
 
 
-class Roll(sprims.SensoryPrimitive):
+class Roll(environments.SensoryPrimitive):
     """Highly specific to a situation. Need to be generalized. FIXME"""
 
     def __init__(self, cfg):
         #self.object_name = cfg.sprimitive.push.object_name
         self.object_name = 'object'
-        self.s_feats  = (8, 9)
-        self.s_fixed  = (None, 1.0)
 
     def required_channels(self):
         return (self.object_name + '_ori',)
 
     def process_context(self, context):
-        self.s_bounds = ((-30.0, 30.0), (0.0, 1.0))
-        self.real_s_bounds = self.s_bounds
+        self.s_channels = [Channel('roll', bounds=(-30.0, 30.0), unit='rad'),
+                           Channel('roll_saliency', bounds=(0.0, 1.0), fixed=1.0)]
 
     def process_sensors(self, sensors_data):
         ori_array = sensors_data[self.object_name + '_ori']
@@ -67,25 +66,19 @@ class Roll(sprims.SensoryPrimitive):
 
         return (angle, 0.0 if angle < 1e-2 else 50.0)
 
-    @property
-    def s_units(self):
-        return ('rad', None)
 
-sprims.sprims['roll'] = Roll
+sprims['roll'] = Roll
 
 
 class Spin(Roll):
     """Highly specific to a situation. Need to be generalized. FIXME"""
 
     def __init__(self, cfg):
-        #self.object_name = cfg.sprimitive.push.object_name
         Roll.__init__(self, cfg)
-        self.s_feats  = (6, 7)
-        self.s_fixed  = (None, 1.0)
 
     def process_context(self, context):
-        self.s_bounds = ((-10.0, 10.0), (0.0, 1.0))
-        self.real_s_bounds = self.s_bounds
+        self.s_channels = [Channel('spin', bounds=(-10.0, 10.0), unit='rad'),
+                           Channel('spin_saliency', bounds=(0.0, 1.0), fixed=1.0)]
 
     def process_sensors(self, sensors_data):
         ori_array = sensors_data[self.object_name + '_ori']
@@ -106,22 +99,19 @@ class Spin(Roll):
         return (angle, 0.0 if angle < 1e-2 else 50.0)
 
 
-sprims.sprims['spin'] = Spin
+sprims['spin'] = Spin
 
 class RollSpin(sprims.SensoryPrimitive):
 
     def __init__(self, cfg):
         self.spin = Spin(cfg)
         self.roll = Roll(cfg)
-        self.s_feats = self.spin.s_feats[:-1]+self.roll.s_feats
-        self.s_fixed  = self.spin.s_fixed[:-1]+self.roll.s_fixed
-
 
     def process_context(self, context):
         self.roll.process_context(context)
         self.spin.process_context(context)
-        self.s_bounds = self.spin.s_bounds[:-1]+self.roll.s_bounds
-        self.real_s_bounds = self.s_bounds
+        self.s_channels = [self.roll.s_channels[0], self.spin.s_channels[0],
+                           Channel('rollspin_saliency', bounds=(0, 50), fixed=50)]
 
     def process_sensors(self, sensors_data):
         effect_spin = self.spin.process_sensors(sensors_data)
@@ -133,9 +123,6 @@ class RollSpin(sprims.SensoryPrimitive):
 
         return effect
 
-    @property
-    def s_units(self):
-        return ('rad', 'rad', None)
 
 
-sprims.sprims['rollspin'] = RollSpin
+sprims['rollspin'] = RollSpin

@@ -65,13 +65,13 @@ class StemCom(object):
         self.cfg = cfg
         self.cfg._update(defcfg, overwrite=False)
 
-        self.stemcfg = stemcfg.stems[cfg.stem.uid]
+        self.stemcfg = stemcfg.execute.hards[cfg.execute.hard.uid]
         if os.uname()[0] == 'Linux':
             self.stemcfg.cycle_usb()
 
         self.ms = RangedMotorSet(  serial_id=self.stemcfg.serial_id,
                                  motor_range=self.stemcfg.motorid_range,
-                                     verbose=self.cfg.stem.verbose_dyn,
+                                     verbose=self.cfg.execute.hard.verbose_dyn,
                                      timeout=timeout)
         assert len(self.ms.motors) == 6
 

@@ -70,13 +70,13 @@ def vrep_capture(poses):
     cfg._branch('sprims')
     cfg._branch('logger')
 
-    cfg.vrep.ppf         = 10
+    cfg.execute.simu.ppf         = 10
 
-    cfg.vrep.mac_folder = '/Applications/V-REP/v_rep/bin'
-    cfg.vrep.load            = True
-    cfg.vrep.headless        = True
+    cfg.execute.simu.mac_folder = '/Applications/V-REP/v_rep/bin'
+    cfg.execute.simu.load            = True
+    cfg.execute.simu.headless        = True
 
-    cfg.vrep.calibrdir = '~/.dovecot/tttcal/'
+    cfg.execute.simu.calibrdir = '~/.dovecot/tttcal/'
     cfg.sprims.scene = 'calibrate'
     cfg.sprims.names = ['push']
     cfg.sprims.uniformize = False
@@ -114,7 +114,7 @@ def vrep_capture(poses):
 def opti_capture(poses, stemcfg, fb=None):
     cfg = forest.Tree()
     cfg._branch('stem')
-    cfg.stem.uid = stemcfg.uid
+    cfg.execute.hard.uid = stemcfg.uid
     stem_com = stemcom.StemCom(cfg)
 
     stem_com.ms.moving_speed    = 100

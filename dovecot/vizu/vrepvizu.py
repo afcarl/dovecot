@@ -83,7 +83,7 @@ class VizuVrep(vrepcom.VRepCom):
 
         if calcheck:
             self.caldata = ttts.TTTCalibrationData(self.scene_name,
-                                                   self.cfg.vrep.calibrdir)
+                                                   self.cfg.execute.simu.calibrdir)
             self.caldata.load()
 
         if not self.connected:

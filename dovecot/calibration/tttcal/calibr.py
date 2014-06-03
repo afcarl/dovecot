@@ -11,14 +11,14 @@ from ...cfgdesc import desc
 from ...vizu import vrepvizu
 
 cfg = desc._copy(deep=True)
-cfg.vrep.ppf         = 10
-cfg.vrep.headless    = True
-cfg.vrep.vglrun      = False
-cfg.vrep.calibrdir   = '~/.dovecot/tttcal/'
-cfg.vrep.mac_folder  = '/Applications/VRep/vrep.app/Contents/MacOS/'
+cfg.execute.simu.ppf         = 10
+cfg.execute.simu.headless    = True
+cfg.execute.simu.vglrun      = False
+cfg.execute.simu.calibrdir   = '~/.dovecot/tttcal/'
+cfg.execute.simu.mac_folder  = '/Applications/VRep/vrep.app/Contents/MacOS/'
 
-#cfg.vrep.mac_folder  ='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS'
-cfg.vrep.load        = True
+#cfg.execute.simu.mac_folder  ='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS'
+cfg.execute.simu.load        = True
 cfg.sprims.prefilter = False
 
 def process_scene(name, ar=False, calibrate=True, vizu_s=False):
@@ -79,7 +79,7 @@ def calibrate_scene(com):
         print('{}error{}: scene file {} not found'.format(gfx.red, gfx.end, scene_filepath))
         return None
     else:
-        caldata = ttts.TTTCalibrationData(com.scene_name, com.cfg.vrep.calibrdir)
+        caldata = ttts.TTTCalibrationData(com.scene_name, com.cfg.execute.simu.calibrdir)
         caldata.populate(toy_mass, position, dimensions, toy_pos_world, dimensions_m)
         caldata.save()
         return caldata

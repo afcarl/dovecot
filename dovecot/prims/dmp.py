@@ -13,11 +13,11 @@ import libpydmp as pydmp
 
 class DMP(object):
 
-    def __init__(self):
+    def __init__(self, dt):
         self.dmp = pydmp.PyDMP(1)
         duration = 2.0
 
-        self.dmp.set_timesteps(int(120*duration), 0.0, duration)
+        self.dmp.set_timesteps(int(1000/dt*duration), 0.0, duration)
         self.dmp.set_initial_state([0.0])
         self.dmp.set_attractor_state([1.0])
 
