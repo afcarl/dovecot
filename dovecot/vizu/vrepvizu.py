@@ -74,7 +74,7 @@ class VizuVrep(vrepcom.VRepCom):
         self.current_color = get_random_color(DEFAULT_TRANSPARENCY)
         self.caldata = None
 
-    def load(self, script="vizu", calcheck=False):
+    def load(self, script="vizu", ar=True, calcheck=False):
         """
             Load a scene, set the script handle name to the given parameter
             and perform a calibration checking if asked

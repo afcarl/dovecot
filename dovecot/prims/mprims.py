@@ -7,6 +7,8 @@ import math
 import numpy as np
 
 from . import dmp
+
+import environments
 from environments import Channel
 
 
@@ -26,7 +28,7 @@ def deg2dmp(v):
     return dmp_limit/150.0*v
 
 
-class DmpG25(environment.MotorPrimitive):
+class DmpG25(environments.MotorPrimitive):
 
     def __init__(self, cfg):
         self.cfg = cfg

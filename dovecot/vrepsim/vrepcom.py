@@ -24,7 +24,7 @@ class VRepCom(object):
         self.verbose = verbose
         self.ppf  = cfg.execute.simu.ppf
         if not calcheck:
-            assert not cfg.sprims.prefilter, 'Can\'t skip the calibration check and prefilter collisions. Choose.'
+            assert not cfg.execute.prefilter, 'Can\'t skip the calibration check and prefilter collisions. Choose.'
 
         self.vrep_proc = None
         self.mac_folder = os.path.expanduser(cfg.execute.simu.mac_folder)
@@ -35,7 +35,7 @@ class VRepCom(object):
         self.scene = None
 
         if cfg.execute.simu.load:
-            if self.cfg.simulation:
+            if self.cfg.execute.is_simulation:
                 self.load(script='Flower', ar=False, calcheck=calcheck)
             else:
                 self.load(script='marker', ar=True,  calcheck=calcheck)

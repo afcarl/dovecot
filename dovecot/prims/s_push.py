@@ -33,4 +33,4 @@ class Push(environments.SensoryPrimitive):
         return (pos_b[0]-pos_a[0], pos_b[1]-pos_a[1]) + (collision,)
 
 
-sprims.sprims['push'] = Push
+sprims['push'] = Push

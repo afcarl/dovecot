@@ -11,6 +11,7 @@ from ...cfgdesc import desc
 from ...vizu import vrepvizu
 
 cfg = desc._copy(deep=True)
+cfg.execute.is_simulation    = True
 cfg.execute.simu.ppf         = 10
 cfg.execute.simu.headless    = True
 cfg.execute.simu.vglrun      = False
@@ -19,19 +20,22 @@ cfg.execute.simu.mac_folder  = '/Applications/VRep/vrep.app/Contents/MacOS/'
 
 #cfg.execute.simu.mac_folder  ='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS'
 cfg.execute.simu.load        = True
-cfg.sprims.prefilter = False
+cfg.execute.prefilter = False
 
 def process_scene(name, ar=False, calibrate=True, vizu_s=False):
     """Calibrate or check scene"""
     cfg.sprims.scene = name
     if not vizu_s:
         if ar:
-            com = vrepcom.OptiVrepCom(cfg, calcheck=not calibrate)
+            cfg.execute.is_simulation = True
+            com = vrepcom.VRepCom(cfg, calcheck=not calibrate)
         else:
+            cfg.execute.is_simulation = False
             com = vrepcom.VRepCom(cfg, calcheck=not calibrate)
         if calibrate:
             com.caldata = calibrate_scene(com)
     else:
+        cfg.execute.is_simulation = True
         com = vrepvizu.VizuVrep(cfg, calcheck=not calibrate)
         if calibrate:
             com.caldata = calibrate_scene(com)

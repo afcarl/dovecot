@@ -10,7 +10,7 @@ from .. import prims
 from . import vrepcom
 
 
-class SimulationEnvironment(environment.PrimitiveEnvironment):
+class SimulationEnvironment(environments.PrimitiveEnvironment):
 
     MARKER_SIZE = 11
 
@@ -69,7 +69,7 @@ class SimulationEnvironment(environment.PrimitiveEnvironment):
     def _check_object_collision(self, motor_traj):
         if self.cfg.sprims.prefilter:
             motor_traj_2 = list(zip(*[np.degrees(t_i[0]) for t_i in motor_traj]))
-            return not self._collision_filter.may_collide(motor_traj_2):
+            return not self._collision_filter.may_collide(motor_traj_2)
         return True
 
     def _execute_raw(self, motor_command, meta=None):
