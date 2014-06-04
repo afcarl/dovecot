@@ -5,7 +5,7 @@ import atexit
 
 from toolbox import gfx
 import natnet
-import environment
+import environments
 
 from ..vrepsim import sim_env
 from ..logger import logger

@@ -133,15 +133,22 @@ class VRepCom(object):
 
 
     def _prepare_traj(self, trajectory, max_steps):
-        if self.cfg.simulation:
+        if self.cfg.execute.is_simulation:
             return self._prepare_motor_traj(trajectory, max_steps)
         else:
             return self._prepare_marker_traj(trajectory, max_steps)
 
     def _prepare_motor_traj(self, trajectory, max_steps):
-        traj = [float(len(trajectory[0][0])), float(max_steps), trajectory[0][1]] # motors_steps, max_steps, max_speed
-        for i, (pos_v, max_speed) in enumerate(trajectory):
-            traj += pos_v
+        """
+            In LUA code, a trajectory looks like this :
+            # motors_sim_steps = math.floor(Trajectory[1])
+            # max_sim_steps    = math.floor(Trajectory[2])
+            # max_speed        = Trajectory[3]
+            # Trajectory[4] for motor 1, Trajectory[5] for motor 2, etc... 
+        """
+        traj = [float(len(trajectory)), float(max_steps), self.cfg.mprim.max_speed] # motors_steps, max_steps, max_speed
+        for pos_v in trajectory:
+            traj.extend(pos_v)
         return traj
 
     def _prepare_marker_traj(self, trajectory, max_step=None):

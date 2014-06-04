@@ -6,7 +6,7 @@ from toolbox import dist
 from dynamics.fwdkin import matrices
 import environments
 
-from .. import sprims
+from . import sprims
 
 
 def unit_vector(vector):
@@ -101,7 +101,7 @@ class Spin(Roll):
 
 sprims['spin'] = Spin
 
-class RollSpin(sprims.SensoryPrimitive):
+class RollSpin(environments.SensoryPrimitive):
 
     def __init__(self, cfg):
         self.spin = Spin(cfg)

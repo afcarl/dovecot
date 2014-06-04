@@ -5,23 +5,25 @@ from dovecot.cfgdesc import desc
 
 cfg0 = desc._copy(deep=True)
 
-cfg0.partial_mvt = False
+cfg0.execute.partial_mvt = False
+cfg0.execute.prefilter  = True
 
-cfg0.stem.dt = 0.01
+cfg0.mprim.dt = 0.01
 
-cfg0.stem.verbose_com  = True
-cfg0.stem.verbose_dyn  = True
-cfg0.vrep.headless     = False
-cfg0.vrep.vglrun       = False
-cfg0.vrep.ppf          = 200
-cfg0.vrep.load         = True
-cfg0.vrep.mac_folder   = '/Applications/V-REP/v_rep/bin' # only for mac
-#cfg0.vrep.mac_folder  = '/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS'
+cfg0.execute.check_self_collisions = False
+cfg0.execute.is_simulation	   = True
+cfg0.execute.hard.verbose_com  = True
+cfg0.execute.hard.verbose_dyn  = True
+cfg0.execute.simu.headless     = False
+cfg0.execute.simu.vglrun       = False
+cfg0.execute.simu.ppf          = 200
+cfg0.execute.simu.load         = True
+cfg0.execute.simu.mac_folder   = '/Applications/VRep/vrep.app/Contents/MacOS/' # only for mac
+#cfg0.execute.simu.mac_folder  = '/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS'
 
 cfg0.sprims.names      = ['push']
 cfg0.sprims.tip        = False
 cfg0.sprims.uniformize = False
-cfg0.sprims.prefilter  = True
 cfg0.sprims.scene      = 'center_cube'
 
 cfg0.mprim.name        = 'dmpg25'
@@ -37,7 +39,7 @@ cfg0.mprim.target_states = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 cfg0.mprim.angle_ranges  = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0, 120.0), (99.0, 99.0), (99.0, 99.0))
 
 
-cfg0.vrep.calibrdir = '~/.dovecot/tttcal/'
+cfg0.execute.simu.calibrdir = '~/.dovecot/tttcal/'
 
 cfg0.logger.enabled = True
 cfg0.logger.write_delay = 10 # seconds

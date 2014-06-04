@@ -7,29 +7,31 @@ import time
 import forest
 
 import env
-from dovecot.vrepsim import vrepbot
-from cfg import cfg
+from dovecot.vrepsim import sim_env
+from cfg import cfg0
 
-cfg.vrep.ppf  = 200
-cfg.vrep.vrep_folder='/Applications/V-REP/v_rep/bin/'
-cfg.vrep.load = True
-cfg.vrep.headless = True
+from environments import tools
+
+cfg0.execute.simu.ppf  = 200
+cfg0.execute.simu.mac_folder='/Applications/VRep/vrep.app/Contents/MacOS/'
+cfg0.execute.simu.load = True
+cfg0.execute.simu.headless = True
 
 total = int(sys.argv[1])
 
-vrepb = vrepbot.VRepBot(cfg)
+vrepb = sim_env.SimulationEnvironment(cfg0)
 
 cols = 0
 col_orders = []
 
 start = time.time()
 for i in range(total):
-    order = tuple(random.uniform(a, b) for a, b in vrepb.m_bounds)
-    effect = vrepb.execute_order(order)
-    print(effect)
-    if effect[2] != 0.0:
+    m_signal = tools.random_signal(vrepb.m_channels)
+    feedback = vrepb.execute(m_signal)
+    s_vector = tools.to_vector(feedback['s_signal'], vrepb.s_channels)
+    if s_vector[2] != 0.0:
         cols += 1
-        col_orders.append(order)
+        col_orders.append(m_signal)
     print('{}({})/{}'.format(i+1, cols, total), end='\r')
     sys.stdout.flush()
     #print(' '.join('{:5.2f}'.format(e) for e in effect))

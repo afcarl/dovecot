@@ -3,8 +3,11 @@ from __future__ import print_function, division, absolute_import
 import numpy as np
 
 from toolbox import dist
+
+from environments import Channel
 import environments
 
+from environments import tools
 from . import sprims
 
 
@@ -24,13 +27,15 @@ class Push(environments.SensoryPrimitive):
                            Channel('y', bounds=tuple(context['y_bounds']), unit='mm'),
                            Channel('push_saliency', bounds=(0.0, 1000.0), fixed=1000.0)]
 
-    def process_sensors(self, sensors_data):
+    def process_raw_sensors(self, sensors_data):
+        if self.object_name + '_pos' not in sensors_data:
+            return tools.to_signal((0, 0, 0), self.s_channels)
         pos_array = sensors_data[self.object_name + '_pos']
         pos_a = pos_array[0]
         pos_b = pos_array[-1]
         collision = 0.0 if dist(pos_a[:2], pos_b[:2]) < 1.0e-2 else 1000.0
 
-        return (pos_b[0]-pos_a[0], pos_b[1]-pos_a[1]) + (collision,)
+        return tools.to_signal((pos_b[0]-pos_a[0], pos_b[1]-pos_a[1]) + (collision,), self.s_channels)
 
 
 sprims['push'] = Push

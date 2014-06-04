@@ -9,4 +9,4 @@ def create_sprim(name, cfg):
 
 from .mprims import create_mprim
 
-import s_push, s_roll
+from . import s_push, s_rollspin

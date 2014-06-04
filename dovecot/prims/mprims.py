@@ -10,7 +10,7 @@ from . import dmp
 
 import environments
 from environments import Channel
-
+from environments import tools
 
 mprims = {}
 
@@ -60,19 +60,20 @@ class DmpG25(environments.MotorPrimitive):
     def process_context(self, context):
         pass
 
-    def process_motor_signal(self, order):
-        assert len(order) == self.n_basis*(2*self.size+1)
+    def process_motor_signal(self, m_signal):
+        assert len(m_signal) == self.n_basis*(2*self.size+1)
 
         traj = []
+        m_vector = tools.to_vector(m_signal, self.m_channels)
 
-        widths = order[-self.n_basis:]
+        widths = m_vector[-self.n_basis:]
         centers = tuple(np.linspace(0.0, 1.0, num=self.n_basis+2)[1:-1])
 
         for i, d in enumerate(self.dmps):
             slopes, offsets = [], []
             for j in range(self.n_basis):
                 cursor = 2 * (self.n_basis * i + j)
-                slope, offset = order[cursor:cursor + 2]
+                slope, offset = m_vector[cursor:cursor + 2]
                 slopes.append(slope)
                 offsets.append(offset)
 

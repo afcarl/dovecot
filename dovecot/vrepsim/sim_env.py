@@ -1,5 +1,6 @@
 from __future__ import print_function, division, absolute_import
 
+import copy
 import numpy as np
 import environments
 
@@ -19,7 +20,7 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
 
         self.vrepcom = vrepcom.VRepCom(cfg)
 
-        if cfg.sprims.prefilter:
+        if cfg.execute.prefilter:
             self._collision_filter = maycollide.CollisionFilter(self.vrepcom.caldata.position,
                                                                 self.vrepcom.caldata.dimensions,
                                                                 self.MARKER_SIZE)
@@ -49,9 +50,8 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
             self.s_prim.add_s_prim(sp)
 
     def _check_self_collision(self, motor_traj):
-        motor_traj = list(zip(*[np.degrees(t_i[0]) for t_i in motor_traj]))
                 # check for self-collisions beforehand
-        ts = [self.mprim.dt/1000.0*i for i in range(len(motor_traj[0][0]))]
+        ts = [self.cfg.mprim.dt/1000.0*i for i in range(len(motor_traj[0]))]
 
         if self.cfg.execute.check_self_collisions:
             for i, pose in enumerate(motor_traj):
@@ -67,9 +67,8 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
         return ts, motor_traj
 
     def _check_object_collision(self, motor_traj):
-        if self.cfg.sprims.prefilter:
-            motor_traj_2 = list(zip(*[np.degrees(t_i[0]) for t_i in motor_traj]))
-            return not self._collision_filter.may_collide(motor_traj_2)
+        if self.cfg.execute.prefilter:
+            return not self._collision_filter.may_collide(motor_traj)
         return True
 
     def _execute_raw(self, motor_command, meta=None):
@@ -77,23 +76,25 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
 
         raw_sensors = {'motor_traj': motor_traj}
 
+        motor_traj = list(zip(*[np.degrees(t_i[0]) for t_i in motor_traj]))
         ts, motor_traj = self._check_self_collision(motor_traj)
         if not self._check_object_collision(motor_traj):
             return raw_sensors
 
-        raw_sensors = self.vrepcom.run_simulation(motor_traj, max_steps, t=t)
+        raw_sensors = self.vrepcom.run_simulation(motor_traj, max_steps)
         raw_sensors = self._process_sensors(raw_sensors)
 
         if self.use_logger:
             data_log = copy.deepcopy(raw_sensors)
-            data_log['order'] = m_vector
+            data_log['motor_command'] = motor_command
             data_log['scene'] = 'vrep_{}'.format(self.cfg.sprims.scene)
-            self.logger.log(data_log, step=t)
+            self.logger.log(data_log)
 
         return raw_sensors
 
     def _process_sensors(self, raw_sensors):
         """Compute processed sensors data"""
+        object_sensors = raw_sensors['object_sensors']
 
         assert len(object_sensors) % (3+4) == 0
         n = int(len(object_sensors)/7)

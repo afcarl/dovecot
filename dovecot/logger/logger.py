@@ -55,7 +55,7 @@ class Logger(object):
 
     def log(self, data, timestamp=True, step=None):
         """Adds data to log"""
-        assert step is not None, "fix log call"
+        # assert step is not None, "fix log call"
         data_c = copy.copy(data)
         for key in self.ignored:
             data_c.pop(key, None)
