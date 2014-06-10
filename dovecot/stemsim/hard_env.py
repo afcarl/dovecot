@@ -53,10 +53,9 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
 
         try:
 
-            if self.use_logger:
-                data_log = {}
-                data_log['order'] = order
-                data_log['scene'] = 'ar_{}'.format(self.cfg.sprims.scene)
+            log =  {}
+            log['order'] = order
+            #log['scene'] = 'ar_{}'.format(self.cfg.sprims.scene)
 
             if self.verbose:
                 print("{}executing movement on stem...{}".format(gfx.purple, gfx.end), end='\r')
@@ -72,10 +71,7 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
 
             if (start, end) == (None, None):
                 return self.vs.null_feedback
-
-            if self.use_logger:
-                order_time = end - start
-                data_log['order_time'] = order_time
+            log['order_time'] = end - start
 
             if self.verbose:
                 print('')
@@ -88,8 +84,7 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
             # get optitrack trajectory
             opti_traj = self.fb.tracking_slice(start, end)
 
-            if self.use_logger:
-                data_log['opti_traj'] = opti_traj
+            log['opti_traj'] = opti_traj
 
             # fill gaps
             try:
@@ -104,22 +99,17 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
 
             # execute in vrep
             """#TODO max_steps set to None ??"""
-            object_sensors, joint_sensors, tip_sensors, collide_data = self.ovar.run_simulation(vrep_traj, None)
+            raw_sensors = self.ovar.run_simulation(vrep_traj, None)
 
-            if self.use_logger:
-                data_log['object_sensors'] = object_sensors
-                data_log['joint_sensors']  = joint_sensors
-                data_log['tip_sensors']    = tip_sensors
-                data_log['vrep_traj']      = vrep_traj
-                data_log['collide_data']   = collide_data
+            log['raw_sensors'] = raw_sensors
+            log['vrep_traj'] = vrep_traj
 
             # produce sensory feedback
             effect = self.vs.process_sensors(object_sensors, joint_sensors, tip_sensors)
             vrep_time = time.time() - start_vrep
 
-            if self.use_logger:
-                data_log['vrep_time'] = vrep_time
-                data_log['effect']    = effect
+            log['vrep_time'] = vrep_time
+            log['effect']    = effect
 
             #print("{}order:{} {}".format(gfx.purple, gfx.end, gfx.ppv(order)))
             if self.verbose:

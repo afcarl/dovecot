@@ -12,7 +12,7 @@ from . import stemcfg
 defcfg = forest.Tree()
 """#TODO Why this ?"""
 #defcfg['stem.motor_range'] = (0, 253)
-defcfg['stem.verbose_dyn'] = True
+defcfg['execute.hard.verbose_dyn'] = True
 
 class RangedMotorSet(MotorSet):
     """
@@ -65,7 +65,7 @@ class StemCom(object):
         self.cfg = cfg
         self.cfg._update(defcfg, overwrite=False)
 
-        self.stemcfg = stemcfg.execute.hards[cfg.execute.hard.uid]
+        self.stemcfg = stemcfg.stems[cfg.execute.hard.uid]
         if os.uname()[0] == 'Linux':
             self.stemcfg.cycle_usb()
 

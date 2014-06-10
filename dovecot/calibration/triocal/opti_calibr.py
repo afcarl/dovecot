@@ -12,6 +12,7 @@ import natnet
 from ...stemsim import stemcom
 from ...vrepsim import vrepbot
 from ... import prims
+from ...cfgdesc import desc
 
 def Rot(M33):
     R = np.eye(4)
@@ -64,26 +65,24 @@ def transform_3D(A, B, scaling=True):
 
 def vrep_capture(poses):
 
-    cfg = forest.Tree()
-    cfg._branch('vrep')
-    cfg._branch('mprim')
-    cfg._branch('sprims')
-    cfg._branch('logger')
+    cfg = desc._copy(deep=True)
 
-    cfg.execute.simu.ppf         = 10
+    cfg.execute.is_simulation   = True
+    cfg.execute.prefilter       = False
 
+    cfg.execute.simu.ppf        = 10
     cfg.execute.simu.mac_folder = '/Applications/V-REP/v_rep/bin'
-    cfg.execute.simu.load            = True
-    cfg.execute.simu.headless        = True
+    cfg.execute.simu.load       = True
+    cfg.execute.simu.headless   = True
+    cfg.execute.simu.calibrdir  = '~/.dovecot/tttcal/'
 
-    cfg.execute.simu.calibrdir = '~/.dovecot/tttcal/'
-    cfg.sprims.scene = 'calibrate'
-    cfg.sprims.names = ['push']
+    cfg.sprims.scene      = 'calibrate'
+    cfg.sprims.names      = ['push']
     cfg.sprims.uniformize = False
-    cfg.sprims.prefilter = False
-    cfg.sprims.tip = True
+    cfg.sprims.tip        = True
 
-    cfg.mprim.name = 'dmpg25'
+    cfg.mprim.dt          = 0.01
+    cfg.mprim.name        = 'dmpg25'
     cfg.mprim.motor_steps = 1000
     cfg.mprim.max_steps   = 1000
     cfg.mprim.uniformize  = False
@@ -112,8 +111,7 @@ def vrep_capture(poses):
     return vrep_res
 
 def opti_capture(poses, stemcfg, fb=None):
-    cfg = forest.Tree()
-    cfg._branch('stem')
+    cfg = desc._copy(deep=True)
     cfg.execute.hard.uid = stemcfg.uid
     stem_com = stemcom.StemCom(cfg)
 

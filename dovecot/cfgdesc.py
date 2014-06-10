@@ -90,10 +90,7 @@ desc._isinstance('mprim.name', str)
 # the number of position (and possibly velocity) orders executed
 desc._isinstance('mprim.motor_steps', numbers.Integral)
 
-# the temporal resolution of the motor trajectory, in ms
-desc._isinstance('mprim.dt', numbers.Real)
-
-# detect and prevent self-collisions ? (mandatory for hardware)
+# the temporal resolution of the motor trajectory, in s
 desc._isinstance('mprim.dt', numbers.Real)
 
 # defines when the simulation is finished
