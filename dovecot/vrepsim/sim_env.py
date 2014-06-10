@@ -5,6 +5,7 @@ import numpy as np
 import environments
 
 from ..collider import maycollide
+from ..collider import collider
 from ..logger import logger
 
 from .. import prims
@@ -79,8 +80,10 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
         motor_traj = list(zip(*[np.degrees(t_i[0]) for t_i in motor_traj]))
         ts, motor_traj = self._check_self_collision(motor_traj)
         if not self._check_object_collision(motor_traj):
+            meta['raw_sensors'] = raw_sensors
             return raw_sensors
 
+        raw_sensors = {'motor_traj': motor_traj}
         raw_sensors = self.vrepcom.run_simulation(motor_traj, max_steps)
         raw_sensors = self._process_sensors(raw_sensors)
 
@@ -90,6 +93,7 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
             data_log['scene'] = 'vrep_{}'.format(self.cfg.sprims.scene)
             self.logger.log(data_log)
 
+        meta['raw_sensors'] = raw_sensors
         return raw_sensors
 
     def _process_sensors(self, raw_sensors):
@@ -109,9 +113,9 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
         # raw_sensors['object_vel_a'] = velocities_a
 
         if self.cfg.sprims.tip:
-            assert tip_sensors is not None
-            n = int(len(tip_sensors)/3)
-            tip_pos = tuple(tuple(tip_sensors[3*i:3*i+ 3]) for i in range(n))
+            assert raw_sensors['tip_sensors'] is not None
+            n = int(len(raw_sensors['tip_sensors'])/3)
+            tip_pos = tuple(tuple(raw_sensors['tip_sensors'][3*i:3*i+ 3]) for i in range(n))
             raw_sensors['tip_pos'] = tip_pos
 
         return raw_sensors

@@ -6,11 +6,13 @@ import sys
 import numpy as np
 import forest
 
+
+from environments import tools
 from toolbox import gfx
 import natnet
 
 from ...stemsim import stemcom
-from ...vrepsim import vrepbot
+from ...vrepsim import sim_env
 from ... import prims
 from ...cfgdesc import desc
 
@@ -67,8 +69,9 @@ def vrep_capture(poses):
 
     cfg = desc._copy(deep=True)
 
-    cfg.execute.is_simulation   = True
-    cfg.execute.prefilter       = False
+    cfg.execute.is_simulation         = True
+    cfg.execute.prefilter             = False
+    cfg.execute.check_self_collisions = False
 
     cfg.execute.simu.ppf        = 10
     cfg.execute.simu.mac_folder = '/Applications/V-REP/v_rep/bin'
@@ -96,16 +99,18 @@ def vrep_capture(poses):
     cfg.mprim.target_states = [  0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     cfg.mprim.angle_ranges  = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0, 120.0), (99.0, 99.0), (99.0, 99.0))
 
-    sb = vrepbot.VRepBot(cfg)
+    sb = sim_env.SimulationEnvironment(cfg)
 
     vrep_res = []
     for tg in poses:
         cfg.mprim.target_states = tg
         sb.m_prim = prims.create_mprim(cfg.mprim.name, cfg)
 
-        order = (0.0, 0.0)*cfg.mprim.n_basis*6 + (0.20, 0.20)
-        sb.execute_order(order)
-        vrep_res.append(np.mean([sb.channels['tip_pos'][-50:]], axis=1))
+        m_signal = tools.to_signal((0.0, 0.0)*cfg.mprim.n_basis*6 + (0.20, 0.20),
+                                   sb.m_channels)
+        meta = {}
+        sb.execute(m_signal, meta=meta)
+        vrep_res.append(np.mean([meta['raw_sensors']['tip_pos'][-50:]], axis=1))
 
     sb.close()
     return vrep_res
