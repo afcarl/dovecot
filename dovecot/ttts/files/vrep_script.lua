@@ -52,9 +52,9 @@ if (simGetScriptExecutionCount() > 0) then
 	qc = simGetObjectQuaternion(toy, -1)
 	for i = 1, 4 do table.insert(object_sensors, qc[i]) end
 
-	--lvc, avc = simGetObjectVelocity(toy)
-	--for i = 1, 3 do table.insert(object_sensors, lvc[i]) end
-	--for i = 1, 3 do table.insert(object_sensors, avc[i]) end
+	lvc, avc = simGetObjectVelocity(toy)
+	for i = 1, 3 do table.insert(object_sensors, lvc[i]) end
+	for i = 1, 3 do table.insert(object_sensors, avc[i]) end
 
 	sim_step = simGetScriptExecutionCount()
 
