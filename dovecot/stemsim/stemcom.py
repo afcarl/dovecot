@@ -110,31 +110,24 @@ class StemCom(object):
         self.ms.compliant = True
         time.sleep(0.3)
 
-    def step(self, trajectory, start_time):
+    def step(self, trajectory, t):
         """Step in a timed trajectory.
 
-            :param trajectory:  a pair of time/pose vectors.
-            :param start_time:  when the trajectory started
+        :param trajectory: list of Trajectory instances
+        :param t         : time since the execution started
         """
-        now = time.time()
-        ts, poses = trajectory
-
-        i = 0
         try:
-            while ts[i] < now-start_time:
-                i += 1
-        except IndexError:
-            i = len(ts)-1
-        try:
-            dp = np.abs(np.array(poses[i]) - np.array(self.ms.pose))
+            pose       = np.degrees([tj_i.p(t)      for tj_i in trajectory])
+            max_speeds = [tj_i.max_speed for tj_i in trajectory]
+            dp = np.abs(np.array(pose) - np.array(self.ms.pose))
             dt = 1.0/5 # 40 Hz
             speed = dp/dt
-            speed = np.clip(speed, 1, 400)
+            speed = np.clip(speed, 1, max_speeds)
             self.ms.moving_speed = speed
-            self.ms.pose = poses[i]
+            self.ms.pose = pose
         except ValueError as e:
             print(self.ms.pose)
-            print(poses[i])
+            print(pose)
             import traceback
             traceback.print_exc()
             raise e

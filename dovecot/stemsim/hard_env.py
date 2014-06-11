@@ -6,6 +6,7 @@ import atexit
 from toolbox import gfx
 import natnet
 import environments
+from environments import tools
 
 from ..vrepsim import sim_env
 from ..logger import logger
@@ -20,14 +21,13 @@ FB_DURATION = 40.0
 class HardwareEnvironment(sim_env.SimulationEnvironment):
 
     def __init__(self, cfg, verbose=True, optitrack=True):
-        super(Episode, self).__init__(cfg)
+        super(HardwareEnvironment, self).__init__(cfg)
 
         self.verbose = verbose
         self.optitrack = optitrack
 
-        self.stem = stemcfg.execute.hards[self.cfg.execute.hard.uid]
+        self.stem = stemcfg.stems[self.cfg.execute.hard.uid]
         self.M_trans = triopost.load_triomatrix(self.stem)
-        self.vs = stemsensors.VrepSensors(self.cfg)
 
         atexit.register(self.close)
 
@@ -42,8 +42,6 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
 
         cfg.execute.simu.load = False # FIXME probably not the most elegant
 
-        self.exhibit_prims()
-
 
     def _execute_raw(self, motor_command, meta=None):
 
@@ -54,7 +52,8 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
         try:
 
             log =  {}
-            log['order'] = order
+            meta['log'] = log
+            log['motor_command'] = motor_command
             #log['scene'] = 'ar_{}'.format(self.cfg.sprims.scene)
 
             if self.verbose:
@@ -66,11 +65,7 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
             # execute movement on stem
             self.fb.track(self.stem.optitrack_side)
             start, end = self.sb._execute(motor_command)
-
             self.fb.stop_tracking()
-
-            if (start, end) == (None, None):
-                return self.vs.null_feedback
             log['order_time'] = end - start
 
             if self.verbose:
@@ -99,27 +94,18 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
 
             # execute in vrep
             """#TODO max_steps set to None ??"""
-            raw_sensors = self.ovar.run_simulation(vrep_traj, None)
+            raw_sensors = self.vrepcom.run_simulation(vrep_traj, None)
 
             log['raw_sensors'] = raw_sensors
             log['vrep_traj'] = vrep_traj
 
             # produce sensory feedback
-            effect = self.vs.process_sensors(object_sensors, joint_sensors, tip_sensors)
+            raw_sensors = self._process_sensors(raw_sensors)
             vrep_time = time.time() - start_vrep
 
             log['vrep_time'] = vrep_time
-            log['effect']    = effect
 
-            #print("{}order:{} {}".format(gfx.purple, gfx.end, gfx.ppv(order)))
-            if self.verbose:
-                print("{}effect:{} {} (stem: {:.1f}, vrep: {:.1f})".format(gfx.cyan,
-                      gfx.end, gfx.ppv(effect, fmt=' .8f'), stem_time, vrep_time))
-
-            if self.use_logger:
-                self.logger.log(data_log, step=t)
-
-            return effect
+            return raw_sensors
 
         except stembot.CollisionError:
             if tries > 0:
@@ -152,6 +138,6 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
         except Exception:
             pass
         try:
-            self.ovar.close(kill=True)
+            self.vrepcom.close(kill=True)
         except Exception:
             pass

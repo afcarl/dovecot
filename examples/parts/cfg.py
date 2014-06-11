@@ -14,6 +14,7 @@ cfg0.execute.check_self_collisions = False
 cfg0.execute.is_simulation	   = True
 cfg0.execute.hard.verbose_com  = True
 cfg0.execute.hard.verbose_dyn  = True
+cfg0.execute.hard.powerswitch  = True
 cfg0.execute.simu.headless     = False
 cfg0.execute.simu.vglrun       = False
 cfg0.execute.simu.ppf          = 200
@@ -31,8 +32,8 @@ cfg0.mprim.motor_steps = 500
 cfg0.mprim.max_steps   = 500
 cfg0.mprim.uniformize  = False
 cfg0.mprim.n_basis     = 2
-cfg0.mprim.max_speed   = 1.0
-cfg0.mprim.end_time    = 1.15
+cfg0.mprim.max_speed   = 400
+cfg0.mprim.end_time    = 5.0
 
 cfg0.mprim.init_states   = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 cfg0.mprim.target_states = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
@@ -41,7 +42,7 @@ cfg0.mprim.angle_ranges  = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0,
 
 cfg0.execute.simu.calibrdir = '~/.dovecot/tttcal/'
 
-cfg0.logger.enabled = True
+cfg0.logger.enabled = False
 cfg0.logger.write_delay = 10 # seconds
 cfg0.logger.folder = '~/.dovecot/logger/'
 cfg0.logger.filename = 'examples_'

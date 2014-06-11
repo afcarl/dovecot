@@ -3,6 +3,7 @@ Computing motor primitives from high-level orders.
 """
 from __future__ import print_function, division, absolute_import
 import math
+import bisect
 
 import numpy as np
 
@@ -27,6 +28,26 @@ def dmp2rad(v):
 def deg2dmp(v):
     return dmp_limit/150.0*v
 
+class Trajectory(object):
+
+    def __init__(self, ts, ps, max_speed=None):
+        """
+        :param ts:  is a list of time
+        :param ps:  is a list of points (or scalar)
+        """
+        assert len(ts) == len(ps)
+        self.ts = ts
+        self.ps = ps
+        self.max_speed = max_speed
+
+    def p(self, t):
+        idx = bisect.bisect_right(self.ts, t)
+        return self.ps[idx]
+
+    @property
+    def max_t(self):
+        return self.ts[-1]
+
 
 class DmpG25(environments.MotorPrimitive):
 
@@ -40,8 +61,8 @@ class DmpG25(environments.MotorPrimitive):
         self.dmps = []
         assert len(self.cfg.mprim.init_states) == len(self.cfg.mprim.target_states) == self.size
         for init_state, target_state in zip(self.cfg.mprim.init_states, self.cfg.mprim.target_states):
-            d = dmp.DMP(self.cfg.mprim.dt)
-            d.dmp.set_timesteps(self.motor_steps, 0.0, self.cfg.mprim.end_time)
+            d = dmp.DMP(self.cfg.mprim.dt/self.cfg.mprim.end_time)
+            d.dmp.set_timesteps(self.motor_steps, 0.0, 1.15)
             d.lwr_meta_params(self.n_basis)
             d.dmp.set_initial_state([deg2dmp(init_state)])
             d.dmp.set_attractor_state([deg2dmp(target_state)])
@@ -79,11 +100,13 @@ class DmpG25(environments.MotorPrimitive):
 
             d.lwr_model_params(centers, widths, slopes, offsets)
             ts, ys, yds = d.trajectory()
+            ts = self.cfg.mprim.end_time*np.array(ts)
             ys = self.dmp2angle_rad(i, np.array(ys))
 
-            traj.append((tuple(ys), self.cfg.mprim.max_speed))
+            traj_i = Trajectory(ts, ys, self.cfg.mprim.max_speed)
+            traj.append(traj_i)
 
-        return tuple(traj), self.max_steps
+        return traj, self.max_steps
 
     def dmp2angle_rad(self, i, ys):
         """In radians"""

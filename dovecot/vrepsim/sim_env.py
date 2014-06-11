@@ -100,10 +100,10 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
         """Compute processed sensors data"""
         object_sensors = raw_sensors['object_sensors']
 
-        assert len(object_sensors) % (3+4) == 0
-        n = int(len(object_sensors)/7)
-        positions    = tuple(tuple(100.0*object_sensors[7*i   :7*i+ 3]) for i in range(n))
-        quaternions  = tuple(tuple(      object_sensors[7*i+ 3:7*i+ 7]) for i in range(n))
+        assert len(object_sensors) % (3+4+3+3) == 0
+        n = int(len(object_sensors)/13)
+        positions    = tuple(tuple(100.0*object_sensors[13*i   :13*i+ 3]) for i in range(n))
+        quaternions  = tuple(tuple(      object_sensors[13*i+ 3:13*i+ 7]) for i in range(n))
         # velocities_t = tuple(tuple(object_sensors[13*i+ 7:13*i+10]) for i in range(n))
         # velocities_a = tuple(tuple(object_sensors[13*i+10:13*i+13]) for i in range(n))
 

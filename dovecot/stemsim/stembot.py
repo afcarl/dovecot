@@ -48,7 +48,7 @@ class StemBot(object):
 
     def _execute(self, motor_command):
 
-        ts, motor_traj = motor_command
+        motor_trajs, max_steps = motor_command
 
         try:
             self.stemcom.setup(self.cfg.mprim.init_states, blocking=True)
@@ -57,9 +57,10 @@ class StemBot(object):
             assert all(not c for c in self.stemcom.ms.compliant)
             self.stemcom.ms.torque_limit = TORQUE_LIMIT
 
+            max_t = max(tj.max_t for tj in motor_trajs)
             start_time = time.time()
-            while time.time()-start_time < ts[-1]:
-                self.stemcom.step((ts, motor_traj), start_time)
+            while time.time()-start_time < max_t:
+                self.stemcom.step(motor_trajs, time.time()-start_time)
             end_time = time.time()
 
             self.stemcom.setup(self.cfg.mprim.init_states, blocking=False)

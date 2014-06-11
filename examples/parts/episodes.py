@@ -3,41 +3,39 @@ import time
 import random
 import sys
 
-import env
-from dovecot.stemsim import episode
+from environments import tools
+
+import dotdot
+import dovecot
 import cfg
 
 DEBUG = False
 
 cfg_run = cfg.cfg0
 cfg_run.mprim.n_basis = 2
-cfg_run.stem.uid  = int(sys.argv[1])
-cfg_run.logger.filename = cfg_run.logger.filename + str(cfg_run.stem.uid)
+cfg_run.execute.is_simulation = False
+cfg_run.execute.hard.uid = int(sys.argv[1])
 
 if DEBUG:
     cfg_run.vrep.headless = False
     cfg_run.vrep.ppf = 1
 
-episodes_count  = 1 if len(sys.argv) <= 2 else int(sys.argv[2])
-collisions      = 0
+n = 1 if len(sys.argv) <= 2 else int(sys.argv[2])
 
 start_time = time.time()
-ep = episode.Episode(cfg_run)
+he = dovecot.HardwareEnvironment(cfg_run)
 
-for _ in range(episodes_count):
+for _ in range(n):
     done = False
     while not done:
         try:
-            order = tuple(random.uniform(lb, hb) for lb, hb in ep.m_bounds)
-            effect = ep.execute_order(order)
-            if effect[2] != 0.0:
-                collisions += 1
+            m_signal = tools.random_signal(he.m_channels)
+            feedback = he.execute(m_signal)
             done = True
-        except episode.OrderNotExecutableError:
+        except he.OrderNotExecutableError:
             pass
 
-ep.close()
+he.close()
 dur = time.time() - start_time
 
-print("{} movements, {} collisions ({:.1f}%), {:.1f}s ({:.1f}s per movements)".format(
-    episodes_count, collisions, 100.0*collisions/episodes_count, dur, dur/episodes_count))
+print("{} movements, {:.1f}s ({:.1f}s per movements)".format(n, dur, dur/n))
