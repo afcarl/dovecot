@@ -17,7 +17,10 @@ cfg0.execute.simu.mac_folder='/Applications/VRep/vrep.app/Contents/MacOS/'
 cfg0.execute.simu.load = True
 cfg0.execute.simu.headless = True
 
-total = int(sys.argv[1])
+total = 1
+if len(sys.argv) >= 2:
+    total = int(sys.argv[1])
+
 
 vrepb = sim_env.SimulationEnvironment(cfg0)
 
@@ -27,7 +30,7 @@ col_orders = []
 start = time.time()
 for i in range(total):
     m_signal = tools.random_signal(vrepb.m_channels)
-    feedback = vrepb.execute(m_signal)
+    feedback = vrepb.execute(m_signal, meta={})
     s_vector = tools.to_vector(feedback['s_signal'], vrepb.s_channels)
     if s_vector[2] != 0.0:
         cols += 1

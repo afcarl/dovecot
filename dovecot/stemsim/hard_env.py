@@ -1,6 +1,7 @@
 from __future__ import print_function, division, absolute_import
 import time
 import sys
+import os
 import atexit
 
 from toolbox import gfx
@@ -16,6 +17,20 @@ from . import stemcfg
 # trio framebuffer buffer duration in seconds.
 FB_DURATION = 40.0
 
+def stem_uid(cfg=None):
+    try:
+        return cfg.execute.hard.uid
+    except (AttributeError, KeyError):
+        try:
+            uid =  int(os.environ['DOVECOT_STEM'])
+            if cfg is not None:
+                cfg.execute.hard._freeze(False)
+                cfg.execute.hard.uid = uid
+                cfg.execute.hard._freeze(True)
+            return uid
+        except KeyError:
+            pass
+    return None
 
 class HardwareEnvironment(sim_env.SimulationEnvironment):
 
@@ -25,7 +40,9 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
         self.verbose = verbose
         self.optitrack = optitrack
 
-        self.stem = stemcfg.stems[self.cfg.execute.hard.uid]
+        suid = stem_uid(cfg)
+
+        self.stem = stemcfg.stems[suid]
         self.M_trans = triopost.load_triomatrix(self.stem)
 
         atexit.register(self.close)
@@ -45,7 +62,7 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
     def _execute_raw(self, motor_command, meta=None):
 
         meta = {} if meta is None else meta
-        tries = meta.get('tries', 3)
+        meta.setdefault('tries', 3)
         t     = meta.get('t', None)
 
         try:
@@ -107,7 +124,7 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
             return raw_sensors
 
         except stembot.CollisionError:
-            if tries > 0:
+            if meta['tries'] > 0:
                 self.fb.stop_tracking()
                 meta['tries'] -= 1
                 return self._execute(motor_command, meta=meta)
@@ -116,7 +133,7 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
                 raise self.OrderNotExecutableError
 
         except natnet.MarkerError as e:
-            if tries > 0:
+            if meta['tries'] > 0:
                 print('{}caught marker error...                   {}'.format(gfx.red, gfx.end))
                 print('{}{}{}'.format(gfx.red, e, gfx.end))
                 time.sleep(0.1)

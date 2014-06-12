@@ -41,26 +41,35 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
             sp.process_context(self.context)
             self.s_prim.add_s_prim(sp)
 
-    def _check_self_collision(self, motor_traj):
+    def _check_self_collision(self, motor_poses):
                 # check for self-collisions beforehand
-        ts = [self.cfg.mprim.dt/1000.0*i for i in range(len(motor_traj[0]))]
+        ts = [self.cfg.mprim.dt*i for i in range(len(motor_poses[0]))]
 
         if self.cfg.execute.check_self_collisions:
-            for i, pose in enumerate(motor_traj):
+            for i, pose in enumerate(motor_poses):
                 if i % 3 == 0: # every 50ms.
                     if len(collider.collide(pose)) > 0:
                         if self.cfg.execute.partial_mvt:
-                            return ts[:i-10], motor_traj[:i-10]
+                            return ts[:i-10], motor_poses[:i-10]
                         else:
                             return CollisionError
         else:
             assert self.cfg.execute.is_simulation
 
-        return ts, motor_traj
+        return ts, motor_poses
 
-    def _check_object_collision(self, motor_traj):
+    @classmethod
+    def _trajs2poses(self, trajs):
+        """Transform 6 trajectories in radians in a list of poses in degrees"""
+        poses = []
+        for j in range(len(trajs[0])):
+            pose = [tj.ps[j] for tj in trajs]
+            poses.append(np.degrees(pose))
+        return poses
+
+    def _check_object_collision(self, motor_poses):
         if self.cfg.execute.prefilter:
-            return not self._collision_filter.may_collide(motor_traj)
+            return not self._collision_filter.may_collide(motor_poses)
         return True
 
     def _execute_raw(self, motor_command, meta=None):
@@ -69,12 +78,12 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
         meta['log'] = {}
         meta['log']['motor_command'] = motor_command
 
-        motor_traj = list(zip(*[np.degrees(t_i[0]) for t_i in motor_traj]))
-        ts, motor_traj = self._check_self_collision(motor_traj)
-        if not self._check_object_collision(motor_traj):
-            return raw_sensors
+        motor_poses = self._trajs2poses(motor_traj)
+        ts, motor_poses = self._check_self_collision(motor_poses)
+        if not self._check_object_collision(motor_poses):
+            return {}
 
-        raw_sensors = self.vrepcom.run_simulation(motor_traj, max_steps)
+        raw_sensors = self.vrepcom.run_simulation(motor_poses, max_steps)
         raw_sensors = self._process_sensors(raw_sensors)
 
         meta['log']['raw_sensors'] = raw_sensors

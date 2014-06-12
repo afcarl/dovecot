@@ -48,6 +48,9 @@ class Trajectory(object):
     def max_t(self):
         return self.ts[-1]
 
+    def __len__(self):
+        return len(self.ts)
+
 
 class DmpG25(environments.MotorPrimitive):
 

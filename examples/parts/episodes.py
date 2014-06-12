@@ -13,14 +13,16 @@ DEBUG = False
 
 cfg_run = cfg.cfg0
 cfg_run.mprim.n_basis = 2
+cfg_run.execute.prefilter  = False
 cfg_run.execute.is_simulation = False
-cfg_run.execute.hard.uid = int(sys.argv[1])
 
 if DEBUG:
     cfg_run.vrep.headless = False
     cfg_run.vrep.ppf = 1
 
-n = 1 if len(sys.argv) <= 2 else int(sys.argv[2])
+n = 1 if len(sys.argv) <= 1 else int(sys.argv[1])
+if len(sys.argv) >= 3:
+    cfg_run.execute.hard.uid = int(sys.argv[2])
 
 start_time = time.time()
 he = dovecot.HardwareEnvironment(cfg_run)
