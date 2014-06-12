@@ -9,7 +9,6 @@ import environments
 from environments import tools
 
 from ..vrepsim import sim_env
-from ..logger import logger
 from . import triopost
 from . import stembot
 from . import stemcfg

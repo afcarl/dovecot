@@ -6,7 +6,6 @@ import environments
 
 from ..collider import maycollide
 from ..collider import collider
-from ..logger import logger
 
 from .. import prims
 from . import vrepcom
@@ -25,14 +24,6 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
             self._collision_filter = maycollide.CollisionFilter(self.vrepcom.caldata.position,
                                                                 self.vrepcom.caldata.dimensions,
                                                                 self.MARKER_SIZE)
-
-        self.use_logger = self.cfg.logger.enabled
-        if self.use_logger:
-            self.logger = logger.Logger(filename   =self.cfg.logger.filename,
-                                        folder     =self.cfg.logger.folder,
-                                        write_delay=self.cfg.logger.write_delay,
-                                        ignored    =self.cfg.logger.ignored)
-            self.logger.start()
 
     def _create_primitives(self, cfg):
         self.context = {'x_bounds': (-300.0, 300.0),
@@ -75,25 +66,18 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
     def _execute_raw(self, motor_command, meta=None):
         motor_traj, max_steps = motor_command
 
-        raw_sensors = {'motor_traj': motor_traj}
+        meta['log'] = {}
+        meta['log']['motor_command'] = motor_command
 
         motor_traj = list(zip(*[np.degrees(t_i[0]) for t_i in motor_traj]))
         ts, motor_traj = self._check_self_collision(motor_traj)
         if not self._check_object_collision(motor_traj):
-            meta['raw_sensors'] = raw_sensors
             return raw_sensors
 
-        raw_sensors = {'motor_traj': motor_traj}
         raw_sensors = self.vrepcom.run_simulation(motor_traj, max_steps)
         raw_sensors = self._process_sensors(raw_sensors)
 
-        if self.use_logger:
-            data_log = copy.deepcopy(raw_sensors)
-            data_log['motor_command'] = motor_command
-            data_log['scene'] = 'vrep_{}'.format(self.cfg.sprims.scene)
-            self.logger.log(data_log)
-
-        meta['raw_sensors'] = raw_sensors
+        meta['log']['raw_sensors'] = raw_sensors
         return raw_sensors
 
     def _process_sensors(self, raw_sensors):
