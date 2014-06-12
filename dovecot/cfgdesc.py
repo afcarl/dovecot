@@ -52,7 +52,7 @@ desc._isinstance('execute.simu.ppf', numbers.Integral)
 desc._isinstance('execute.simu.headless', bool)
 
 # obsolete ?
-desc._isinstance('execute.simu.vglrun', bool)
+desc._describe('execute.simu.vglrun', instanceof=bool, default=False)
 
 # the location of the calibration folder
 desc._isinstance('execute.simu.calibrdir', str)
@@ -119,20 +119,20 @@ desc._describe('mprim.angle_ranges', instanceof=collections.Iterable,
 
 
 
-    # Logger
-desc._branch('logger')
+#     # Logger
+# desc._branch('logger')
 
-# log folder
-desc._isinstance('logger.enabled', bool)
+# # log folder
+# desc._isinstance('logger.enabled', bool)
 
-# log folder
-desc._isinstance('logger.folder', str)
+# # log folder
+# desc._isinstance('logger.folder', str)
 
-# log filename
-desc._isinstance('logger.filename', str)
+# # log filename
+# desc._isinstance('logger.filename', str)
 
-# logger write delay
-desc._isinstance('logger.write_delay', numbers.Integral)
+# # logger write delay
+# desc._isinstance('logger.write_delay', numbers.Integral)
 
-# logger ignored
-desc._isinstance('logger.ignored', collections.Iterable)
+# # logger ignored
+# desc._isinstance('logger.ignored', collections.Iterable)
