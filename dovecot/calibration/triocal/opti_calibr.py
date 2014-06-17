@@ -108,7 +108,7 @@ def vrep_capture(poses):
                                    sb.m_channels)
         meta = {}
         sb.execute(m_signal, meta=meta)
-        vrep_res.append(np.mean([meta['raw_sensors']['tip_pos'][-50:]], axis=1))
+        vrep_res.append(np.mean([meta['log']['raw_sensors']['tip_pos'][-50:]], axis=1))
 
     sb.close()
     return vrep_res
