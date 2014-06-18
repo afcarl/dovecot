@@ -1,20 +1,13 @@
 from __future__ import division, print_function, absolute_import
 import time
 
-import numpy as np
-
+from toolbox import gfx
 import powerswitch as ps
 import pydyn
 
-from .. import ttts
-from .. import prims
-from ..collider import maycollide
-from ..collider import collider
 from . import stemcfg
 from . import stemcom
 
-class CollisionError(Exception):
-    pass
 
 TORQUE_LIMIT = [50, 50, 50, 70, 50, 50]
 
@@ -48,7 +41,7 @@ class StemBot(object):
 
     def _execute(self, motor_command):
 
-        motor_trajs, max_steps = motor_command
+        motor_trajs, _ = motor_command
 
         try:
             self.stemcom.setup(self.cfg.mprim.init_states, blocking=True)
@@ -67,13 +60,13 @@ class StemBot(object):
 
             return start_time, end_time
 
-        except pydyn.MotorError as e:
-            print("MotorError")
+        except pydyn.MotorError as exc:
+            print('{}{}{}'.format(gfx.red, exc, gfx.end))
             if self.cfg.execute.hard.powerswitch:
                 self.powerswitch.set_off(self.powerswitch_port)
             import traceback
             traceback.print_exc()
-            raise e
+            raise exc
 
 
     def close(self, rest=True):

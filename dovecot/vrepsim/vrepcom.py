@@ -79,7 +79,7 @@ class VRepCom(object):
 
         port_found = False
         start_time = time.time()
-        while(not port_found and time.time() - start_time < CONNECTION_TIMEOUT):
+        while not port_found and time.time() - start_time < CONNECTION_TIMEOUT:
             print("trying to read {}".format(logname))
             with open(logname, 'r') as f:
                 output = f.read()
@@ -119,7 +119,7 @@ class VRepCom(object):
 
         print("loading v-rep scene {}".format(scene_filepath))
         ret = self.vrep.simLoadScene(scene_filepath)
-        #if ret == -1:      #FIXME Why not ?
+        # if ret == -1:      #FIXME Why not ?
         #    raise IOError
         self.handle_script = self.vrep.simGetScriptHandle(script)
 
@@ -132,11 +132,11 @@ class VRepCom(object):
             self.connected = False
 
 
-    def _prepare_traj(self, trajectory, max_steps):
+    def _prepare_traj(self, trajectory, max_steps=None):
         if self.cfg.execute.is_simulation:
             return self._prepare_motor_traj(trajectory, max_steps)
         else:
-            return self._prepare_marker_traj(trajectory, max_steps)
+            return self._prepare_marker_traj(trajectory)
 
     def _prepare_motor_traj(self, trajectory, max_steps):
         """
@@ -151,7 +151,7 @@ class VRepCom(object):
             traj.extend(pos_v)
         return traj
 
-    def _prepare_marker_traj(self, trajectory, max_step=None):
+    def _prepare_marker_traj(self, trajectory):
         assert len(trajectory) > 0, "Trajectory to prepare is empty."
 
         ts_ref = trajectory[0][0]
@@ -168,7 +168,7 @@ class VRepCom(object):
         return list(traj_x + traj_y + traj_z)
 
 
-    def run_simulation(self, trajectory, max_steps, t=None):
+    def run_simulation(self, trajectory, max_steps):
         """
             Trajectory is a list 6 pairs of vectors, each of the same length.
             For each pair:

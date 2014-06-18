@@ -11,8 +11,13 @@ from .. import prims
 from . import vrepcom
 
 
+class CollisionError(Exception):
+    pass
+
+
 class SimulationEnvironment(environments.PrimitiveEnvironment):
 
+    CollisionError = CollisionError
     MARKER_SIZE = 11
 
     def __init__(self, cfg):
@@ -52,7 +57,7 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
                         if self.cfg.execute.partial_mvt:
                             return ts[:i-10], motor_poses[:i-10]
                         else:
-                            return CollisionError
+                            return self.CollisionError
         else:
             assert self.cfg.execute.is_simulation
 

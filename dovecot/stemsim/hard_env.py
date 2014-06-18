@@ -30,6 +30,7 @@ def stem_uid(cfg=None):
             pass
     return None
 
+
 class HardwareEnvironment(sim_env.SimulationEnvironment):
 
     def __init__(self, cfg, verbose=True, optitrack=True):
@@ -116,7 +117,7 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
 
             return raw_sensors
 
-        except stembot.CollisionError:
+        except self.CollisionError:
             if meta['tries'] > 0:
                 self.fb.stop_tracking()
                 meta['tries'] -= 1
