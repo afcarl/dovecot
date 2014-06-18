@@ -56,8 +56,6 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
         if self.verbose:
             print("{}launching vrep... {}".format(gfx.cyan, gfx.end))
 
-        cfg.execute.simu.load = False # FIXME probably not the most elegant
-
 
     def _execute_raw(self, motor_command, meta=None):
 
