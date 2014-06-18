@@ -6,8 +6,6 @@ import atexit
 
 from toolbox import gfx
 import natnet
-import environments
-from environments import tools
 
 from ..vrepsim import sim_env
 from . import triopost
@@ -19,28 +17,30 @@ FB_DURATION = 40.0
 
 def stem_uid(cfg=None):
     try:
-        return cfg.execute.hard.uid
-    except (AttributeError, KeyError):
+        uid = int(os.environ['DOVECOT_STEM'])
+        if cfg is not None:
+            cfg.execute.hard._freeze(False)
+            cfg.execute.hard.uid = uid
+            cfg.execute.hard._freeze(True)
+        return uid
+    except KeyError:
         try:
-            uid =  int(os.environ['DOVECOT_STEM'])
-            if cfg is not None:
-                cfg.execute.hard._freeze(False)
-                cfg.execute.hard.uid = uid
-                cfg.execute.hard._freeze(True)
-            return uid
-        except KeyError:
+            return cfg.execute.hard.uid
+        except (AttributeError, KeyError):
             pass
     return None
 
 class HardwareEnvironment(sim_env.SimulationEnvironment):
 
     def __init__(self, cfg, verbose=True, optitrack=True):
+        assert not cfg.execute.is_simulation
         super(HardwareEnvironment, self).__init__(cfg)
 
         self.verbose = verbose
         self.optitrack = optitrack
 
         suid = stem_uid(cfg)
+        print(suid)
 
         self.stem = stemcfg.stems[suid]
         self.M_trans = triopost.load_triomatrix(self.stem)
@@ -63,7 +63,6 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
 
         meta = {} if meta is None else meta
         meta.setdefault('tries', 3)
-        t     = meta.get('t', None)
 
         try:
 
@@ -76,8 +75,6 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
                 print("{}executing movement on stem...{}".format(gfx.purple, gfx.end), end='\r')
             sys.stdout.flush()
 
-            start_stem = time.time()
-
             # execute movement on stem
             self.fb.track(self.stem.optitrack_side)
             start, end = self.sb._execute(motor_command)
@@ -87,7 +84,6 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
             if self.verbose:
                 print('')
             time.sleep(0.01)
-            stem_time = time.time() - start_stem
             print('time slice: {:.1f}'.format(end-start))
 
             start_vrep = time.time()
@@ -109,8 +105,7 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
                 print("{}executing movement in vrep...{}".format(gfx.cyan, gfx.end))
 
             # execute in vrep
-            """#TODO max_steps set to None ??"""
-            raw_sensors = self.vrepcom.run_simulation(vrep_traj, None)
+            raw_sensors = self.vrepcom.run_simulation(vrep_traj, self.cfg.mprim.max_steps)
 
             log['raw_sensors'] = raw_sensors
             log['vrep_traj'] = vrep_traj
@@ -127,21 +122,21 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
             if meta['tries'] > 0:
                 self.fb.stop_tracking()
                 meta['tries'] -= 1
-                return self._execute(motor_command, meta=meta)
+                return self._execute_raw(motor_command, meta=meta)
             else:
                 self.fb.stop_tracking()
                 raise self.OrderNotExecutableError
 
-        except natnet.MarkerError as e:
+        except natnet.MarkerError as exc:
             if meta['tries'] > 0:
                 print('{}caught marker error...                   {}'.format(gfx.red, gfx.end))
-                print('{}{}{}'.format(gfx.red, e, gfx.end))
+                print('{}{}{}'.format(gfx.red, exc, gfx.end))
                 time.sleep(0.1)
                 self.fb = natnet.FrameBuffer(FB_DURATION, addr=self.stem.optitrack_addr)
                 meta['tries'] -= 1
-                return self._execute(motor_command, meta=meta)
+                return self._execute_raw(motor_command, meta=meta)
             else:
-                raise self.OrderNotExecutableError('{}'.format(e))
+                raise self.OrderNotExecutableError('{}'.format(exc))
 
     def close(self):
         try:
