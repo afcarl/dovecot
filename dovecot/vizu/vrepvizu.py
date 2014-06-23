@@ -74,7 +74,7 @@ class VizuVrep(vrepcom.VRepCom):
         self.current_color = get_random_color(DEFAULT_TRANSPARENCY)
         self.caldata = None
 
-    def load(self, script="vizu", calcheck=False):
+    def load(self, script="vizu", ar=True, calcheck=False):
         """
             Load a scene, set the script handle name to the given parameter
             and perform a calibration checking if asked
@@ -83,7 +83,7 @@ class VizuVrep(vrepcom.VRepCom):
 
         if calcheck:
             self.caldata = ttts.TTTCalibrationData(self.scene_name,
-                                                   self.cfg.vrep.calibrdir)
+                                                   self.cfg.execute.simu.calibrdir)
             self.caldata.load()
 
         if not self.connected:

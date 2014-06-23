@@ -5,9 +5,13 @@ import time
 from pydyn import MotorSet
 import env
 import powerswitch
+import dovecot
 from dovecot.stemsim import stemcfg
 
-uid = None if len(sys.argv) == 1 else int(sys.argv[1])
+if len(sys.argv) >= 2:
+    uid = int(sys.argv[1])
+else:
+    uid = dovecot.stem_uid()
 
 stem = stemcfg.stems[uid]
 stem.cycle_usb()

@@ -4,10 +4,14 @@ import numpy as np
 
 from toolbox import dist
 
+from environments import Channel
+import environments
+
+from environments import tools
 from . import sprims
 
 
-class Push(sprims.SensoryPrimitive):
+class Push(environments.SensoryPrimitive):
 
     def __init__(self, cfg):
         #self.object_name = cfg.sprimitive.push.object_name
@@ -19,19 +23,19 @@ class Push(sprims.SensoryPrimitive):
         return (self.object_name + '_pos',)
 
     def process_context(self, context):
-        self.s_bounds = (tuple(context['x_bounds']), tuple(context['y_bounds']), (0.0, 1000.0))
-        self.real_s_bounds = self.s_bounds
+        self.s_channels = [Channel('x', bounds=tuple(context['x_bounds']), unit='mm'),
+                           Channel('y', bounds=tuple(context['y_bounds']), unit='mm'),
+                           Channel('push_saliency', bounds=(0.0, 1000.0), fixed=1000.0)]
 
-    def process_sensors(self, sensors_data):
+    def process_raw_sensors(self, sensors_data):
+        if self.object_name + '_pos' not in sensors_data:
+            return tools.to_signal((0, 0, 0), self.s_channels)
         pos_array = sensors_data[self.object_name + '_pos']
         pos_a = pos_array[0]
         pos_b = pos_array[-1]
         collision = 0.0 if dist(pos_a[:2], pos_b[:2]) < 1.0e-2 else 1000.0
 
-        return (pos_b[0]-pos_a[0], pos_b[1]-pos_a[1]) + (collision,)
+        return tools.to_signal((pos_b[0]-pos_a[0], pos_b[1]-pos_a[1]) + (collision,), self.s_channels)
 
-    @property
-    def s_units(self):
-        return ('mm', 'mm', None)
 
-sprims.sprims['push'] = Push
+sprims['push'] = Push

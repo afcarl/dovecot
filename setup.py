@@ -11,7 +11,6 @@ setup(
     keywords     = 'science experiment hardware simulation robots',
     url          = 'flowers.inria.fr',
     packages = ['dovecot',
-                'dovecot.logger',
                 'dovecot.vizu',
                 'dovecot.prims',
                 'dovecot.ttts',

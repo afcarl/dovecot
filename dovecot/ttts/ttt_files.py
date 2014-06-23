@@ -78,10 +78,10 @@ class TTTCalibrationData(object):
         with open(self.cal_filepath, 'r') as f:
             caldata = pickle.load(f)
         self.md5 = md5sum(self.ttt_filepath)
-        assert caldata.md5 == self.md5, "loaded scene calibration ({}) differs from scene ({})".format(self.cal_filepath, self.ttt_filepath)
+        assert caldata.md5 == self.md5, "loaded scene calibration ({}:{}) differs from scene ({}:{})".format(self.cal_filepath, caldata.md5, self.ttt_filepath, self.md5)
 
         self.dimensions     = caldata.dimensions
-        self.dimensions_m     = caldata.dimensions_m
+        self.dimensions_m   = caldata.dimensions_m
         self.mass           = caldata.mass
         self.position       = caldata.position
         self.position_world = caldata.position_world

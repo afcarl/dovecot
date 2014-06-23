@@ -6,38 +6,61 @@ import forest
 desc = forest.Tree()
 desc._strict(True)
 
-# FIXME should not not be in a branch
-desc._isinstance('partial_mvt', bool)
 
 
+    # Execution parameters
+desc._branch('execute')
 
-    # Hardware stem config
-desc._branch('stem')
+# if True, execute in simulation, else hardware
+desc._isinstance('execute.is_simulation', bool)
+
+# if True, self-collisions movements are allowed (and truncated)
+desc._isinstance('execute.partial_mvt', bool)
+
+# if True, self-collisions movements are forbidden (and truncated)
+desc._isinstance('execute.check_self_collisions', bool)
+
+# if True, self-collisions movements are allowed (and truncated)
+desc._isinstance('execute.prefilter', bool)
+
+
+    # Hardware parameters
+desc._branch('execute.hard')
+
 # the stem number
-desc._isinstance('stem.uid', numbers.Integral)
-# FIXME meaning ?
-desc._isinstance('stem.dt', numbers.Real)
+desc._isinstance('execute.hard.uid', numbers.Integral)
+
+# if True, control powerswitch during experiment
+desc._isinstance('execute.hard.powerswitch', bool)
+
 # FIXME diff between the two ?
-desc._isinstance('stem.verbose_com', bool)
+desc._isinstance('execute.hard.verbose_com', bool)
 
-desc._isinstance('stem.verbose_dyn', bool)
+desc._isinstance('execute.hard.verbose_dyn', bool)
 
 
+    # Simulation parameters
+desc._branch('execute.simu')
 
-    # V-REP config
-desc._branch('vrep')
 # do we load vrep or not ?
-desc._isinstance('vrep.load', bool)
+desc._isinstance('execute.simu.load', bool)
+
 # pass of the physic engine per frame (max 200)
-desc._isinstance('vrep.ppf', numbers.Integral)
+desc._isinstance('execute.simu.ppf', numbers.Integral)
 
-desc._isinstance('vrep.headless', bool)
+# will run with xfvb if True
+desc._isinstance('execute.simu.headless', bool)
 
-desc._isinstance('vrep.vglrun', bool)
+# obsolete ?
+desc._describe('execute.simu.vglrun', instanceof=bool, default=False)
 
-desc._isinstance('vrep.calibrdir', str)
+# the location of the calibration folder
+desc._isinstance('execute.simu.calibrdir', str)
+
 # on mac, we need to know where vrep is
-desc._isinstance('vrep.mac_folder', str)
+desc._isinstance('execute.simu.mac_folder', str)
+
+
 
     # Sensory primitives
 desc._branch('sprims')
@@ -56,9 +79,6 @@ desc._isinstance('sprims.tip', bool)
 # recast every sensory dimension between 0 and 1 ?
 desc._isinstance('sprims.uniformize', bool)
 
-# use collision detection to avoid running non-colliding episodes ?
-desc._isinstance('sprims.prefilter', bool)
-
 
 
  	# Motor primitives
@@ -69,6 +89,9 @@ desc._isinstance('mprim.name', str)
 
 # the number of position (and possibly velocity) orders executed
 desc._isinstance('mprim.motor_steps', numbers.Integral)
+
+# the temporal resolution of the motor trajectory, in s
+desc._isinstance('mprim.dt', numbers.Real)
 
 # defines when the simulation is finished
 desc._isinstance('mprim.max_steps', numbers.Integral)
@@ -94,20 +117,3 @@ desc._isinstance('mprim.target_states', collections.Iterable)
 desc._describe('mprim.angle_ranges', instanceof=collections.Iterable,
                docstring='The range of the angles of the joints around the zero position the motor primitives bounds its values into')
 
-# logger
-desc._branch('logger')
-
-# log folder
-desc._isinstance('logger.enabled', bool)
-
-# log folder
-desc._isinstance('logger.folder', str)
-
-# log filename
-desc._isinstance('logger.filename', str)
-
-# logger write delay
-desc._isinstance('logger.write_delay', numbers.Integral)
-
-# logger ignored
-desc._isinstance('logger.ignored', collections.Iterable)

@@ -6,12 +6,15 @@ import sys
 import numpy as np
 import forest
 
+
+from environments import tools
 from toolbox import gfx
 import natnet
 
 from ...stemsim import stemcom
-from ...vrepsim import vrepbot
+from ...vrepsim import sim_env
 from ... import prims
+from ...cfgdesc import desc
 
 def Rot(M33):
     R = np.eye(4)
@@ -64,26 +67,25 @@ def transform_3D(A, B, scaling=True):
 
 def vrep_capture(poses):
 
-    cfg = forest.Tree()
-    cfg._branch('vrep')
-    cfg._branch('mprim')
-    cfg._branch('sprims')
-    cfg._branch('logger')
+    cfg = desc._copy(deep=True)
 
-    cfg.vrep.ppf         = 10
+    cfg.execute.is_simulation         = True
+    cfg.execute.prefilter             = False
+    cfg.execute.check_self_collisions = False
 
-    cfg.vrep.mac_folder = '/Applications/V-REP/v_rep/bin'
-    cfg.vrep.load            = True
-    cfg.vrep.headless        = True
+    cfg.execute.simu.ppf        = 10
+    cfg.execute.simu.mac_folder = '/Applications/V-REP/v_rep/bin'
+    cfg.execute.simu.load       = True
+    cfg.execute.simu.headless   = True
+    cfg.execute.simu.calibrdir  = '~/.dovecot/tttcal/'
 
-    cfg.vrep.calibrdir = '~/.dovecot/tttcal/'
-    cfg.sprims.scene = 'calibrate'
-    cfg.sprims.names = ['push']
+    cfg.sprims.scene      = 'calibrate'
+    cfg.sprims.names      = ['push']
     cfg.sprims.uniformize = False
-    cfg.sprims.prefilter = False
-    cfg.sprims.tip = True
+    cfg.sprims.tip        = True
 
-    cfg.mprim.name = 'dmpg25'
+    cfg.mprim.dt          = 0.01
+    cfg.mprim.name        = 'dmpg25'
     cfg.mprim.motor_steps = 1000
     cfg.mprim.max_steps   = 1000
     cfg.mprim.uniformize  = False
@@ -91,30 +93,29 @@ def vrep_capture(poses):
     cfg.mprim.max_speed   = 1.0
     cfg.mprim.end_time    = 2.0
 
-    cfg['logger.enabled'] = False
-
     cfg.mprim.init_states   = [-30.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     cfg.mprim.target_states = [  0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     cfg.mprim.angle_ranges  = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0, 120.0), (99.0, 99.0), (99.0, 99.0))
 
-    sb = vrepbot.VRepBot(cfg)
+    sb = sim_env.SimulationEnvironment(cfg)
 
     vrep_res = []
     for tg in poses:
         cfg.mprim.target_states = tg
         sb.m_prim = prims.create_mprim(cfg.mprim.name, cfg)
 
-        order = (0.0, 0.0)*cfg.mprim.n_basis*6 + (0.20, 0.20)
-        sb.execute_order(order)
-        vrep_res.append(np.mean([sb.channels['tip_pos'][-50:]], axis=1))
+        m_signal = tools.to_signal((0.0, 0.0)*cfg.mprim.n_basis*6 + (0.20, 0.20),
+                                   sb.m_channels)
+        meta = {}
+        sb.execute(m_signal, meta=meta)
+        vrep_res.append(np.mean([meta['log']['raw_sensors']['tip_pos'][-50:]], axis=1))
 
     sb.close()
     return vrep_res
 
 def opti_capture(poses, stemcfg, fb=None):
-    cfg = forest.Tree()
-    cfg._branch('stem')
-    cfg.stem.uid = stemcfg.uid
+    cfg = desc._copy(deep=True)
+    cfg.execute.hard.uid = stemcfg.uid
     stem_com = stemcom.StemCom(cfg)
 
     stem_com.ms.moving_speed    = 100
