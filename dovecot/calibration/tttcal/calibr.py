@@ -85,6 +85,7 @@ def calibrate_scene(com):
     else:
         caldata = ttts.TTTCalibrationData(com.scene_name, com.cfg.execute.simu.calibrdir)
         caldata.populate(toy_mass, position, dimensions, toy_pos_world, dimensions_m)
+        print(caldata.md5)
         caldata.save()
         return caldata
 

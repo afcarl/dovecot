@@ -6,16 +6,16 @@ import time
 
 import forest
 
-import env
+import dotdot
 from dovecot.vrepsim import sim_env
 from cfg import cfg0
 
 from environments import tools
 
-cfg0.execute.simu.ppf  = 200
+cfg0.execute.simu.ppf = 1
 cfg0.execute.simu.mac_folder='/Applications/VRep/vrep.app/Contents/MacOS/'
 cfg0.execute.simu.load = True
-cfg0.execute.simu.headless = True
+cfg0.execute.simu.headless = False
 
 total = 1
 if len(sys.argv) >= 2:

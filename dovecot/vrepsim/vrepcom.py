@@ -67,7 +67,10 @@ class VRepCom(object):
                 else:
                     cmd = "DISPLAY=:0 vrep >> {}".format(logname)
         elif os.uname()[0] == "Darwin":
-            cmd = "cd {}; ./vrep >> {}".format(self.mac_folder, logname)
+            flags = ''
+            if self.cfg.execute.simu.headless:
+                flags = '-h'
+            cmd = "cd {}; ./vrep {} >> {}".format(self.mac_folder, flags, logname)
         else:
             raise OSError
         print(cmd)
@@ -148,7 +151,7 @@ class VRepCom(object):
         """
         traj = [float(len(trajectory)), float(max_steps), self.cfg.mprim.max_speed] # motors_steps, max_steps, max_speed
         for pos_v in trajectory:
-            traj.extend(pos_v)
+            traj.extend(np.radians(pos_v))
         return traj
 
     def _prepare_marker_traj(self, trajectory):

@@ -46,16 +46,13 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
             sp.process_context(self.context)
             self.s_prim.add_s_prim(sp)
 
-    def _check_self_collision(self, motor_poses):
-                # check for self-collisions beforehand
-        ts = [self.cfg.mprim.dt*i for i in range(len(motor_poses[0]))]
-
+    def _check_self_collision(self, ts, motor_poses):
         if self.cfg.execute.check_self_collisions:
             for i, pose in enumerate(motor_poses):
-                if i % 3 == 0: # every 50ms.
+                if i % 3 == 0: # every 30ms.
                     if len(collider.collide(pose)) > 0:
                         if self.cfg.execute.partial_mvt:
-                            return ts[:i-10], motor_poses[:i-10]
+                            return ts[:i-0.5/self.cfg.mprim.dt], motor_poses[:i-0.5/self.cfg.mprim.dt]
                         else:
                             return self.CollisionError
         else:
@@ -84,7 +81,7 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
         meta['log']['motor_command'] = motor_command
 
         motor_poses = self._trajs2poses(motor_traj)
-        ts, motor_poses = self._check_self_collision(motor_poses)
+        ts, motor_poses = self._check_self_collision(motor_traj[0].ts, motor_poses)
         if not self._check_object_collision(motor_poses):
             return {}
 
