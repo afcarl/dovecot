@@ -68,7 +68,7 @@ if (simGetScriptExecutionCount() > 0) then
 
 	if(sim_step <= motors_sim_steps) then
 		for i = 1, #handles do
-			simSetJointTargetPosition(handles[i], Trajectory[3 + (i-1) * motors_sim_steps + sim_step])
+			simSetJointTargetPosition(handles[i], Trajectory[3 + (i-1) + 6*sim_step])
 		end
 	end
 
