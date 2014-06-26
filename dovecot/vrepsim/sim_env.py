@@ -52,7 +52,7 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
                 if i % 3 == 0: # every 30ms.
                     if len(collider.collide(pose)) > 0:
                         if self.cfg.execute.partial_mvt:
-                            return ts[:i-0.5/self.cfg.mprim.dt], motor_poses[:i-0.5/self.cfg.mprim.dt]
+                            return ts[:i-int(0.5/self.cfg.mprim.dt)], motor_poses[:i-int(0.5/self.cfg.mprim.dt)]
                         else:
                             return self.CollisionError
         else:
