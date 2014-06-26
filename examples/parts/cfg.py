@@ -5,13 +5,13 @@ from dovecot import desc
 
 cfg0 = desc._copy(deep=True)
 
-cfg0.execute.partial_mvt = False
-cfg0.execute.prefilter  = True
+cfg0.execute.partial_mvt = True
+cfg0.execute.prefilter   = True
 
 cfg0.mprim.dt = 0.01
 
-cfg0.execute.check_self_collisions = False
-cfg0.execute.is_simulation	   = True
+cfg0.execute.check_self_collisions = True
+cfg0.execute.is_simulation	       = True
 
 cfg0.execute.hard.verbose_com  = True
 cfg0.execute.hard.verbose_dyn  = True

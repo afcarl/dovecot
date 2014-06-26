@@ -5,15 +5,21 @@ import math
 import pydyn
 
 import env
+import dovecot
 from dovecot.stemsim import stemcfg
 from dovecot.stemsim import stemcom
-from dovecot.stemsim.collider import stem_bodytree
-from dovecot.stemsim.collider import display
-from dovecot.stemsim.collider import collider
+from dovecot.collider import stem_bodytree
+from dovecot.collider import display
+from dovecot.collider import collider
 
 from cfg import cfg0
 
-cfg0.stem.uid = int(sys.argv[1])
+if len(sys.argv) >= 2:
+    uid = int(sys.argv[1])
+else:
+    uid = dovecot.stem_uid()
+
+cfg0.execute.hard.uid = uid
 sc = stemcom.StemCom(cfg0)
 
 btdisplay = display.BodyTreeCubes(stem_bodytree.bt)

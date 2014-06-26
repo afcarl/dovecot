@@ -65,6 +65,11 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
 
         try:
 
+            motor_poses = self._trajs2poses(motor_traj)
+            ts, motor_poses = self._check_self_collision(motor_traj[0].ts, motor_poses)
+            if not self._check_object_collision(motor_poses):
+                return meta
+
             log =  {}
             meta['log'] = log
             log['motor_command'] = motor_command
