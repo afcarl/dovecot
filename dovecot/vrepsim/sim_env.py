@@ -1,6 +1,5 @@
 from __future__ import print_function, division, absolute_import
 
-import copy
 import numpy as np
 import environments
 
@@ -52,13 +51,13 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
                 if i % 3 == 0: # every 30ms.
                     if len(collider.collide(pose)) > 0:
                         if self.cfg.execute.partial_mvt:
-                            return ts[:i-int(0.5/self.cfg.mprim.dt)], motor_poses[:i-int(0.5/self.cfg.mprim.dt)]
+                            return i-int(0.5/self.cfg.mprim.dt)
                         else:
                             return self.CollisionError
         else:
             assert self.cfg.execute.is_simulation
 
-        return ts, motor_poses
+        return len(motor_poses)
 
     @classmethod
     def _trajs2poses(self, trajs):
@@ -81,7 +80,8 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
         meta['log']['motor_command'] = motor_command
 
         motor_poses = self._trajs2poses(motor_traj)
-        ts, motor_poses = self._check_self_collision(motor_traj[0].ts, motor_poses)
+        max_index = self._check_self_collision(motor_traj[0].ts, motor_poses)
+        motor_poses = motor_poses[:max_index]
         if not self._check_object_collision(motor_poses):
             return {}
 

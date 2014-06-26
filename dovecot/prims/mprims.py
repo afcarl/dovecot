@@ -44,6 +44,10 @@ class Trajectory(object):
         idx = bisect.bisect_right(self.ts, t)
         return self.ps[idx]
 
+    def truncate(self, index):
+        self.ts = self.ts[:index]
+        self.ps = self.ps[:index]
+
     @property
     def max_t(self):
         return self.ts[-1]

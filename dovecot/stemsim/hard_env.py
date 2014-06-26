@@ -74,10 +74,12 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
             # check for collisions
             motor_traj, max_steps = motor_command
             motor_poses = self._trajs2poses(motor_traj)
-            ts, motor_poses = self._check_self_collision(motor_traj[0].ts, motor_poses)
+            max_index = self._check_self_collision(motor_traj[0].ts, motor_poses)
             if not self._check_object_collision(motor_poses):
                 return meta
 
+            for traj in motor_traj:
+                traj.truncate(max_index)
 
             if self.verbose:
                 print("{}executing movement on stem...{}".format(gfx.purple, gfx.end), end='\r')
