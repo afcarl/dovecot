@@ -24,7 +24,7 @@ tip_group   = 7
 
 
 # Ref0
-attach(0, (50, 1000,  50), (0, 0, -25), meta='table', groups=[world_group])
+attach(0, (70, 1000,  70), (0, 0, -25), meta='table', groups=[world_group])
 #attach(0, (  55.002,   75, 165), (22/2,  75/2 + 30, -165/2 + 25), meta='clawL', groups=[world_group])
 #attach(0, (  55.003,   75, 165), (22/2, -75/2 - 30, -165/2 + 25), meta='clawR', groups=[world_group])
 attach(0, (  20,  20, 15), (0,  70, 7), meta='boltL', groups=[world_group])
