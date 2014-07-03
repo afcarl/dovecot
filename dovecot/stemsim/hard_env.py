@@ -66,17 +66,18 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
         try:
 
 
-            log =  {}
+            log =  {'times':{}}
             meta['log'] = log
-            log['motor_command'] = motor_command
-            #log['scene'] = 'ar_{}'.format(self.cfg.sprims.scene)
+            meta.setdefault('errors_marker', [])
+            meta.setdefault('errors_collision', [])
+
 
             # check for collisions
             motor_traj, max_steps = motor_command
             motor_poses = self._trajs2poses(motor_traj)
-            max_index = self._check_self_collision(motor_traj[0].ts, motor_poses)
             if not self._check_object_collision(motor_poses):
                 return meta
+            max_index = self._check_self_collision(motor_traj[0].ts, motor_poses)
 
             for traj in motor_traj:
                 traj.truncate(max_index)
@@ -89,7 +90,7 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
             self.fb.track(self.stem.optitrack_side)
             start, end = self.sb._execute(motor_command)
             self.fb.stop_tracking()
-            log['order_time'] = end - start
+            log['times']['order_time'] = end - start
 
             if self.verbose:
                 print('')
@@ -100,8 +101,7 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
 
             # get optitrack trajectory
             opti_traj = self.fb.tracking_slice(start, end)
-
-            log['opti_traj'] = opti_traj
+            self.fb.purge_tracking()
 
             # fill gaps
             try:
@@ -114,39 +114,47 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
             if self.verbose:
                 print("{}executing movement in vrep...{}".format(gfx.cyan, gfx.end))
 
+            log['captured_marker_traj'] = vrep_traj
+
             # execute in vrep
             raw_sensors = self.vrepcom.run_simulation(vrep_traj, self.cfg.mprim.max_steps)
 
             log['raw_sensors'] = raw_sensors
-            log['vrep_traj'] = vrep_traj
 
             # produce sensory feedback
             raw_sensors = self._process_sensors(raw_sensors)
             vrep_time = time.time() - start_vrep
 
-            log['vrep_time'] = vrep_time
+            log['times']['vrep_time'] = vrep_time
 
             return raw_sensors
 
-        except self.CollisionError:
+        except self.CollisionError as exc:
             if meta['tries'] > 0:
+                print('{}caught collision error...                   {}'.format(gfx.red, gfx.end))
+                print('{}{}{}'.format(gfx.red, exc, gfx.end))
+                meta['errors_collision'].append(meta['m_signal'])
                 self.fb.stop_tracking()
                 meta['tries'] -= 1
                 return self._execute_raw(motor_command, meta=meta)
             else:
                 self.fb.stop_tracking()
-                raise self.OrderNotExecutableError
+                raise self.OrderNotExecutableError('CollisionError')
 
         except natnet.MarkerError as exc:
             if meta['tries'] > 0:
                 print('{}caught marker error...                   {}'.format(gfx.red, gfx.end))
                 print('{}{}{}'.format(gfx.red, exc, gfx.end))
+                meta['errors_marker'].append(meta['m_signal'])
                 time.sleep(0.1)
                 self.fb = natnet.FrameBuffer(FB_DURATION, addr=self.stem.optitrack_addr)
                 meta['tries'] -= 1
                 return self._execute_raw(motor_command, meta=meta)
             else:
+                self.fb.stop_tracking()
                 raise self.OrderNotExecutableError('{}'.format(exc))
+        # finally:
+        #     self.fb.stop_tracking()
 
     def close(self):
         try:

@@ -178,6 +178,7 @@ class VRepCom(object):
                 1. The first vector is the position of the motor in rad.
                 2. The second vector is the max velocity of the motor in rad/s.
         """
+        #return {}
 
         if self.verbose:
             print("Setting parameters...")

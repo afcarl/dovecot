@@ -8,7 +8,7 @@ from __future__ import print_function, division, absolute_import
 
 import numpy as np
 
-import libpydmp as pydmp
+import pydmp
 
 
 class DMP(object):

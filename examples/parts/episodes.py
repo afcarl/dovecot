@@ -2,12 +2,14 @@ from __future__ import division, print_function
 import time
 import random
 import sys
+import os
 
 from environments import tools
 
 import dotdot
 import dovecot
 import cfg
+
 
 DEBUG = False
 
@@ -27,7 +29,21 @@ if len(sys.argv) >= 3:
 start_time = time.time()
 he = dovecot.HardwareEnvironment(cfg_run)
 
-for _ in range(n):
+def memory_usage():
+    import resource
+    rusage_denom = 1024.
+    if sys.platform == 'darwin':
+        # ... it seems that in OSX the output is different units ...
+        rusage_denom = rusage_denom * rusage_denom
+    mem = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / rusage_denom
+    return mem
+
+for i in range(n):
+
+    print('{}: {:.2f} MiB'.format(i, memory_usage()))
+    # if i == n-1:
+    #     import pdb
+    #     pdb.set_trace()
     done = False
     while not done:
         try:

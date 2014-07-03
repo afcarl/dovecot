@@ -53,7 +53,7 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
                         if self.cfg.execute.partial_mvt:
                             return i-int(0.5/self.cfg.mprim.dt)
                         else:
-                            return self.CollisionError
+                            raise self.CollisionError
         else:
             assert self.cfg.execute.is_simulation
 
@@ -70,14 +70,14 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
 
     def _check_object_collision(self, motor_poses):
         if self.cfg.execute.prefilter:
-            return not self._collision_filter.may_collide(motor_poses)
+            a = self._collision_filter.may_collide(motor_poses)
+            return a
         return True
 
     def _execute_raw(self, motor_command, meta=None):
         motor_traj, max_steps = motor_command
 
         meta['log'] = {}
-        meta['log']['motor_command'] = motor_command
 
         motor_poses = self._trajs2poses(motor_traj)
         max_index = self._check_self_collision(motor_traj[0].ts, motor_poses)
@@ -93,6 +93,7 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
 
     def _process_sensors(self, raw_sensors):
         """Compute processed sensors data"""
+        #return {}
         object_sensors = raw_sensors['object_sensors']
 
         assert len(object_sensors) % (3+4+3+3) == 0

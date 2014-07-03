@@ -41,7 +41,7 @@ class Trajectory(object):
         self.max_speed = max_speed
 
     def p(self, t):
-        idx = bisect.bisect_right(self.ts, t)
+        idx = min(len(self.ps)-1, bisect.bisect_right(self.ts, t))
         return self.ps[idx]
 
     def truncate(self, index):
