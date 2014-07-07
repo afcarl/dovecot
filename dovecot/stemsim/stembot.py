@@ -36,7 +36,19 @@ class StemBot(object):
             while self.powerswitch.is_restarting(self.powerswitch_port):
                 time.sleep(1)
 
+        # clean state for motors
+        self._onoff(**kwargs)
         self.stemcom = stemcom.StemCom(cfg, **kwargs)
+
+    def _onoff(self, **kwargs):
+        if self.cfg.execute.hard.powerswitch:
+            self.stemcom = stemcom.StemCom(self.cfg, **kwargs)
+            self.stemcom.rest()
+            self.powerswitch.set_off(self.powerswitch_port)
+            time.sleep(1)
+            self.powerswitch.set_on(self.powerswitch_port)
+            time.sleep(1)
+            self.stemcom.close()
 
 
     def _execute(self, motor_command):
