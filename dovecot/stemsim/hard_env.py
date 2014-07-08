@@ -6,6 +6,7 @@ import atexit
 
 from toolbox import gfx
 import natnet
+import pydyn
 
 from ..vrepsim import sim_env
 from . import triopost
@@ -68,8 +69,7 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
 
             log =  {'times':{}}
             meta['log'] = log
-            meta.setdefault('errors_marker', [])
-            meta.setdefault('errors_collision', [])
+            meta.setdefault('errors', [])
 
 
             # check for collisions
@@ -95,7 +95,8 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
             if self.verbose:
                 print('')
             time.sleep(0.01)
-            print('time slice: {:.1f}'.format(end-start))
+            if self.verbose:
+                print('time slice: {:.1f}'.format(end-start))
 
             start_vrep = time.time()
 
@@ -129,30 +130,21 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
 
             return raw_sensors
 
-        except self.CollisionError as exc:
+        except (self.CollisionError, natnet.MarkerError, pydyn.CommunicationError, pydyn.TimeoutError) as exc:
             if meta['tries'] > 0:
-                print('{}caught collision error...                   {}'.format(gfx.red, gfx.end))
+                print('{}caught error...                   {}'.format(gfx.red, gfx.end))
                 print('{}{}{}'.format(gfx.red, exc, gfx.end))
-                meta['errors_collision'].append(meta['m_signal'])
+                meta['errors'].append((exc, meta['m_signal']))
                 self.fb.stop_tracking()
-                meta['tries'] -= 1
-                return self._execute_raw(motor_command, meta=meta)
-            else:
-                self.fb.stop_tracking()
-                raise self.OrderNotExecutableError('CollisionError')
-
-        except natnet.MarkerError as exc:
-            if meta['tries'] > 0:
-                print('{}caught marker error...                   {}'.format(gfx.red, gfx.end))
-                print('{}{}{}'.format(gfx.red, exc, gfx.end))
-                meta['errors_marker'].append(meta['m_signal'])
-                time.sleep(0.1)
+                self.fb.purge_tracking()
                 self.fb = natnet.FrameBuffer(FB_DURATION, addr=self.stem.optitrack_addr)
+                self.sb = stembot.StemBot(self.cfg)
                 meta['tries'] -= 1
                 return self._execute_raw(motor_command, meta=meta)
             else:
                 self.fb.stop_tracking()
-                raise self.OrderNotExecutableError('{}'.format(exc))
+                self.fb.purge_tracking()
+                raise self.OrderNotExecutableError('CollisionError')
         # finally:
         #     self.fb.stop_tracking()
 

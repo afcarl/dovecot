@@ -48,6 +48,7 @@ for i in range(n):
     while not done:
         try:
             m_signal = tools.random_signal(he.m_channels)
+            #print(', '.join('{:.2f}'.format(m_i) for m_i in tools.to_vector(m_signal, he.m_channels)))
             feedback = he.execute(m_signal)
             done = True
         except he.OrderNotExecutableError:

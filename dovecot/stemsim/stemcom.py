@@ -84,21 +84,23 @@ class StemCom(object):
 
         start = time.time()
         if blocking:
-            while max(abs(p - tg) for p, tg in zip(self.ms.pose, pose)) > 3 and time.time() - start < 10:
-                time.sleep(0.02)
+            self.zero(pose)
 
-            if max(abs(p - tg) for p, tg in zip(self.ms.pose, pose)) > 6:
+            if max(abs(p - tg) for p, tg in zip(self.ms.pose, pose[:5])) > 6:
+                print("Can't reach zero position")
                 sys.exit(1)
+                #raise ZeroError(tuple(abs(p - tg) for p, tg in zip(self.ms.pose, pose)))
 
 
     def rest(self):
+        rest_pose = np.array([0.0, 96.3, -97.8, 0.0, -46.5, -10.0])
+
+        self.ms.compliant    = False
         self.ms.moving_speed = 50
-
-        rest_pose = np.array([0.0, 96.3, -97.8, 0.0, -46.5, -18.9])
-
         self.ms.pose = rest_pose
         while max(abs(p - tg) for p, tg in zip(self.ms.pose, rest_pose)) > 20:
             time.sleep(0.05)
+
         self.ms.moving_speed = 20
         self.ms.torque_limit = 20
         start_time = time.time()
@@ -139,3 +141,27 @@ class StemCom(object):
         while max(abs(p - tg) for p, tg in zip(self.ms.pose, pose)) > margin and time.time()-start<timeout:
             time.sleep(0.05)
         return tuple(p-tg for p, tg in zip(self.ms.pose, pose))
+
+    def zero(self, pose, margin=3.0, timeout=10.0):
+        print('calling zero()')
+        old_torque = list(self.ms.torque_limit)
+        old_speed  = list(self.ms.moving_speed)
+
+        self.ms.torque_limit = [100, 100, 100, 50, 25]
+        self.ms.speed = 100
+        time.sleep(0.1)
+        self.ms.compliant = [False, False, False, False, False, True]
+        self.ms.pose = pose[:5]
+
+        start = time.time()
+        while max(abs(p - tg) for p, tg in zip(self.ms.pose, pose[:5])) > margin and time.time()-start<timeout:
+            time.sleep(0.05)
+
+        self.ms.compliant = False
+        self.ms.torque_limit = old_torque
+        self.ms.speed        = old_speed
+        self.ms.pose = pose
+
+        time.sleep(0.2)
+
+        return self.ms.pose

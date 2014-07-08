@@ -30,58 +30,61 @@ class StemBot(object):
             self.powerswitch = ps.Eps4m(mac_address=stem_cfg.powerswitch_mac,
                                         load_config=True)
             self.powerswitch_port = stem_cfg.powerswitch
-            if self.powerswitch.is_off(self.powerswitch_port):
-                self.powerswitch.set_on(self.powerswitch_port)
-                time.sleep(1)
-            while self.powerswitch.is_restarting(self.powerswitch_port):
-                time.sleep(1)
+            # if self.powerswitch.is_off(self.powerswitch_port):
+            #     self.powerswitch.set_on(self.powerswitch_port)
+            #     time.sleep(1)
+            # while self.powerswitch.is_restarting(self.powerswitch_port):
+            #     time.sleep(1)
 
         # clean state for motors
         self._onoff(**kwargs)
-        self.stemcom = stemcom.StemCom(cfg, **kwargs)
 
     def _onoff(self, **kwargs):
         if self.cfg.execute.hard.powerswitch:
-            self.stemcom = stemcom.StemCom(self.cfg, **kwargs)
-            self.stemcom.rest()
-            self.powerswitch.set_off(self.powerswitch_port)
-            time.sleep(1)
+            try:
+                self.stemcom = stemcom.StemCom(self.cfg, **kwargs)
+                self.stemcom.rest()
+                self.stemcom.close()
+                self.powerswitch.set_off(self.powerswitch_port)
+                time.sleep(1)
+            except AssertionError:
+                self.powerswitch.set_off(self.powerswitch_port)
+                time.sleep(5)
             self.powerswitch.set_on(self.powerswitch_port)
             time.sleep(1)
-            self.stemcom.close()
+
+        self.stemcom = stemcom.StemCom(self.cfg, **kwargs)
 
 
     def _execute(self, motor_command):
 
         motor_trajs, _ = motor_command
 
-        try:
-            self.stemcom.setup(self.cfg.mprim.init_states, blocking=True)
-            time.sleep(0.1)
+        self.stemcom.setup(self.cfg.mprim.init_states, blocking=True)
+        time.sleep(0.1)
 
-            assert all(not c for c in self.stemcom.ms.compliant)
-            self.stemcom.ms.torque_limit = TORQUE_LIMIT
+        assert all(not c for c in self.stemcom.ms.compliant)
+        self.stemcom.ms.torque_limit = TORQUE_LIMIT
 
-            max_t = max(tj.max_t for tj in motor_trajs)
-            start_time = time.time()
-            while time.time()-start_time < max_t:
-                self.stemcom.step(motor_trajs, time.time()-start_time)
-            end_time = time.time()
+        max_t = max(tj.max_t for tj in motor_trajs)
+        start_time = time.time()
+        while time.time()-start_time < max_t:
+            self.stemcom.step(motor_trajs, time.time()-start_time)
+        end_time = time.time()
 
-            self.stemcom.setup(self.cfg.mprim.init_states, blocking=False)
+        self.stemcom.setup(self.cfg.mprim.init_states, blocking=False)
 
-            return start_time, end_time
-
-        except pydyn.MotorError as exc:
-            print('{}{}{}'.format(gfx.red, exc, gfx.end))
-            if self.cfg.execute.hard.powerswitch:
-                self.powerswitch.set_off(self.powerswitch_port)
-            import traceback
-            traceback.print_exc()
-            raise exc
+        return start_time, end_time
 
 
     def close(self, rest=True):
-        if rest:
-            self.stemcom.rest()
-        self.stemcom.close()
+        try:
+            self.stemcom.close()
+        except Exception:
+            pass
+        finally:
+            if rest:
+                self.stemcom = stemcom.StemCom(self.cfg)
+                self.stemcom.zero((0.0,)*6)
+                self.stemcom.rest()
+                self.stemcom.close()

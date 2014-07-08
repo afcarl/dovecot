@@ -34,7 +34,7 @@ time.sleep(0.1)
 ms.moving_speed    = 100
 ms.torque_limit = 50
 
-rest_pose = [5.3, 96.3, -97.8, 0.6, -46.5, -18.9]
+rest_pose = [5.3, 96.3, -97.8, 0.6, -46.5, -10]
 ms.pose = rest_pose
 
 while max(abs(p - tg) for p, tg in zip(ms.pose, rest_pose)) > 10:
