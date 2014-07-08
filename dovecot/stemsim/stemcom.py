@@ -1,6 +1,7 @@
 from __future__ import print_function, division, absolute_import
 import os, sys
 import time
+import threading
 
 import numpy as np
 
@@ -11,6 +12,17 @@ from . import stemcfg
 
 defcfg = forest.Tree()
 defcfg['execute.hard.verbose_dyn'] = True
+
+class ZeroError(Exception):
+    """Thrown when a status packet arrived corrupted."""
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __str__(self):
+        return "ZeroError({})".format(self.msg, )
+
+
+
 
 class RangedMotorSet(MotorSet):
     """
@@ -73,26 +85,35 @@ class StemCom(object):
                                      timeout=timeout)
         assert len(self.ms.motors) == 6
 
+        self.zero_thread     = None
         self.ms.zero_pose    = self.stemcfg.zero_pose
         self.ms.angle_ranges = self.stemcfg.angle_ranges
 
+
     def setup(self, pose, blocking=True):
         """Setup the stem at the correct position"""
-        self.ms.compliant    = False
-        self.ms.moving_speed = 50
-        self.ms.pose         = pose
+        self.ms.moving_speed = 100
 
-        start = time.time()
+        if self.zero_thread is not None:
+            self.zero_thread.join()
+            self.zero_thread = None
+
+        self.zero_thread = threading.Thread(target=self.careful_zero, args=(pose,))
+        self.zero_thread.daemon = True
+        self.zero_thread.start()
+
         if blocking:
-            self.zero(pose)
+            self.zero_thread.join()
+            self.zero_thread = None
 
             if max(abs(p - tg) for p, tg in zip(self.ms.pose, pose[:5])) > 6:
                 print("Can't reach zero position")
-                sys.exit(1)
-                #raise ZeroError(tuple(abs(p - tg) for p, tg in zip(self.ms.pose, pose)))
+                raise ZeroError(tuple(abs(p - tg) for p, tg in zip(self.ms.pose, pose)))
 
 
     def rest(self):
+        assert self.zero_thread is None
+
         rest_pose = np.array([0.0, 96.3, -97.8, 0.0, -46.5, -10.0])
 
         self.ms.compliant    = False
@@ -116,6 +137,8 @@ class StemCom(object):
         :param trajectory: list of Trajectory instances
         :param t         : time since the execution started
         """
+        assert self.zero_thread is None
+
         try:
             pose       = np.degrees([tj_i.p(t)      for tj_i in trajectory])
             max_speeds = [tj_i.max_speed for tj_i in trajectory]
@@ -135,33 +158,27 @@ class StemCom(object):
     def close(self):
         self.ms.close_all()
 
-    def go_to(self, pose, margin=3.0, timeout=10.0):
-        self.ms.pose = pose
-        start = time.time()
-        while max(abs(p - tg) for p, tg in zip(self.ms.pose, pose)) > margin and time.time()-start<timeout:
-            time.sleep(0.05)
-        return tuple(p-tg for p, tg in zip(self.ms.pose, pose))
-
-    def zero(self, pose, margin=3.0, timeout=10.0):
-        print('calling zero()')
+    def careful_zero(self, pose, margin=3.0, timeout=10.0, speed=None):
         old_torque = list(self.ms.torque_limit)
         old_speed  = list(self.ms.moving_speed)
 
-        self.ms.torque_limit = [100, 100, 100, 50, 25]
-        self.ms.speed = 100
-        time.sleep(0.1)
-        self.ms.compliant = [False, False, False, False, False, True]
-        self.ms.pose = pose[:5]
+        self.ms.torque_limit = [  100,   100,   100,    50,    25]
+        if speed is not None:
+            self.ms.speed    = [speed, speed, speed, speed, speed]
+        self.ms.compliant    = [False, False, False, False, False, True]
+        self.ms.pose         = pose[:5]
+
 
         start = time.time()
         while max(abs(p - tg) for p, tg in zip(self.ms.pose, pose[:5])) > margin and time.time()-start<timeout:
             time.sleep(0.05)
 
-        self.ms.compliant = False
+        self.ms.compliant    = False
         self.ms.torque_limit = old_torque
         self.ms.speed        = old_speed
-        self.ms.pose = pose
+        self.ms.pose         = pose
 
-        time.sleep(0.2)
+        while max(abs(p - tg) for p, tg in zip(self.ms.pose, pose)) > margin and time.time()-start<1.0:
+            time.sleep(0.02)
 
         return self.ms.pose

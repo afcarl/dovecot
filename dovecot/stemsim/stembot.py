@@ -13,6 +13,8 @@ TORQUE_LIMIT = [50, 50, 50, 70, 50, 50]
 
 class StemBot(object):
 
+    ZeroError = stemcom.ZeroError
+
     """ This class is responsible of executing the motor primitive only.
 
         This involves carrying out the movement of the stem, and keeping the motor temp
@@ -30,8 +32,8 @@ class StemBot(object):
             self.powerswitch = ps.Eps4m(mac_address=stem_cfg.powerswitch_mac,
                                         load_config=True)
             self.powerswitch_port = stem_cfg.powerswitch
-            # if self.powerswitch.is_off(self.powerswitch_port):
-            #     self.powerswitch.set_on(self.powerswitch_port)
+            if self.powerswitch.is_off(self.powerswitch_port):
+                self.powerswitch.set_on(self.powerswitch_port)
             #     time.sleep(1)
             # while self.powerswitch.is_restarting(self.powerswitch_port):
             #     time.sleep(1)
@@ -79,12 +81,19 @@ class StemBot(object):
 
     def close(self, rest=True):
         try:
-            self.stemcom.close()
-        except Exception:
-            pass
-        finally:
-            if rest:
-                self.stemcom = stemcom.StemCom(self.cfg)
-                self.stemcom.zero((0.0,)*6)
-                self.stemcom.rest()
+            try:
                 self.stemcom.close()
+            except Exception as e:
+                raise e
+            finally:
+                if rest:
+                    self.stemcom = stemcom.StemCom(self.cfg)
+                    self.stemcom.ms.torque_limit = 100
+                    self.stemcom.ms.speed = 100
+                    self.stemcom.careful_zero((0.0,)*6)
+                    self.stemcom.rest()
+                    self.stemcom.close()
+        finally:
+            if self.cfg.execute.hard.powerswitch:
+                self.powerswitch.set_off(self.powerswitch_port)
+                time.sleep(5)

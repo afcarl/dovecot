@@ -95,8 +95,7 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
             if self.verbose:
                 print('')
             time.sleep(0.01)
-            if self.verbose:
-                print('time slice: {:.1f}'.format(end-start))
+            # print('time slice: {:.1f}'.format(end-start))
 
             start_vrep = time.time()
 
@@ -130,7 +129,7 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
 
             return raw_sensors
 
-        except (self.CollisionError, natnet.MarkerError, pydyn.CommunicationError, pydyn.TimeoutError) as exc:
+        except (self.CollisionError, natnet.MarkerError, pydyn.CommunicationError, pydyn.TimeoutError, stembot.StemBot.ZeroError) as exc:
             if meta['tries'] > 0:
                 print('{}caught error...                   {}'.format(gfx.red, gfx.end))
                 print('{}{}{}'.format(gfx.red, exc, gfx.end))
@@ -138,6 +137,7 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
                 self.fb.stop_tracking()
                 self.fb.purge_tracking()
                 self.fb = natnet.FrameBuffer(FB_DURATION, addr=self.stem.optitrack_addr)
+                self.sb.close()
                 self.sb = stembot.StemBot(self.cfg)
                 meta['tries'] -= 1
                 return self._execute_raw(motor_command, meta=meta)
