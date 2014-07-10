@@ -182,3 +182,10 @@ class StemCom(object):
             time.sleep(0.02)
 
         return self.ms.pose
+
+    def go_to(self, pose, margin=3.0, timeout=10.0):
+        self.ms.pose = pose
+        start = time.time()
+        while max(abs(p - tg) for p, tg in zip(self.ms.pose, pose)) > margin and time.time()-start<timeout:
+            time.sleep(0.05)
+        return tuple(p-tg for p, tg in zip(self.ms.pose, pose))
