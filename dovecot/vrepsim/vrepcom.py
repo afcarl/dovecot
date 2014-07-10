@@ -186,6 +186,8 @@ class VRepCom(object):
         traj = self._prepare_traj(trajectory, max_steps)
         self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Trajectory", traj)
         self.vrep.simSetSimulationPassesPerRenderingPass(self.ppf)
+        
+        self.vrep.simSetFloatingParameter(pyvrep.constants.sim_floatparam_simulation_time_step, cfg.mprim.dt)
 
         self.vrep.simStartSimulation()
 
