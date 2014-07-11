@@ -70,8 +70,9 @@ class StemBot(object):
 
         max_t = max(tj.max_t for tj in motor_trajs)
         start_time = time.time()
-        while time.time()-start_time < max_t:
-            self.stemcom.step(motor_trajs, time.time()-start_time)
+        collided = False
+        while (not collided) and time.time()-start_time < max_t:
+            collided = self.stemcom.step(motor_trajs, time.time()-start_time)
         end_time = time.time()
 
         self.stemcom.setup(self.cfg.mprim.init_states, blocking=False)

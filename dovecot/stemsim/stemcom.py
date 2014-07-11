@@ -8,6 +8,7 @@ import numpy as np
 import forest
 from pydyn.msets import MotorSet
 
+from ..collider import collider
 from . import stemcfg
 
 defcfg = forest.Tree()
@@ -141,6 +142,8 @@ class StemCom(object):
 
         try:
             pose       = np.degrees([tj_i.p(t)      for tj_i in trajectory])
+            if collider.collide(self.ms.pose):
+                return True
             max_speeds = [tj_i.max_speed for tj_i in trajectory]
             dp = np.abs(np.array(pose) - np.array(self.ms.pose))
             dt = 1.0/5 # 40 Hz
@@ -148,6 +151,7 @@ class StemCom(object):
             speed = np.clip(speed, 1, max_speeds)
             self.ms.moving_speed = speed
             self.ms.pose = pose
+            return False
         except ValueError as e:
             print(self.ms.pose)
             print(pose)

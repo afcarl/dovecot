@@ -42,7 +42,6 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
         self.optitrack = optitrack
 
         suid = stem_uid(cfg)
-        print(suid)
 
         self.stem = stemcfg.stems[suid]
         self.M_trans = triopost.load_triomatrix(self.stem)
