@@ -10,13 +10,9 @@ from .. import prims
 from . import vrepcom
 
 
-class CollisionError(Exception):
-    pass
-
-
 class SimulationEnvironment(environments.PrimitiveEnvironment):
 
-    CollisionError = CollisionError
+    CollisionError = collider.CollisionError
     MARKER_SIZE = 11
 
     def __init__(self, cfg):

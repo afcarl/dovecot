@@ -10,6 +10,8 @@ fs = fcls.FclSpace()
 for body in bt.bodies():
     fs.register_body(body)
 
+
+
 # should be a class, but no time
 def collide(angles):
 
