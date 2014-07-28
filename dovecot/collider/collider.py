@@ -11,6 +11,9 @@ for body in bt.bodies():
     fs.register_body(body)
 
 
+class CollisionError(Exception):
+    pass
+
 
 # should be a class, but no time
 def collide(angles):

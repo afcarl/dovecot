@@ -34,6 +34,7 @@ class StemBot(object):
             self.powerswitch_port = stem_cfg.powerswitch
             if self.powerswitch.is_off(self.powerswitch_port):
                 self.powerswitch.set_on(self.powerswitch_port)
+                time.sleep(2)
             #     time.sleep(1)
             # while self.powerswitch.is_restarting(self.powerswitch_port):
             #     time.sleep(1)
@@ -53,7 +54,7 @@ class StemBot(object):
                 self.powerswitch.set_off(self.powerswitch_port)
                 time.sleep(5)
             self.powerswitch.set_on(self.powerswitch_port)
-            time.sleep(1)
+            time.sleep(2)
 
         self.stemcom = stemcom.StemCom(self.cfg, **kwargs)
 

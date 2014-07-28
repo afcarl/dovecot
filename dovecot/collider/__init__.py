@@ -1,2 +1,0 @@
-class CollisionError(Exception):
-    pass
