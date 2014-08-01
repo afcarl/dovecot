@@ -24,23 +24,38 @@ cfg.execute.prefilter = False
 
 def process_scene(name, ar=False, calibrate=True, vizu_s=False):
     """Calibrate or check scene"""
-    cfg.sprims.scene = name
-    if not vizu_s:
-        if ar:
-            cfg.execute.is_simulation = True
-            com = vrepcom.VRepCom(cfg, calcheck=not calibrate)
+    # check if caldata is uptodate:
+    try:
+        scene_name = '{}_{}'.format({True:'ar', False:'vrep'}[ar], name)
+        if vizu_s:
+            scene_name = '{}_{}'.format('vizu', name)
+        caldata = ttts.TTTCalibrationData(scene_name, cfg.execute.simu.calibrdir)
+        caldata.load()
+        print('cal: already uptodate')
+        return caldata
+    except (IOError, AssertionError) as e:
+        if isinstance(e, IOError):
+            print('cal: {} could not be read'.format(caldata.cal_filepath))
+        if isinstance(e, AssertionError):
+            print('cal: mismatching md5 signature')
+
+        cfg.sprims.scene = name
+        if not vizu_s:
+            if not ar:
+                cfg.execute.is_simulation = True
+                com = vrepcom.VRepCom(cfg, calcheck=not calibrate)
+            else:
+                cfg.execute.is_simulation = False
+                com = vrepcom.VRepCom(cfg, calcheck=not calibrate)
+            if calibrate:
+                com.caldata = calibrate_scene(com)
         else:
-            cfg.execute.is_simulation = False
-            com = vrepcom.VRepCom(cfg, calcheck=not calibrate)
-        if calibrate:
-            com.caldata = calibrate_scene(com)
-    else:
-        cfg.execute.is_simulation = True
-        com = vrepvizu.VizuVrep(cfg, calcheck=not calibrate)
-        if calibrate:
-            com.caldata = calibrate_scene(com)
-    com.close(kill=True)
-    return com.caldata
+            cfg.execute.is_simulation = True
+            com = vrepvizu.VizuVrep(cfg, calcheck=not calibrate)
+            if calibrate:
+                com.caldata = calibrate_scene(com)
+        com.close(kill=True)
+        return com.caldata
 
 def compare_calib_data(ar_calib, v_calib, vizu_calib):
     assert round(ar_calib.mass, 4) == round(v_calib.mass, 4) == round(vizu_calib.mass, 4), "Toy mass error..."
@@ -53,7 +68,7 @@ def compare_calib_data(ar_calib, v_calib, vizu_calib):
 def calibrate_scene(com):
     toy_h    = com.vrep.simGetObjectHandle("toy")
     base_h   = com.vrep.simGetObjectHandle("dummy_ref_base")
-    marker = com.vrep.simGetObjectHandle("marker")
+    marker   = com.vrep.simGetObjectHandle("marker")
     toy_pos  = com.vrep.simGetObjectPosition(toy_h, base_h)
     toy_pos_world  = com.vrep.simGetObjectPosition(toy_h, -1)
     min_x    = com.vrep.simGetObjectFloatParameter(toy_h, 21)[0] * 100

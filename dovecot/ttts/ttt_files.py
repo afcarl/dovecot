@@ -52,6 +52,8 @@ class TTTCalibrationData(object):
         self.dimensions     = None
         self.dimensions_m   = None
 
+        self.verbose        = True
+
     def populate(self, mass, position, dimensions, position_world, dimensions_m):
         self.md5 = md5sum(self.ttt_filepath)
         self.mass = mass
@@ -61,6 +63,8 @@ class TTTCalibrationData(object):
         self.dimensions_m = dimensions_m
 
     def save(self):
+        if self.verbose:
+            print('cal: saving calibration data {}'.format(self.cal_filepath))
         with open(self.cal_filepath, 'w+') as f:
             pickle.dump(self, f)
 
@@ -75,6 +79,9 @@ class TTTCalibrationData(object):
             raise IOError("error: scene file {} not found".format(self.ttt_filepath))
         if not os.path.isfile(self.cal_filepath):
             raise IOError("error: calibration file {} not found".format(self.cal_filepath))
+        if self.verbose:
+            print('cal: loading calibration data {}'.format(self.cal_filepath))
+
         with open(self.cal_filepath, 'r') as f:
             caldata = pickle.load(f)
         self.md5 = md5sum(self.ttt_filepath)
