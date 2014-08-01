@@ -21,7 +21,8 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
         self.vrepcom = vrepcom.VRepCom(cfg)
 
         if cfg.execute.prefilter:
-            self._collision_filter = maycollide.CollisionFilter(self.vrepcom.caldata.position,
+            self._collision_filter = maycollide.CollisionFilter(self.cfg,
+                                                                self.vrepcom.caldata.position,
                                                                 self.vrepcom.caldata.dimensions,
                                                                 self.MARKER_SIZE)
 

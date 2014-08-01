@@ -29,7 +29,7 @@ class Push(environments.SensoryPrimitive):
 
     def process_raw_sensors(self, sensors_data):
         if self.object_name + '_pos' not in sensors_data:
-            return tools.to_signal((0, 0, 0), self.s_channels)
+            return tools.to_signal((0, 0, 0), self.s_channels) # does this hide bugs ? when is it necessary ?
         pos_array = sensors_data[self.object_name + '_pos']
         pos_a = pos_array[0]
         pos_b = pos_array[-1]

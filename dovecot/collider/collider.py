@@ -26,7 +26,4 @@ def collide(angles):
 
     bt.update(r_angles)
 
-    if os.uname()[0] == 'Darwin':
-        raise OSError("OS X not supported yet.")
-
     return fs.collisions()

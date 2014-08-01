@@ -24,6 +24,13 @@ desc._isinstance('execute.check_self_collisions', bool)
 desc._isinstance('execute.prefilter', bool)
 
 
+    # Kinematic Surrogate parameters
+desc._branch('execute.kin')
+
+# the stem number
+desc._isinstance('execute.kin.force', numbers.Real)
+
+
     # Hardware parameters
 desc._branch('execute.hard')
 
