@@ -67,7 +67,8 @@ desc._isinstance('execute.simu.calibrdir', str)
 # on mac, we need to know where vrep is
 desc._isinstance('execute.simu.mac_folder', str)
 
-
+# # the position (x, y, z) of the toy # NOT IMPLEMENTED YET
+# desc._isinstance('execute.simu.toy_pos', collections.Iterable)
 
     # Sensory primitives
 desc._branch('sprims')

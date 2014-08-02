@@ -3,6 +3,8 @@ import os
 import hashlib
 import pickle
 
+from toolbox import gfx
+
 def cleanpath(path):
     return os.path.normpath(os.path.abspath(os.path.expanduser(path)))
 
@@ -64,7 +66,7 @@ class TTTCalibrationData(object):
 
     def save(self):
         if self.verbose:
-            print('cal: saving calibration data {}'.format(self.cal_filepath))
+            print('{}cal: {}saving calibration data {}{}'.format(gfx.grey, gfx.cyan, self.cal_filepath, gfx.end))
         with open(self.cal_filepath, 'w+') as f:
             pickle.dump(self, f)
 
@@ -80,12 +82,12 @@ class TTTCalibrationData(object):
         if not os.path.isfile(self.cal_filepath):
             raise IOError("error: calibration file {} not found".format(self.cal_filepath))
         if self.verbose:
-            print('cal: loading calibration data {}'.format(self.cal_filepath))
+            print('{}cal: {}loading calibration data {}{}'.format(gfx.grey, gfx.cyan, self.cal_filepath, gfx.end))
 
         with open(self.cal_filepath, 'r') as f:
             caldata = pickle.load(f)
         self.md5 = md5sum(self.ttt_filepath)
-        assert caldata.md5 == self.md5, "loaded scene calibration ({}:{}) differs from scene ({}:{})".format(self.cal_filepath, caldata.md5, self.ttt_filepath, self.md5)
+        assert caldata.md5 == self.md5, "{}cal: {}loaded scene calibration ({}:{}) differs from scene ({}:{}){}".format(gfx.grey, gfx.red, self.cal_filepath, caldata.md5, self.ttt_filepath, self.md5, gfx.end)
 
         self.dimensions     = caldata.dimensions
         self.dimensions_m   = caldata.dimensions_m

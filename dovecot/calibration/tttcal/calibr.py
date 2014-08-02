@@ -28,13 +28,13 @@ def process_scene(name, calibrate=True):
     try:
         caldata = ttts.TTTCalibrationData(name, cfg.execute.simu.calibrdir)
         caldata.load()
-        print('cal: already uptodate')
+        print('{}cal: {}already uptodate{}'.format(gfx.grey, gfx.green, gfx.end))
         return caldata
     except (IOError, AssertionError) as e:
         if isinstance(e, IOError):
-            print('cal: {} could not be read'.format(caldata.cal_filepath))
+            print('{}cal: {}{} could not be read{}'.format(gfx.grey, gfx.yellow, caldata.cal_filepath, gfx.end))
         if isinstance(e, AssertionError):
-            print('cal: mismatching md5 signature')
+            print('{}cal: {}mismatching md5 signature{}'.format(gfx.grey, gfx.yellow, gfx.end))
 
         cfg.sprims.scene = name
         com = vrepcom.VRepCom(cfg, calcheck=not calibrate, setup=False)
@@ -89,7 +89,7 @@ def calibrate_scene(com):
 
     scene_filepath = ttts.TTTFile(com.scene_name).filepath
     if not os.path.isfile(scene_filepath):
-        print('{}error{}: scene file {} not found'.format(gfx.red, gfx.end, scene_filepath))
+        print('{}cal: {}error{}: scene file {} not found'.format(gfx.grey, gfx.red, gfx.end, scene_filepath))
         return None
     else:
         caldata = ttts.TTTCalibrationData(com.scene_name, com.cfg.execute.simu.calibrdir)
