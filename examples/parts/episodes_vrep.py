@@ -15,9 +15,10 @@ from environments import tools
 cfg0.execute.simu.ppf = 1
 cfg0.execute.simu.mac_folder='/Applications/VRep/vrep.app/Contents/MacOS/'
 cfg0.execute.simu.load     = True
-cfg0.execute.simu.headless = True
+cfg0.execute.simu.headless = False
 cfg0.execute.prefilter     = False
 cfg0.execute.check_self_collisions = True
+cfg0.sprims.scene      = 'ball0'
 
 total = 1
 if len(sys.argv) >= 2:

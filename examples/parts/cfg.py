@@ -13,6 +13,8 @@ cfg0.mprim.dt = 0.01
 cfg0.execute.check_self_collisions = True
 cfg0.execute.is_simulation	       = True
 
+cfg0.execute.kin.force  = 1.0
+
 cfg0.execute.hard.verbose_com  = True
 cfg0.execute.hard.verbose_dyn  = True
 cfg0.execute.hard.powerswitch  = True
@@ -22,12 +24,11 @@ cfg0.execute.simu.vglrun       = False
 cfg0.execute.simu.ppf          = 200
 cfg0.execute.simu.load         = True
 cfg0.execute.simu.mac_folder   = '/Applications/VRep/vrep.app/Contents/MacOS/' # only for mac
-#cfg0.execute.simu.mac_folder  = '/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS'
 
 cfg0.sprims.names      = ['push']
 cfg0.sprims.tip        = False
 cfg0.sprims.uniformize = False
-cfg0.sprims.scene      = 'center_cube'
+cfg0.sprims.scene      = 'ball0'
 
 cfg0.mprim.name        = 'dmpg25'
 cfg0.mprim.motor_steps = 500

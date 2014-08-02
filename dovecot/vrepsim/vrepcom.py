@@ -18,11 +18,15 @@ class VRepCom(object):
     Communication with a V-REP simulation
     """
 
-    def __init__(self, cfg, verbose=False, calcheck=True):
-        self.cfg = cfg
-        self.connected = False
+    def __init__(self, cfg, verbose=False, calcheck=True, setup=True):
+        self.cfg     = cfg
         self.verbose = verbose
-        self.ppf  = cfg.execute.simu.ppf
+        self.setup   = setup
+
+        self.connected    = False
+        self.scene_loaded = False
+        self.ppf          = cfg.execute.simu.ppf
+
         if not calcheck:
             assert not cfg.execute.prefilter, 'Can\'t skip the calibration check and prefilter collisions. Choose.'
 
@@ -35,10 +39,11 @@ class VRepCom(object):
         self.scene = None
 
         if cfg.execute.simu.load:
+
             if self.cfg.execute.is_simulation:
-                self.load(script='Flower', ar=False, calcheck=calcheck)
+                self.load(script='robot', calcheck=calcheck)
             else:
-                self.load(script='marker', ar=True,  calcheck=calcheck)
+                self.load(script='solomarker', calcheck=calcheck)
 
 
     def __del__(self):
@@ -101,30 +106,68 @@ class VRepCom(object):
             self.vrep_proc.stdout.read()
             self.vrep_proc.stderr.read()
 
-    def load(self, script="Flower", ar=False, calcheck=True):
+    def load(self, script='robot', calcheck=True):
         """
 
         :param ar:  if True, load augmented reality scene, else, vrep ones.
         """
-        self.scene_name = '{}_{}'.format({True:'ar', False:'vrep'}[ar], self.cfg.sprims.scene)
+        self.scene_name =  self.cfg.sprims.scene
 
+        # check calibration data
         if calcheck:
             self.caldata = ttts.TTTCalibrationData(self.scene_name, self.cfg.execute.simu.calibrdir)
             self.caldata.load()
 
+        # check vrep connectivity
         if not self.connected:
             if not self.vrep.connect_str(self.port):
                 raise IOError("Unable to connect to vrep")
             self.connected = True
 
+        # loading scene
         scene_filepath = ttts.TTTFile(self.scene_name).filepath
         assert os.path.isfile(scene_filepath), "scene file {} not found".format(scene_filepath)
 
         print("loading v-rep scene {}".format(scene_filepath))
-        ret = self.vrep.simLoadScene(scene_filepath)
-        # if ret == -1:      #FIXME Why not ?
-        #    raise IOError
+        if self.vrep.simLoadScene(scene_filepath) == -1:
+            raise IOError
+        self.scene_loaded = True
+
+        if self.setup:
+            self.setup_scene(script)
+
+    def setup_scene(self, script):
+        assert self.scene_loaded
+        assert script in ('robot', 'solomarker', 'vizu')
+
+        # deleting objects
+        for s in ('robot', 'solomarker', 'vizu'):
+            if s != script:
+                obj_handle = self.vrep.simGetObjectHandle(s)
+                print(s, obj_handle)
+                children_handles = self._get_children(s) # should be object_handle
+                for h in [obj_handle]+children_handles:
+                    if self.vrep.simRemoveObject(h) == -1:
+                        if self.vrep.simRemoveObject(h) == -1:
+                            pass
+
         self.handle_script = self.vrep.simGetScriptHandle(script)
+
+    def _get_children(self, obj_handle):
+        assert self.scene_loaded
+        if obj_handle == 'robot':
+            names = [          'bbMotor1',     'motor1',
+                     'vx64_1', 'bbHorn1',      'horn1',
+                     'vx64_2', 'bbMotorHorn2', 'motor2', 'horn2',
+                     'vx64_3', 'bbMotorHorn3', 'motor3', 'horn3',
+                     'vx64_4', 'bbMotorHorn4', 'motor4', 'horn4',
+                     'vx64_5', 'bbMotorHorn5', 'motor5', 'horn5',
+                     'vx64_6', 'bbMotor6',     'motor6', 'marker_joint', 'marker',
+                    ]
+        else:
+            names = []
+
+        return [self.vrep.simGetObjectHandle(name) for name in names]
 
     def close(self, kill=False):
         if self.connected:
@@ -186,7 +229,7 @@ class VRepCom(object):
         traj = self._prepare_traj(trajectory, max_steps)
         self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Trajectory", traj)
         self.vrep.simSetSimulationPassesPerRenderingPass(self.ppf)
-        
+
         self.vrep.simSetFloatingParameter(pyvrep.constants.sim_floatparam_simulation_time_step, self.cfg.mprim.dt)
 
         self.vrep.simStartSimulation()

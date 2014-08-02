@@ -59,7 +59,7 @@ class TTTCalibrationData(object):
         self.mass = mass
         self.position = position
         self.position_world = position_world
-        self.dimensions = dimensions
+        self.dimensions   = dimensions
         self.dimensions_m = dimensions_m
 
     def save(self):
