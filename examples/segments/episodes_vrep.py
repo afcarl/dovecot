@@ -13,12 +13,10 @@ from cfg import cfg0
 from environments import tools
 
 cfg0.execute.simu.ppf = 1
-cfg0.execute.simu.mac_folder='/Applications/VRep/vrep.app/Contents/MacOS/'
-cfg0.execute.simu.load     = True
 cfg0.execute.simu.headless = False
 cfg0.execute.prefilter     = False
 cfg0.execute.check_self_collisions = True
-cfg0.sprims.scene      = 'ball0'
+cfg0.sprims.scene      = 'bigball0'
 
 total = 1
 if len(sys.argv) >= 2:
@@ -48,6 +46,8 @@ for i in range(total):
     #     import pdb; pdb.set_trace()
     m_signal = tools.random_signal(vrepb.m_channels)
     feedback = vrepb.execute(m_signal, meta={})
+    print(feedback['m_signal'])
+    print(feedback['s_signal'])
     s_vector = tools.to_vector(feedback['s_signal'], vrepb.s_channels)
     if s_vector[2] != 0.0:
         cols += 1
