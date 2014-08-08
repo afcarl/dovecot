@@ -1,4 +1,5 @@
 from __future__ import print_function, division, absolute_import
+import math
 
 import numpy as np
 import environments
@@ -18,7 +19,7 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
     def __init__(self, cfg):
         super(SimulationEnvironment, self).__init__(cfg)
 
-        self.vrepcom = vrepcom.VRepCom(cfg)
+        self.vrepcom = vrepcom.VRepCom(cfg, verbose=cfg.execute.simu.verbose)
 
         if cfg.execute.prefilter:
             self._collision_filter = maycollide.CollisionFilter(self.cfg,
@@ -29,10 +30,10 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
     def _create_primitives(self, cfg):
         self.context = {'x_bounds': (-300.0, 300.0),
                         'y_bounds': (-300.0, 300.0),
-                        'z_bounds': ( 140.0, 330.0)}
+                        'z_bounds': (   0.0, 330.0)}
 
         # motor primitive
-        self.m_prim = prims.create_mprim(self.cfg.mprim.name, self.cfg)
+        self.m_prim = prims.create_mprim(self.cfg.mprims.name, self.cfg)
         self.m_prim.process_context(self.context)
 
         # sensory primitive
@@ -48,7 +49,7 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
                 if i % 3 == 0: # every 30ms.
                     if len(collider.collide(pose)) > 0:
                         if self.cfg.execute.partial_mvt:
-                            return i-int(0.5/self.cfg.mprim.dt)
+                            return i-int(0.5/self.cfg.mprims.dt)
                         else:
                             raise self.CollisionError
         else:
@@ -56,14 +57,12 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
 
         return len(motor_poses)
 
-    @classmethod
-    def _trajs2poses(self, trajs):
+    def _trajs2poses(self, trajectories):
         """Transform 6 trajectories in radians in a list of poses in degrees"""
-        poses = []
-        for j in range(len(trajs[0])):
-            pose = [tj.ps[j] for tj in trajs]
-            poses.append(np.degrees(pose))
-        return poses
+        trajectory = []
+        for step in range(self.cfg.mprims.traj_end):
+            trajectory.append([math.radians(traj.p(step*self.cfg.mprims.dt)) for traj in trajectories])
+        return trajectory
 
     def _check_object_collision(self, motor_poses):
         if self.cfg.execute.prefilter:
@@ -72,17 +71,15 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
         return True
 
     def _execute_raw(self, motor_command, meta=None):
-        motor_traj, max_steps = motor_command
-
         meta['log'] = {}
 
-        motor_poses = self._trajs2poses(motor_traj)
-        max_index = self._check_self_collision(motor_traj[0].ts, motor_poses)
+        motor_poses = self._trajs2poses(motor_command)
+        max_index = self._check_self_collision(motor_command[0].ts, motor_poses)
         motor_poses = motor_poses[:max_index]
         if not self._check_object_collision(motor_poses):
             return {}
 
-        raw_sensors = self.vrepcom.run_simulation(motor_poses, max_steps)
+        raw_sensors = self.vrepcom.run_simulation(motor_poses, self.cfg.mprims.sim_end)
         raw_sensors = self._process_sensors(raw_sensors)
 
         meta['log']['raw_sensors'] = raw_sensors

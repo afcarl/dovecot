@@ -12,6 +12,7 @@ from cfg import cfg0
 class TestKin(unittest.TestCase):
 
     def test_kin(self):
+        cfg0.execute.kin.force = 50.0
         kinenv = KinEnvironment(cfg0)
         c = 0
         n = 1000

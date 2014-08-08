@@ -11,7 +11,7 @@ cfg0.execute.simu.ppf = 1
 cfg0.execute.simu.headless = False
 cfg0.execute.prefilter     = False
 cfg0.execute.check_self_collisions = True
-cfg0.sprims.scene      = 'bigball0'
+cfg0.sprims.scene      = 'enormouscube0'
 
 vrepb = sim_env.SimulationEnvironment(cfg0)
 
@@ -21,7 +21,7 @@ m_signals = [
 
 
 
-for m_signal in m_signals:
+for m_signal in m_signals*10:
     feedback = vrepb.execute(m_signal, meta={})
     s_vector = tools.to_vector(feedback['s_signal'], vrepb.s_channels)
     print(s_vector)

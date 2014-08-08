@@ -20,13 +20,9 @@ def create_mprim(name, cfg):
     motor_prim = motor_class(cfg)
     return motor_prim
 
-dmp_limit = 4.0
-
-def dmp2rad(v):
-    return 150.0/dmp_limit * (math.pi/180.0) * v
 
 def deg2dmp(v):
-    return dmp_limit/150.0*v
+    return 5.0/150.0*v
 
 class Trajectory(object):
 
@@ -56,23 +52,24 @@ class Trajectory(object):
         return len(self.ts)
 
 
-class DmpG25(environments.MotorPrimitive):
+class DmpSharedWidth(environments.MotorPrimitive):
 
     def __init__(self, cfg):
         self.cfg = cfg
-        self.size = 6
-        self.n_basis   = cfg.mprim.n_basis
-        self.max_steps = cfg.mprim.max_steps
+        self.size     = len(self.cfg.mprims.init_states)
+        self.n_basis  = self.cfg.mprims.n_basis
+        self.sim_end  = self.cfg.mprims.sim_end
+        self.traj_end = self.cfg.mprims.traj_end - (cfg.mprims.traj_end % 2)
+        assert len(self.cfg.mprims.init_states) == len(self.cfg.mprims.target_states) == self.size
 
-        self.motor_steps   = cfg.mprim.motor_steps - (cfg.mprim.motor_steps % 2)
         self.dmps = []
-        assert len(self.cfg.mprim.init_states) == len(self.cfg.mprim.target_states) == self.size
-        for init_state, target_state in zip(self.cfg.mprim.init_states, self.cfg.mprim.target_states):
-            d = dmp.DMP(self.cfg.mprim.dt/self.cfg.mprim.end_time)
-            d.dmp.set_timesteps(self.motor_steps, 0.0, 1.15)
+        for i, (init_state, target_state) in enumerate(zip(self.cfg.mprims.init_states, self.cfg.mprims.target_states)):
+            d = dmp.DMP(self.cfg.mprims.dt)
+            total_time = self.traj_end/self.cfg.mprims.target_end
+            d.dmp.set_timesteps(self.traj_end, 0.0, total_time)
             d.lwr_meta_params(self.n_basis)
-            d.dmp.set_initial_state([deg2dmp(init_state)])
-            d.dmp.set_attractor_state([deg2dmp(target_state)])
+            d.dmp.set_initial_state([self.deg_angle2dmp(i, init_state)])
+            d.dmp.set_attractor_state([self.deg_angle2dmp(i, target_state)])
 
             self.dmps.append(d)
 
@@ -82,7 +79,7 @@ class DmpG25(environments.MotorPrimitive):
                 self.m_channels += [Channel('slope{}.{}'.format(motor, i), (-400, 400)),
                                     Channel('offset{}.{}'.format(motor, i), (-400, 400))]
         for i in range(self.n_basis):
-            self.m_channels += [Channel('width{}'.format(i), (0.05, 1.0))]
+            self.m_channels += [Channel('width{}'.format(i), (0.05/self.n_basis, 1.0/self.n_basis))]
 
 
     def process_context(self, context):
@@ -107,67 +104,24 @@ class DmpG25(environments.MotorPrimitive):
 
             d.lwr_model_params(centers, widths, slopes, offsets)
             ts, ys, yds = d.trajectory()
-            ts = self.cfg.mprim.end_time*np.array(ts)
-            ys = self.dmp2angle_rad(i, np.array(ys))
+            ts = self.cfg.mprims.target_end*self.cfg.mprims.dt*np.array(ts)
+            ys = self.dmp2angle_deg(i, np.array(ys))
 
-            traj_i = Trajectory(ts, ys, self.cfg.mprim.max_speed)
+            traj_i = Trajectory(ts, ys, self.cfg.mprims.max_speed)
             traj.append(traj_i)
 
-        return traj, self.max_steps
+        return traj
 
-    def dmp2angle_rad(self, i, ys):
+    def dmp2angle_deg(self, i, ys):
         """In radians"""
-        assert self.cfg.mprim.angle_ranges[i][0] == self.cfg.mprim.angle_ranges[i][1], "angles range of {}th motor are not symmetric: {}".format(i, self.cfg.mprim.angle_ranges[i])
-        r = self.cfg.mprim.angle_ranges[i][1]
-        return r/5.0 * (math.pi/180.0) * ys
+        assert self.cfg.mprims.angle_ranges[i][0] == self.cfg.mprims.angle_ranges[i][1], "angles range of {}th motor are not symmetric: {}".format(i, self.cfg.mprims.angle_ranges[i])
+        r = self.cfg.mprims.angle_ranges[i][1]
+        return r/5.0 * ys
 
     def deg_angle2dmp(self, i, a):
         """In radians"""
-        assert self.cfg.mprim.angle_ranges[i][0] == self.cfg.mprim.angle_ranges[i][1]
-        r = self.cfg.mprim.angle_ranges[i][1]
-        return 5.0/r * (180/math.pi) * a
+        assert self.cfg.mprims.angle_ranges[i][0] == self.cfg.mprims.angle_ranges[i][1]
+        r = self.cfg.mprims.angle_ranges[i][1]
+        return 5.0/r * a
 
-
-mprims['dmpg25'] = DmpG25
-
-class DmpG(DmpG25):
-
-    def __init__(self, cfg):
-        super(DmpG, self).__init__(cfg)
-
-        self.m_channels = []
-        for motor in range(self.size):
-            for i in range(self.n_basis):
-                self.m_channels += [Channel('slope{}.{}'.format(motor, i), (-400, 400)),
-                                    Channel('offset{}.{}'.format(motor, i), (-400, 400)),
-                                    Channel('width{}.{}'.format(motor, i), (0.05, 1.0))]
-
-    def process_context(self, context):
-        pass
-
-    def process_order(self, order):
-        assert len(order) == 3*self.n_basis*self.size
-
-        traj = []
-        centers = tuple(np.linspace(0.0, 1.0, num=self.n_basis+2)[1:-1])
-
-        for i, d in enumerate(self.dmps):
-            slopes, offsets, widths = [], [], []
-            for j in range(self.n_basis):
-                cursor = 3 * (self.n_basis * i + j)
-                slope, offset, width = order[cursor:cursor + 3]
-                slopes.append(slope)
-                offsets.append(offset)
-                widths.append(width)
-
-            d.lwr_model_params(centers, widths, slopes, offsets)
-            ts, ys, yds = d.trajectory()
-
-            ys = self.dmp2angle_rad(i, np.array(ys))
-
-            traj.append((tuple(ys), self.cfg.mprim.max_speed))
-
-        return tuple(traj), self.max_steps
-
-
-mprims['dmpg'] = DmpG
+mprims['dmp_sharedwidth'] = DmpSharedWidth

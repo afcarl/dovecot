@@ -46,7 +46,7 @@ for i in range(total):
     #     import pdb; pdb.set_trace()
     m_signal = tools.random_signal(vrepb.m_channels)
     feedback = vrepb.execute(m_signal, meta={})
-    print(feedback['m_signal'])
+    print(m_signal)
     print(feedback['s_signal'])
     s_vector = tools.to_vector(feedback['s_signal'], vrepb.s_channels)
     if s_vector[2] != 0.0:

@@ -144,7 +144,6 @@ class VRepCom(object):
         for s in ('robot', 'solomarker', 'vizu'):
             if s != script:
                 obj_handle = self.vrep.simGetObjectHandle(s)
-                print(s, obj_handle)
                 children_handles = self._get_children(s) # should be object_handle
                 for h in [obj_handle]+children_handles:
                     if self.vrep.simRemoveObject(h) == -1:
@@ -180,11 +179,11 @@ class VRepCom(object):
 
     def _prepare_traj(self, trajectory, max_steps=None):
         if self.cfg.execute.is_simulation:
-            return self._prepare_motor_traj(trajectory, max_steps)
+            return self._prepare_motor_traj(trajectory)
         else:
             return self._prepare_marker_traj(trajectory)
 
-    def _prepare_motor_traj(self, trajectory, max_steps):
+    def _prepare_motor_traj(self, trajectory):
         """
             In LUA code, a trajectory looks like this :
             # motors_sim_steps = math.floor(Trajectory[1])
@@ -192,9 +191,9 @@ class VRepCom(object):
             # max_speed        = Trajectory[3]
             # Trajectory[4] for motor 1, Trajectory[5] for motor 2, etc...
         """
-        traj = [float(len(trajectory)), float(max_steps), self.cfg.mprim.max_speed] # motors_steps, max_steps, max_speed
+        traj = [float(len(trajectory)), float(self.cfg.mprims.sim_end), self.cfg.mprims.max_speed] # motors_steps, max_steps, max_speed
         for pos_v in trajectory:
-            traj.extend(np.radians(pos_v))
+            traj.extend(pos_v)
         return traj
 
     def _prepare_marker_traj(self, trajectory):
@@ -230,7 +229,7 @@ class VRepCom(object):
         self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "Trajectory", traj)
         self.vrep.simSetSimulationPassesPerRenderingPass(self.ppf)
 
-        self.vrep.simSetFloatingParameter(pyvrep.constants.sim_floatparam_simulation_time_step, self.cfg.mprim.dt)
+        self.vrep.simSetFloatingParameter(pyvrep.constants.sim_floatparam_simulation_time_step, self.cfg.mprims.dt)
 
         self.vrep.simStartSimulation()
 

@@ -25,5 +25,5 @@ def collide(angles):
     r_angles = [math.radians(a) for a in u_angles]
 
     bt.update(r_angles)
-
-    return fs.collisions()
+    c = fs.collisions()
+    return c

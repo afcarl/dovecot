@@ -32,12 +32,12 @@ class DMP(object):
         traj = self.dmp.generate_trajectory()
         return traj[::3], traj[1::3], traj[2::3]
 
-    def lwr_meta_params(self, n_bases, overlap=0.1):
+    def lwr_meta_params(self, n_bases, overlap=0.01):
         self.n_bases = n_bases
         self.dmp.set_lwr_meta_parameters(1, n_bases, overlap)
 
         self.centers = list(np.linspace(0.0, 1.0, num=n_bases+2))[1:-1]
-        self.widths  = [1.0/n_bases + 2*overlap]*n_bases
+        self.widths  = [0.5/n_bases + 2*overlap]*n_bases
         self.slopes  = [0.0]*n_bases
         self.offsets = [0.0]*n_bases
 

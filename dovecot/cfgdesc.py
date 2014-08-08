@@ -1,11 +1,11 @@
 import collections
 import numbers
 
-import forest
+import environments
 
-desc = forest.Tree()
+
+desc = environments.Environment.defcfg._deepcopy()
 desc._strict(True)
-
 
 
     # Execution parameters
@@ -49,6 +49,9 @@ desc._isinstance('execute.hard.verbose_dyn', bool)
     # Simulation parameters
 desc._branch('execute.simu')
 
+# will run with xfvb if True
+desc._describe('execute.simu.verbose', instanceof=bool, default=False)
+
 # do we load vrep or not ?
 desc._isinstance('execute.simu.load', bool)
 
@@ -70,6 +73,7 @@ desc._isinstance('execute.simu.mac_folder', str)
 # # the position (x, y, z) of the toy # NOT IMPLEMENTED YET
 # desc._isinstance('execute.simu.toy_pos', collections.Iterable)
 
+
     # Sensory primitives
 desc._branch('sprims')
 
@@ -88,40 +92,39 @@ desc._isinstance('sprims.tip', bool)
 desc._isinstance('sprims.uniformize', bool)
 
 
-
  	# Motor primitives
-desc._branch('mprim')
+desc._branch('mprims')
 
 # name of the motor primitive
-desc._isinstance('mprim.name', str)
+desc._describe('mprims.name', instanceof=str)
 
-# the number of position (and possibly velocity) orders executed
-desc._isinstance('mprim.motor_steps', numbers.Integral)
+# temporal resolution of the trajectory and simulation step in seconds
+desc._describe('mprims.dt', instanceof=numbers.Real)
 
-# the temporal resolution of the motor trajectory, in s
-desc._isinstance('mprim.dt', numbers.Real)
+# lengths of the trajectory
+desc._describe('mprims.traj_end', instanceof=numbers.Integral)
 
-# defines when the simulation is finished
-desc._isinstance('mprim.max_steps', numbers.Integral)
+# when the target should be reached during the trajectory
+desc._describe('mprims.target_end', instanceof=numbers.Integral)
+
+# when to stop the simulation
+desc._describe('mprims.sim_end', instanceof=numbers.Integral)
 
 # uniformize motor orders dimension between 0 and 1 ?
-desc._isinstance('mprim.uniformize', bool)
+desc._describe('mprims.uniformize', instanceof=bool, default=True)
 
-# how many basis for the dmp ?
-desc._isinstance('mprim.n_basis', numbers.Integral)
+# number of basis functions for the dmp
+desc._describe('mprims.n_basis', instanceof=numbers.Integral)
 
-# the maximum speed of the motors # FIXME units ?
-desc._isinstance('mprim.max_speed', numbers.Real)
-
-# when does the dmp trajectory end ?
-desc._isinstance('mprim.end_time', numbers.Real)
+# the maximum speed of the motors in degree/seconds
+desc._describe('mprims.max_speed', instanceof=numbers.Real)
 
 # starting position of the stem
-desc._isinstance('mprim.init_states', collections.Iterable)
+desc._describe('mprims.init_states', instanceof=collections.Iterable)
 
 # target position of the stem
-desc._isinstance('mprim.target_states', collections.Iterable)
+desc._describe('mprims.target_states', instanceof=collections.Iterable)
 
-desc._describe('mprim.angle_ranges', instanceof=collections.Iterable,
+desc._describe('mprims.angle_ranges', instanceof=collections.Iterable,
                docstring='The range of the angles of the joints around the zero position the motor primitives bounds its values into')
 

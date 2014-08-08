@@ -14,13 +14,13 @@ class KinEnvironment(sim_env.SimulationEnvironment):
     def __init__(self, cfg):
         environments.PrimitiveEnvironment.__init__(self, cfg)
 
-        self.scene_name = 'ar_{}'.format(self.cfg.sprims.scene)
+        self.scene_name = self.cfg.sprims.scene
         self.caldata = ttts.TTTCalibrationData(self.scene_name, self.cfg.execute.simu.calibrdir)
         self.caldata.load()
 
         self.collider = maycollide.FakeColliderCube(self.cfg,
-                                                   self.caldata.position,
-                                                   self.caldata.dimensions, self.MARKER_SIZE)
+                                                    self.caldata.position,
+                                                    self.caldata.dimensions, self.MARKER_SIZE)
 
     def _create_primitives(self, cfg):
         self.context = {'x_bounds': (-300.0, 300.0),
@@ -53,4 +53,6 @@ class KinEnvironment(sim_env.SimulationEnvironment):
         meta['log']['raw_sensors'] = raw_sensors
         return raw_sensors
 
+    def close(self):
+        pass
 
