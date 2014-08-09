@@ -201,12 +201,10 @@ class VRepCom(object):
 
         ts_ref = trajectory[0][0]
         new_traj = []
-        new_traj.append(trajectory[0])
-        ts_ref = ts_ref + 0.01 # 10 ms
-        for i in range (1, len(trajectory)):
-            if trajectory[i][0] > ts_ref:
+        for i in range(len(trajectory)):
+            if trajectory[i][0] >= ts_ref:
                 new_traj.append(trajectory[i])
-                ts_ref = ts_ref + 0.01
+                ts_ref = ts_ref + self.cfg.mprims.dt
 
         ts, pos_raw = zip(*new_traj)
         traj_x, traj_y, traj_z = zip(*pos_raw)
