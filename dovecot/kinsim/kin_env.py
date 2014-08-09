@@ -25,10 +25,10 @@ class KinEnvironment(sim_env.SimulationEnvironment):
     def _create_primitives(self, cfg):
         self.context = {'x_bounds': (-300.0, 300.0),
                         'y_bounds': (-300.0, 300.0),
-                        'z_bounds': ( 140.0, 330.0)}
+                        'z_bounds': (   0.0, 330.0)}
 
         # motor primitive
-        self.m_prim = prims.create_mprim(self.cfg.mprim.name, self.cfg)
+        self.m_prim = prims.create_mprim(self.cfg.mprims.name, self.cfg)
         self.m_prim.process_context(self.context)
 
         # sensory primitive
@@ -41,7 +41,7 @@ class KinEnvironment(sim_env.SimulationEnvironment):
 
     def _execute_raw(self, motor_command, meta=None):
 
-        motor_traj, max_steps = motor_command
+        motor_traj = motor_command
 
         meta['log'] = {}
 
