@@ -17,10 +17,11 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
     MARKER_SIZE = 11
 
     def __init__(self, cfg):
-        super(SimulationEnvironment, self).__init__(cfg)
-
         self.vrepcom = vrepcom.VRepCom(cfg, verbose=cfg.execute.simu.verbose)
 
+        super(SimulationEnvironment, self).__init__(cfg)
+
+        print('pos_world', self.vrepcom.caldata.position_world)
         if cfg.execute.prefilter:
             self._collision_filter = maycollide.CollisionFilter(self.cfg,
                                                                 self.vrepcom.caldata.position,
@@ -30,7 +31,8 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
     def _create_primitives(self, cfg):
         self.context = {'x_bounds': (-300.0, 300.0),
                         'y_bounds': (-300.0, 300.0),
-                        'z_bounds': (   0.0, 330.0)}
+                        'z_bounds': (   0.0, 330.0),
+                        'obj_pos_world': self.vrepcom.caldata.position_world}
 
         # motor primitive
         self.m_prim = prims.create_mprim(self.cfg.mprims.name, self.cfg)
@@ -87,7 +89,6 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
 
     def _process_sensors(self, raw_sensors):
         """Compute processed sensors data"""
-        #return {}
         object_sensors = raw_sensors['object_sensors']
 
         assert len(object_sensors) % (3+4+3+3) == 0
