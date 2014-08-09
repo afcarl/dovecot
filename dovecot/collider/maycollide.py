@@ -19,8 +19,7 @@ class CollisionFilter(object):
     _u = np.matrix([[0], [0], [0], [1]])
 
     def __init__(self, cfg, obj_pos, obj_geom, marker_diam):
-        # print(obj_pos)
-        # print(obj_geom)
+        """:param obj_pos: is relative to the feet of the robotic arm (as defined by its kinematic model)"""
         self.cfg           = cfg
         self.obj_pos       = obj_pos
         self.obj_geom      = obj_geom
@@ -36,17 +35,14 @@ class CollisionFilter(object):
         if len(self.obj_geom) == 3: # cube
             obj_radius = math.sqrt((sorted(self.obj_geom)[2]/2)**2 + (sorted(self.obj_geom)[1]/2)**2)
 
-        self.min_d_sq = 2.0*((obj_radius + self.marker_radius)**2)
+        self.min_d_sq = 9.0*((obj_radius + self.marker_radius)**2)
 
 
     def may_collide(self, poses):
         for pose in poses:
             orientation = [1.0, -1.0, -1.0, 1.0, 1.0, 1.0]
             pose_r = [p*o for p, o in zip(pose, orientation)]
-
             tip_pos = self.tip(pose_r)
-            #print(gfx.ppv(pose), gfx.ppv(tip_pos), gfx.ppv(self.obj_pos))
-            #print('{:.1f} {:.1f}'.format(toolbox.dist_sq(tip_pos, self.obj_pos), self.min_d_sq))
             if self._collision_detected(tip_pos):
                 return True
         return False
@@ -56,7 +52,7 @@ class CollisionFilter(object):
         obj_pose = []
         for i, pose in enumerate(poses):
             orientation = [1.0, -1.0, -1.0, 1.0, 1.0, 1.0]
-            pose_r = [math.radians(p*o) for p, o in zip(pose, orientation)]
+            pose_r = [p*o for p, o in zip(pose, orientation)]
             tip_pos = self.tip(pose_r)
             #print(gfx.ppv(pose), gfx.ppv(tip_pos), gfx.ppv(self.obj_pos))
             #print('{:.1f} {:.1f}'.format(toolbox.dist_sq(tip_pos, self.obj_pos), self.min_d_sq))
