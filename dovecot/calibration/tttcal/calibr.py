@@ -93,7 +93,7 @@ def calibrate_scene(com):
         return None
     else:
         caldata = ttts.TTTCalibrationData(com.scene_name, com.cfg.execute.simu.calibrdir)
-        caldata.populate(toy_mass, position, toy_dims, toy_pos_world, mark_dims)
+        caldata.populate(toy_mass, position, toy_dims, position_world, mark_dims)
         print(caldata.md5)
         caldata.save()
         return caldata
