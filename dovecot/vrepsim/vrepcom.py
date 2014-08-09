@@ -85,9 +85,13 @@ class VRepCom(object):
         #                         shell=True, preexec_fn=os.setsid)
         time.sleep(1)
 
-        port_found = False
+        port =  None
         start_time = time.time()
-        while not port_found and time.time() - start_time < CONNECTION_TIMEOUT:
+
+        while port is None:
+            if time.time() - start_time > CONNECTION_TIMEOUT:
+                raise IOError('Could not read port in vrep logfile {}:\n{}'.format(logname, output))
+
             print("trying to read {}".format(logname))
             with open(logname, 'r') as f:
                 output = f.read()
@@ -96,9 +100,9 @@ class VRepCom(object):
             for line in output.split('\n'):
                 if string.find(line, prefix) == 0:
                     port = line[len(prefix):]
-                    port_found = True
                     print("found port {}".format(port))
             time.sleep(2)
+
         return port
 
     def flush_proc(self):
@@ -143,14 +147,30 @@ class VRepCom(object):
         # deleting objects
         for s in ('robot', 'solomarker', 'vizu'):
             if s != script:
-                obj_handle = self.vrep.simGetObjectHandle(s)
+                obj_handle = self._vrep_get_handle(s)
                 children_handles = self._get_children(s) # should be object_handle
                 for h in [obj_handle]+children_handles:
-                    if self.vrep.simRemoveObject(h) == -1:
-                        if self.vrep.simRemoveObject(h) == -1:
-                            raise IOError('could not remove all necessary objects from the scene (handle: {})'.format(h))
+                    self._vrep_del_object(h)
 
         self.handle_script = self.vrep.simGetScriptHandle(script)
+
+    def _vrep_get_handle(self, name, tries=3, fail=True):
+        h, trycount = -1, 0
+        while h == -1 and trycount < tries:
+            trycount += 1
+            h = self.vrep.simGetObjectHandle(name)
+        if fail and h == -1:
+            raise IOError('could not get handle for object name {}'.format(name))
+        return h
+
+    def _vrep_del_object(self, handle, tries=3, fail=True):
+        r, trycount = -1, 0
+        while r == -1 and trycount < tries:
+            trycount += 1
+            r = self.vrep.simRemoveObject(handle)
+        if fail and r == -1:
+            raise IOError('could not get remove object (handle: {})'.format(name))
+        return r
 
     def _get_children(self, obj_handle):
         assert self.scene_loaded
@@ -166,7 +186,7 @@ class VRepCom(object):
         else:
             names = []
 
-        return [self.vrep.simGetObjectHandle(name) for name in names]
+        return [self._get_handle(name) for name in names]
 
     def close(self, kill=False):
         if self.connected:
