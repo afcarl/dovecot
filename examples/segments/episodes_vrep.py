@@ -5,6 +5,7 @@ import random
 import time
 
 import forest
+from toolbox import gfx
 
 import dotdot
 from dovecot.vrepsim import sim_env
@@ -13,10 +14,10 @@ from cfg import cfg0
 from environments import tools
 
 cfg0.execute.simu.ppf = 1
-cfg0.execute.simu.headless = False
-cfg0.execute.prefilter     = False
+cfg0.execute.simu.headless = True
+cfg0.execute.prefilter     = True
 cfg0.execute.check_self_collisions = True
-cfg0.sprims.scene      = 'bigball0'
+#cfg0.sprims.scene      = 'bigball0'
 
 total = 1
 if len(sys.argv) >= 2:
@@ -45,9 +46,9 @@ for i in range(total):
     # if i == 100 or i == total-1:
     #     import pdb; pdb.set_trace()
     m_signal = tools.random_signal(vrepb.m_channels)
+    print(tools.to_vector(m_signal, vrepb.m_channels))
     feedback = vrepb.execute(m_signal, meta={})
-    print(m_signal)
-    print(feedback['s_signal'])
+    print('{}{}{}'.format(gfx.green, tools.to_vector(feedback['s_signal'], vrepb.s_channels), gfx.end))
     s_vector = tools.to_vector(feedback['s_signal'], vrepb.s_channels)
     if s_vector[2] != 0.0:
         cols += 1

@@ -31,11 +31,11 @@ cfg0.sprims.scene      = 'ball0'
 cfg0.mprims.name        = 'dmp_sharedwidth'
 cfg0.mprims.dt          = 0.020
 cfg0.mprims.target_end  = 250
-cfg0.mprims.traj_end    = 500
-cfg0.mprims.sim_end     = 750
+cfg0.mprims.traj_end    = 350
+cfg0.mprims.sim_end     = 400
 cfg0.mprims.uniformize  = False
 cfg0.mprims.n_basis     = 2
-cfg0.mprims.max_speed   = 400
+cfg0.mprims.max_speed   = 50
 
 cfg0.mprims.init_states   = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 cfg0.mprims.target_states = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
