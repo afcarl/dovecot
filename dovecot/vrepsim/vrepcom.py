@@ -191,7 +191,7 @@ class VRepCom(object):
             # max_speed        = Trajectory[3]
             # Trajectory[4] for motor 1, Trajectory[5] for motor 2, etc...
         """
-        traj = [float(len(trajectory)), float(self.cfg.mprims.sim_end), self.cfg.mprims.max_speed] # motors_steps, max_steps, max_speed
+        traj = [float(len(trajectory)), float(self.cfg.mprims.sim_end), np.radians(self.cfg.mprims.max_speed)] # motors_steps, max_steps, max_speed
         for pos_v in trajectory:
             traj.extend(pos_v)
         return traj
