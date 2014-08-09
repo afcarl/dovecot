@@ -148,7 +148,7 @@ class VRepCom(object):
                 for h in [obj_handle]+children_handles:
                     if self.vrep.simRemoveObject(h) == -1:
                         if self.vrep.simRemoveObject(h) == -1:
-                            pass
+                            raise IOError('could not remove all necessary objects from the scene (handle: {})'.format(h))
 
         self.handle_script = self.vrep.simGetScriptHandle(script)
 
