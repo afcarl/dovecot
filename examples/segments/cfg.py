@@ -25,7 +25,7 @@ cfg0.execute.simu.mac_folder   = '/Applications/VRep/vrep.app/Contents/MacOS/' #
 
 cfg0.execute.scene.name        = 'ball0'
 cfg0.execute.scene.object.mass = 0.050
-cfg0.execute.scene.object.pos  = (None, None, None)
+cfg0.execute.scene.object.pos  = (0.0, 0.0, None)
 
 cfg0.sprims.names      = ['push']
 cfg0.sprims.tip        = False

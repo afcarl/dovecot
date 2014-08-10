@@ -147,11 +147,16 @@ class VRepCom(object):
         self._setup_robot(script)
 
     def _setup_objects(self):
-        toy_handle = self._vrep_get_handle(self.cfg.execute.scene.object.name)
+        obj_h = self._vrep_get_handle(self.cfg.execute.scene.object.name)
 
-        if self.cfg.execute.scene.object.mass is not None:
+        obj_cfg = self.cfg.execute.scene.object
+        if obj_cfg.mass is not None:
             MASS_PARAM = 3005        # 3005 is mass param
-            assert self.vrep.simSetObjectFloatParameter(toy_handle, MASS_PARAM, self.cfg.execute.scene.object.mass) != -1
+            assert self.vrep.simSetObjectFloatParameter(obj_h, MASS_PARAM, obj_cfg.mass) != -1
+
+        obj_pos = self.vrep.simGetObjectPosition(obj_h, -1)
+        obj_pos2 = [o2_i/100.0 if o2_i is not None else o_i for o_i, o2_i in zip(obj_pos, obj_cfg.pos)]
+        self.vrep.simSetObjectPosition(obj_h, -1, obj_pos2)
 
     def _setup_robot(self, script):
         assert script in ('robot', 'solomarker', 'vizu')
