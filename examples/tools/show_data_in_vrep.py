@@ -57,12 +57,7 @@ def start_com(datas):
                 scene = data['datas']['scene']
                 print(scene)
                 break
-        if scene.startswith('ar_'):
-            cfg.sprims.scene = scene[3:]
-        elif scene.startswith('vrep_'):
-            cfg.sprims.scene = scene[5:]
-        else:
-            raise NameError(scene)
+        cfg.execute.scene.name = scene
     com = VizuVrep(cfg, calcheck=False)
     return com
 

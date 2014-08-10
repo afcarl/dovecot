@@ -13,11 +13,11 @@ from cfg import cfg0
 
 from environments import tools
 
-cfg0.execute.simu.ppf = 1
-cfg0.execute.simu.headless = True
-cfg0.execute.prefilter     = True
+cfg0.execute.simu.ppf              = 1
+cfg0.execute.simu.headless         = True
+cfg0.execute.prefilter             = False
 cfg0.execute.check_self_collisions = True
-#cfg0.sprims.scene      = 'bigball0'
+#cfg0.execute.scene.name = 'bigball0'
 
 total = 1
 if len(sys.argv) >= 2:
@@ -39,9 +39,11 @@ vrepb = sim_env.SimulationEnvironment(cfg0)
 cols = 0
 col_orders = []
 
+random.seed(0)
+
 start = time.time()
 for i in range(total):
-    print('{}: {:.2f} MiB'.format(i, memory_usage()))
+    start_order = time.time()
 
     # if i == 100 or i == total-1:
     #     import pdb; pdb.set_trace()
@@ -56,6 +58,10 @@ for i in range(total):
 #    print('{}({})/{}'.format(i+1, cols, total), end='\r')
     sys.stdout.flush()
     #print(' '.join('{:5.2f}'.format(e) for e in effect))
+    dur = time.time()-start_order
+    print('{:04d}: {:.2f} MiB'.format(i, memory_usage()))
+    print('      {:4.2f}s for this order)'.format(dur))
+
 
 dur = time.time()-start
 print('\nran for {}s ({:4.2f}s per order)'.format(int(dur), dur/total))

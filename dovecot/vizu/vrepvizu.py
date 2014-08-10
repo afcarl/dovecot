@@ -79,7 +79,7 @@ class VizuVrep(vrepcom.VRepCom):
             Load a scene, set the script handle name to the given parameter
             and perform a calibration checking if asked
         """
-        self.scene_name = '{}_{}'.format('vizu', self.cfg.sprims.scene)
+        self.scene_name = self.cfg.execute.scene.name
 
         if calcheck:
             self.caldata = ttts.TTTCalibrationData(self.scene_name,

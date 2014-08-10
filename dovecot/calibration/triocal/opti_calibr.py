@@ -73,13 +73,14 @@ def vrep_capture(poses):
     cfg.execute.prefilter             = False
     cfg.execute.check_self_collisions = False
 
+    cfg.execute.scene.name      = 'calibrate'
+
     cfg.execute.simu.ppf        = 10
     cfg.execute.simu.mac_folder = '/Applications/V-REP/v_rep/bin'
     cfg.execute.simu.load       = True
     cfg.execute.simu.headless   = True
     cfg.execute.simu.calibrdir  = '~/.dovecot/tttcal/'
 
-    cfg.sprims.scene      = 'calibrate'
     cfg.sprims.names      = ['push']
     cfg.sprims.uniformize = False
     cfg.sprims.tip        = True

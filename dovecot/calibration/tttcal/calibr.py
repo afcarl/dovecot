@@ -36,7 +36,7 @@ def process_scene(name, calibrate=True):
         if isinstance(e, AssertionError):
             print('{}cal: {}mismatching md5 signature{}'.format(gfx.grey, gfx.yellow, gfx.end))
 
-        cfg.sprims.scene = name
+        cfg.execute.scene.name = name
         com = vrepcom.VRepCom(cfg, calcheck=not calibrate, setup=False)
         if calibrate:
             com.caldata = calibrate_scene(com)
@@ -82,7 +82,7 @@ def calibrate_scene(com):
     if solomarker_h != -1:
         solo_dims, solo_mass = object_properties(com.vrep, solomarker_h)
         assert solo_dims == mark_dims
-        assert solo_mass == mark_mass
+#        assert solo_mass == mark_mass
 
     position       = [100 * e for e in toy_pos]
     position_world = [100 * e for e in toy_pos_world]

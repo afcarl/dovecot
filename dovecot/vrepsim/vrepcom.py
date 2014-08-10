@@ -115,7 +115,7 @@ class VRepCom(object):
 
         :param ar:  if True, load augmented reality scene, else, vrep ones.
         """
-        self.scene_name =  self.cfg.sprims.scene
+        self.scene_name =  self.cfg.execute.scene.name
 
         # check calibration data
         if calcheck:
@@ -142,14 +142,25 @@ class VRepCom(object):
 
     def setup_scene(self, script):
         assert self.scene_loaded
-        assert script in ('robot', 'solomarker', 'vizu')
 
+        self._setup_objects()
+        self._setup_robot(script)
+
+    def _setup_objects(self):
+        toy_handle = self._vrep_get_handle(self.cfg.execute.scene.object.name)
+
+        if self.cfg.execute.scene.object.mass is not None:
+            MASS_PARAM = 3005        # 3005 is mass param
+            assert self.vrep.simSetObjectFloatParameter(toy_handle, MASS_PARAM, self.cfg.execute.scene.object.mass) != -1
+
+    def _setup_robot(self, script):
+        assert script in ('robot', 'solomarker', 'vizu')
         # deleting objects
         for s in ('robot', 'solomarker', 'vizu'):
             if s != script:
-                obj_handle = self._vrep_get_handle(s)
+                robot_handle = self._vrep_get_handle(s)
                 children_handles = self._get_children(s) # should be object_handle
-                for h in [obj_handle]+children_handles:
+                for h in [robot_handle]+children_handles:
                     self._vrep_del_object(h)
 
         self.handle_script = self.vrep.simGetScriptHandle(script)
@@ -157,19 +168,23 @@ class VRepCom(object):
     def _vrep_get_handle(self, name, tries=3, fail=True):
         h, trycount = -1, 0
         while h == -1 and trycount < tries:
+            if trycount > 0:
+                time.sleep(0.2)
             trycount += 1
             h = self.vrep.simGetObjectHandle(name)
         if fail and h == -1:
-            raise IOError('could not get handle for object name {}'.format(name))
+            raise IOError("could not get handle for object named '{}'".format(name))
         return h
 
     def _vrep_del_object(self, handle, tries=3, fail=True):
         r, trycount = -1, 0
         while r == -1 and trycount < tries:
+            if trycount > 0:
+                time.sleep(0.2)
             trycount += 1
             r = self.vrep.simRemoveObject(handle)
         if fail and r == -1:
-            raise IOError('could not get remove object (handle: {})'.format(name))
+            raise IOError('could not get remove object (handle: {})'.format(handle))
         return r
 
     def _get_children(self, obj_handle):

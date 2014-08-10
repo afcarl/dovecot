@@ -14,7 +14,7 @@ class KinEnvironment(sim_env.SimulationEnvironment):
     def __init__(self, cfg):
         environments.PrimitiveEnvironment.__init__(self, cfg)
 
-        self.scene_name = self.cfg.sprims.scene
+        self.scene_name = self.cfg.execute.scene.name
         self.caldata = ttts.TTTCalibrationData(self.scene_name, self.cfg.execute.simu.calibrdir)
         self.caldata.load()
 

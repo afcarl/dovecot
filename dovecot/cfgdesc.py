@@ -74,13 +74,25 @@ desc._isinstance('execute.simu.mac_folder', str)
 # desc._isinstance('execute.simu.toy_pos', collections.Iterable)
 
 
+    # Scene Configuration
+desc._branch('execute.scene')
+desc._branch('execute.scene.object')
+
+# name of the scene
+desc._describe('execute.scene.name', instanceof=str)
+
+# name of the object to track (for now, only 'toy' is supported)
+desc._describe('execute.scene.object.name', instanceof=str, default='toy')
+
+# x, y, z - if some dimension must be inchanged, set to None.
+desc._describe('execute.scene.object.pos', instanceof=collections.Iterable)
+
+# mass of the object - set to None to leave to default.
+desc._describe('execute.scene.object.mass', instanceof=(None.__class__, numbers.Real))
+
+
     # Sensory primitives
 desc._branch('sprims')
-
-# the scene to load in vrep
-# if equal to 'cube_center', experiments are pure simulation, then 'vrep_cube_center.ttt' is loaded
-# else, 'ar_cube_center.ttt' is loaded
-desc._isinstance('sprims.scene', str)
 
 # the names of the sensory primitives whose sensory feedback is computed
 desc._isinstance('sprims.names', collections.Iterable)
