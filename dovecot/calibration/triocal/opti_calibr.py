@@ -73,7 +73,10 @@ def vrep_capture(poses):
     cfg.execute.prefilter             = False
     cfg.execute.check_self_collisions = False
 
-    cfg.execute.scene.name      = 'calibrate'
+    cfg.execute.scene.name        = 'vanilla'
+    cfg.execute.scene.object.name = 'cube45'
+    cfg.execute.scene.object.pos  = (None, None, None)
+    cfg.execute.scene.object.mass = 0.050
 
     cfg.execute.simu.ppf        = 10
     cfg.execute.simu.mac_folder = '/Applications/V-REP/v_rep/bin'
@@ -86,7 +89,7 @@ def vrep_capture(poses):
     cfg.sprims.tip        = True
 
     cfg.mprim.dt          = 0.01
-    cfg.mprim.name        = 'dmpg25'
+    cfg.mprim.name        = 'dmpg_sharedwidth'
     cfg.mprim.motor_steps = 1000
     cfg.mprim.max_steps   = 1000
     cfg.mprim.uniformize  = False

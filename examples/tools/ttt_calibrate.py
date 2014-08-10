@@ -6,6 +6,7 @@ import sys
 from dovecot.calibration import tttcal
 
 names=['vanilla',
+       'vanilla_rightwall',
        # 'ball0',
        # 'ball0_wall',
        # 'smallball0',

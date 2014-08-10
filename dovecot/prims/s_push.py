@@ -29,8 +29,8 @@ class Push(environments.SensoryPrimitive):
         self.null_effect = (context['obj_pos_world'][0], context['obj_pos_world'][1], 0)
 
     def process_raw_sensors(self, sensors_data):
-        if self.object_name + '_pos' not in sensors_data:
-            return tools.to_signal(self.null_effect, self.s_channels) # does this hide bugs ? when is it necessary ?
+        # if self.object_name + '_pos' not in sensors_data:
+        #     return tools.to_signal(self.null_effect, self.s_channels) # does this hide bugs ? when is it necessary ?
         pos_array = sensors_data[self.object_name + '_pos']
         pos_a = pos_array[0]
         pos_b = pos_array[-1]

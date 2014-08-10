@@ -175,7 +175,7 @@ class VRepCom(object):
         self.handle_script = self.vrep.simGetScriptHandle(script)
 
 
-    def _vrep_set_pos(self, handle, handle_rel, pos, tries=3, fail=True):
+    def _vrep_set_pos(self, handle, handle_rel, pos, tries=10, fail=True):
         r, trycount = -1, 0
         while r == -1 and trycount < tries:
             if trycount > 0:
@@ -196,6 +196,7 @@ class VRepCom(object):
             h = self.vrep.simGetObjectHandle(name)
         if fail and h == -1:
             raise IOError("could not get handle for object named '{}'".format(name))
+        #print(name, h)
         return h
 
     def _vrep_del_object(self, handle, tries=3, fail=True):

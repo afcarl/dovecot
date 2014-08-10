@@ -18,8 +18,11 @@ class KinEnvironment(sim_env.SimulationEnvironment):
         self.caldata = ttts.TTTCalibrationData(self.scene_name, self.cfg.execute.simu.calibrdir)
         self.caldata.load()
 
-        self.collider = maycollide.FakeColliderCube(self.cfg,
-                                                    self.caldata.position,
+        obj_pos = self.cfg.execute.scene.object.pos
+        assert obj_pos[0] is not None and obj_pos[1] is not None
+        obj_pos = [o_i if o_i is not None else o2_i for o_i, o2_i in zip(obj_pos, self.caldata.position)]
+
+        self.collider = maycollide.FakeColliderCube(self.cfg, obj_pos,
                                                     self.caldata.dimensions, self.MARKER_SIZE)
 
     def _create_primitives(self, cfg):

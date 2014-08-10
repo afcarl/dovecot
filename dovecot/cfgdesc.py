@@ -81,8 +81,8 @@ desc._branch('execute.scene.object')
 # name of the scene
 desc._describe('execute.scene.name', instanceof=str)
 
-# name of the object to track (for now, only 'toy' is supported)
-desc._describe('execute.scene.object.name', instanceof=str, default='toy')
+# name of the object to track
+desc._describe('execute.scene.object.name', instanceof=str)
 
 # x, y, z - if some dimension must be inchanged, set to None.
 desc._describe('execute.scene.object.pos', instanceof=collections.Iterable)

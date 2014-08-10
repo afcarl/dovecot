@@ -30,7 +30,7 @@ cfg.execute.scene.object.pos  = (None, None, None)
 
 OBJ_NAMES = ['ball25', 'ball45', 'ball60',
              'cube25', 'cube45', 'cube90', 'cube140',
-             'tube0']
+             'tube40_80']
 
 
 def process_scene(name, calibrate=True):
