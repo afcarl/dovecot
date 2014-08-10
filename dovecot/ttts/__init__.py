@@ -1,1 +1,1 @@
-from ttt_files import TTTFile, TTTCalibrationData
+from ttt_files import TTTFile, TTTCalibrationData, VRepObject

@@ -41,30 +41,25 @@ class TTTCalibrationData(object):
                        (ie. 'ar_center_cube.ttt.cal')
         :param folder: the folder with the calibration file.
         """
-        self.name = name
+        self.name   = name
         self.folder = folder
-        ttt_file = TTTFile(name)
+        ttt_file    = TTTFile(name)
         self.ttt_filepath = ttt_file.filepath
         self.cal_filepath = cleanpath(os.path.join(self.folder, ttt_file.filename + '.cal'))
 
-        self.md5            = None
-        self.mass           = None
-        self.position       = None
-        self.position_world = None
-        self.dimensions     = None
-        self.dimensions_m   = None
+        self.md5        = None
+        self.objects    = {}
+        self.marker_dim = None
 
-        self.verbose        = True
+        self.verbose    = True
 
-    def populate(self, mass, position, dimensions, position_world, dimensions_m):
+    def populate(self, objects, marker_dim):
         self.md5 = md5sum(self.ttt_filepath)
-        self.mass = mass
-        self.position = position
-        self.position_world = position_world
-        self.dimensions   = dimensions
-        self.dimensions_m = dimensions_m
+        self.objects = objects
+        self.marker_dim = marker_dim
 
     def save(self):
+        print(self.objects)
         if self.verbose:
             print('{}cal: {}saving calibration data {}{}'.format(gfx.grey, gfx.cyan, self.cal_filepath, gfx.end))
         with open(self.cal_filepath, 'w+') as f:
@@ -89,17 +84,53 @@ class TTTCalibrationData(object):
         self.md5 = md5sum(self.ttt_filepath)
         assert caldata.md5 == self.md5, "{}cal: {}loaded scene calibration ({}:{}) differs from scene ({}:{}){}".format(gfx.grey, gfx.red, self.cal_filepath, caldata.md5, self.ttt_filepath, self.md5, gfx.end)
 
-        self.dimensions     = caldata.dimensions
-        self.dimensions_m   = caldata.dimensions_m
-        self.mass           = caldata.mass
-        self.position       = caldata.position
-        self.position_world = caldata.position_world
+        self.objects    = caldata.objects
+        self.marker_dim = caldata.marker_dim
 
     def __repr__(self):
         s  = 'ttt_file: {}, md5: {}\n'.format(self.ttt_filepath, self.md5)
         s += 'cal_file: {}\n'.format(self.cal_filepath)
-        s += 'mass: {}, pos: {}, world_pos:{}, dim: {}, dime_marker: {}\n'.format(self.mass, self.position, self.position_world, self.dimensions, self.dimensions_m)
+        # s += 'mass: {}, pos: {}, world_pos:{}, dim: {}, dime_marker: {}\n'.format(self.mass, self.position, self.position_world, self.dimensions, self.dimensions_m)
         return s
 
 
+class VRepObject(object):
+
+    def __init__(self, name):
+        """
+            :param pos:   position relative to the robot
+            :param pos_w: absolute position
+        """
+        self.name = name
+
+    def setup(self, pos, pos_w, dim, mass):
+        self.pos   = pos
+        self.pos_w = pos_w
+        self.dim   = dim
+        self.mass  = mass
+
+    def load(self, com, base_h):
+        self.handle = com._vrep_get_handle(self.name)
+        self.pos    = tuple(100*p for p in com.vrep.simGetObjectPosition(self.handle, base_h))
+        self.pos_w  = tuple(100*p for p in com.vrep.simGetObjectPosition(self.handle, -1))
+        self.dim, self.mass = self.object_properties(com.vrep, self.handle)
+
+    def actual_pos(cls, start_pos, cfg_pos):
+        """Return the position of the object after it has been moved by configuration defined postion"""
+        assert all(p_s is not None for p_s in start_pos)
+        return tuple(p_c if p_c is not None else p_s for p_c, p_s in zip(cfg_pos, start_pos))
+
+    @classmethod
+    def object_properties(cls, vrep, handle):
+        min_x = vrep.simGetObjectFloatParameter(handle,   21)[0] * 100
+        max_x = vrep.simGetObjectFloatParameter(handle,   24)[0] * 100
+        min_y = vrep.simGetObjectFloatParameter(handle,   22)[0] * 100
+        max_y = vrep.simGetObjectFloatParameter(handle,   25)[0] * 100
+        min_z = vrep.simGetObjectFloatParameter(handle,   23)[0] * 100
+        max_z = vrep.simGetObjectFloatParameter(handle,   26)[0] * 100
+        mass  = vrep.simGetObjectFloatParameter(handle, 3005)[0]
+
+        dims = (max_x - min_x, max_y - min_y, max_z - min_z)
+
+        return dims, mass
 

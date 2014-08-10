@@ -10,6 +10,7 @@ from ...cfgdesc import desc
 
 from ...vizu import vrepvizu
 
+
 cfg = desc._copy(deep=True)
 cfg.execute.is_simulation    = True
 cfg.execute.simu.ppf         = 10
@@ -21,6 +22,16 @@ cfg.execute.simu.mac_folder  = '/Applications/VRep/vrep.app/Contents/MacOS/'
 #cfg.execute.simu.mac_folder  ='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS'
 cfg.execute.simu.load        = True
 cfg.execute.prefilter = False
+
+cfg.execute.scene.object.name = 'ball25'
+cfg.execute.scene.object.mass = None
+cfg.execute.scene.object.pos  = (None, None, None)
+
+
+OBJ_NAMES = ['ball25', 'ball45', 'ball60',
+             'cube25', 'cube45', 'cube90', 'cube140',
+             'tube0']
+
 
 def process_scene(name, calibrate=True):
     """Calibrate or check scene"""
@@ -43,49 +54,26 @@ def process_scene(name, calibrate=True):
         com.close(kill=True)
         return com.caldata
 
-def compare_calib_data(ar_calib, v_calib, vizu_calib):
-    assert round(ar_calib.mass, 4) == round(v_calib.mass, 4) == round(vizu_calib.mass, 4), "Toy mass error..."
-    assert [round(e, 4) for e in ar_calib.dimensions] == [round(e, 4) for e in v_calib.dimensions] == [round(e, 4) for e in vizu_calib.dimensions], "Toy dimensions error..."
-    assert [round(e, 4) for e in ar_calib.position] == [round(e, 4) for e in v_calib.position] == [round(e, 4) for e in vizu_calib.position], "Toy position error..."
-    if len(ar_calib.dimensions_m) == len(v_calib.dimensions_m):
-        assert ar_calib.dimensions_m   == v_calib.dimensions_m   , "Marker dimensions error..."
-    #assert ar_calib.position_world == v_calib.position_world , "Toy position error..."
-
-def object_properties(vrep, handle):
-    min_x = vrep.simGetObjectFloatParameter(handle,   21)[0] * 100
-    max_x = vrep.simGetObjectFloatParameter(handle,   24)[0] * 100
-    min_y = vrep.simGetObjectFloatParameter(handle,   22)[0] * 100
-    max_y = vrep.simGetObjectFloatParameter(handle,   25)[0] * 100
-    min_z = vrep.simGetObjectFloatParameter(handle,   23)[0] * 100
-    max_z = vrep.simGetObjectFloatParameter(handle,   26)[0] * 100
-    mass  = vrep.simGetObjectFloatParameter(handle, 3005)[0] * 100
-
-    dims = [max_x - min_x, max_y - min_y, max_z - min_z]
-
-    return dims, mass
 
 
 def calibrate_scene(com):
-    toy_h        = com.vrep.simGetObjectHandle("toy")
     base_h       = com.vrep.simGetObjectHandle("base")
     marker_h     = com.vrep.simGetObjectHandle("marker")
     solomarker_h = com.vrep.simGetObjectHandle("solomarker")
 
-    toy_pos        = com.vrep.simGetObjectPosition(toy_h, base_h)
-    toy_pos_world  = com.vrep.simGetObjectPosition(toy_h, -1)
-
-    toy_dims, toy_mass = object_properties(com.vrep, toy_h)
-
     assert marker_h != -1
-    mark_dims, mark_mass = object_properties(com.vrep, marker_h)
+    mark_dims, mark_mass = ttts.VRepObject.object_properties(com.vrep, marker_h)
 
     if solomarker_h != -1:
-        solo_dims, solo_mass = object_properties(com.vrep, solomarker_h)
+        solo_dims, solo_mass = ttts.VRepObject.object_properties(com.vrep, solomarker_h)
         assert solo_dims == mark_dims
-#        assert solo_mass == mark_mass
+        assert solo_mass == mark_mass
 
-    position       = [100 * e for e in toy_pos]
-    position_world = [100 * e for e in toy_pos_world]
+    objects = {}
+    for name in OBJ_NAMES:
+        obj = ttts.VRepObject(name)
+        obj.load(com, base_h)
+        objects[name] = obj
 
     scene_filepath = ttts.TTTFile(com.scene_name).filepath
     if not os.path.isfile(scene_filepath):
@@ -93,7 +81,7 @@ def calibrate_scene(com):
         return None
     else:
         caldata = ttts.TTTCalibrationData(com.scene_name, com.cfg.execute.simu.calibrdir)
-        caldata.populate(toy_mass, position, toy_dims, position_world, mark_dims)
+        caldata.populate(objects, mark_dims)
         print(caldata.md5)
         caldata.save()
         return caldata

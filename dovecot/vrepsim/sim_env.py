@@ -21,8 +21,8 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
 
         super(SimulationEnvironment, self).__init__(cfg)
 
-        print('pos_world', self.vrepcom.caldata.position_world)
         if cfg.execute.prefilter:
+            assert False # prefilter does not work properly !
             self._collision_filter = maycollide.CollisionFilter(self.cfg,
                                                                 self.vrepcom.caldata.position,
                                                                 self.vrepcom.caldata.dimensions,
@@ -32,7 +32,7 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
         self.context = {'x_bounds': (-300.0, 300.0),
                         'y_bounds': (-300.0, 300.0),
                         'z_bounds': (   0.0, 330.0),
-                        'obj_pos_world': self.vrepcom.caldata.position_world}
+                        'obj_pos_world': self.vrepcom.objects_pos[cfg.execute.scene.object.name]}
 
         # motor primitive
         self.m_prim = prims.create_mprim(self.cfg.mprims.name, self.cfg)
@@ -81,7 +81,7 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
         if not self._check_object_collision(motor_poses):
             return {}
 
-        raw_sensors = self.vrepcom.run_simulation(motor_poses, self.cfg.mprims.sim_end)
+        raw_sensors = self.vrepcom.run_simulation(motor_poses)
         raw_sensors = self._process_sensors(raw_sensors)
 
         meta['log']['raw_sensors'] = raw_sensors

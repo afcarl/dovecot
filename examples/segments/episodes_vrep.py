@@ -17,7 +17,12 @@ cfg0.execute.simu.ppf              = 1
 cfg0.execute.simu.headless         = False
 cfg0.execute.prefilter             = False
 cfg0.execute.check_self_collisions = True
-#cfg0.execute.scene.name = 'bigball0'
+
+cfg0.execute.scene.name        = 'vanilla'
+cfg0.execute.scene.object.name = 'ball45'
+cfg0.execute.scene.object.mass = 0.050
+cfg0.execute.scene.object.pos  = (-60.0, 0.0, None)
+
 
 total = 1
 if len(sys.argv) >= 2:
