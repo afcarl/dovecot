@@ -2,6 +2,7 @@ import forest
 
 import dotdot
 from dovecot import desc
+from dovecot import objdesc
 
 cfg0 = desc._copy(deep=True)
 
@@ -24,9 +25,10 @@ cfg0.execute.simu.load         = True
 cfg0.execute.simu.mac_folder   = '/Applications/VRep/vrep.app/Contents/MacOS/' # only for mac
 
 cfg0.execute.scene.name        = 'vanilla'
-cfg0.execute.scene.object.name = 'ball45'
-cfg0.execute.scene.object.mass = 0.050
-cfg0.execute.scene.object.pos  = (0.0, 0.0, None)
+cfg0.execute.scene.objects.ball45 = objdesc._deepcopy()
+cfg0.execute.scene.objects.ball45.mass    = 0.050
+cfg0.execute.scene.objects.ball45.pos     = (0.0, 0.0, None)
+cfg0.execute.scene.objects.ball45.tracked = True
 
 cfg0.sprims.names      = ['push']
 cfg0.sprims.tip        = False

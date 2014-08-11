@@ -6,7 +6,7 @@ from toolbox import gfx
 
 from ...vrepsim import vrepcom
 from ... import ttts
-from ...cfgdesc import desc
+from ...cfgdesc import desc, objdesc
 
 from ...vizu import vrepvizu
 
@@ -23,9 +23,9 @@ cfg.execute.simu.mac_folder  = '/Applications/VRep/vrep.app/Contents/MacOS/'
 cfg.execute.simu.load        = True
 cfg.execute.prefilter = False
 
-cfg.execute.scene.object.name = 'ball25'
-cfg.execute.scene.object.mass = None
-cfg.execute.scene.object.pos  = (None, None, None)
+# cfg.execute.scene.objects.'ball25'
+# cfg.execute.scene.object.mass = None
+# cfg.execute.scene.object.pos  = (None, None, None)
 
 
 OBJ_NAMES = ['ball25', 'ball45', 'ball60',

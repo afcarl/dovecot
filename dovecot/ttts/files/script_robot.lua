@@ -24,12 +24,15 @@ if (simGetScriptExecutionCount() == 0) then
     simSetScriptSimulationParameter(sim_handle_self, "trajectory", "")
 
     n_args    = math.floor(trajectory[1])
-    obj       = math.floor(trajectory[2])
-    traj_end  = math.floor(trajectory[3])
-    sim_end   = math.floor(trajectory[4])
-    max_speed =            trajectory[5]
+    traj_end  = math.floor(trajectory[2])
+    sim_end   = math.floor(trajectory[3])
+    max_speed =            trajectory[4]
+    n_obj     = math.floor(trajectory[5])
 
-    obj_handles = {obj,}
+    obj_handles = {}
+    for i=1, n_obj do
+        table.insert(obj_handles, math.floor(trajectory[5+i]))
+    end
 
     simSetFloatingParameter(sim_floatparam_simulation_time_step, 0.02)
     for i = 1, #joint_handles do

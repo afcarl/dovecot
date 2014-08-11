@@ -14,13 +14,17 @@ from . import sprims
 class Push(environments.SensoryPrimitive):
 
     def __init__(self, cfg):
+        self.tracked_objects = []
+        for obj_name, obj_cfg in cfg.execute.scene.objects._children_items():
+            if obj_cfg.tracked:
+                self.tracked_objects.append(obj_name)
+
+        assert len(self.tracked_objects) == 1
         #self.object_name = cfg.sprimitive.push.object_name
-        self.object_name = 'object'
-        self.s_feats  = (10, 11, 12,)
-        self.s_fixed  = (None, None, 1000.0)
+        self.object_name = self.tracked_objects[0]
 
     def required_channels(self):
-        return (self.object_name + '_pos',)
+        return (self.object_name + '.pos',)
 
     def process_context(self, context):
         self.s_channels = [Channel('x', bounds=tuple(context['x_bounds']), unit='mm'),
@@ -31,7 +35,7 @@ class Push(environments.SensoryPrimitive):
     def process_raw_sensors(self, sensors_data):
         # if self.object_name + '_pos' not in sensors_data:
         #     return tools.to_signal(self.null_effect, self.s_channels) # does this hide bugs ? when is it necessary ?
-        pos_array = sensors_data[self.object_name + '_pos']
+        pos_array = sensors_data[self.object_name + '.pos']
         pos_a = pos_array[0]
         pos_b = pos_array[-1]
         collision = 0.0 if dist(pos_a[:2], pos_b[:2]) < 1.0 else 1000.0

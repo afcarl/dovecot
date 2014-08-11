@@ -31,8 +31,7 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
     def _create_primitives(self, cfg):
         self.context = {'x_bounds': (-300.0, 300.0),
                         'y_bounds': (-300.0, 300.0),
-                        'z_bounds': (   0.0, 330.0),
-                        'obj_pos_world': self.vrepcom.objects_pos[cfg.execute.scene.object.name]}
+                        'z_bounds': (   0.0, 330.0)}
 
         # motor primitive
         self.m_prim = prims.create_mprim(self.cfg.mprims.name, self.cfg)
@@ -92,21 +91,23 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
         object_sensors = raw_sensors['object_sensors']
 
         assert len(object_sensors) % (3+4+3+3) == 0
-        n = int(len(object_sensors)/13)
-        positions    = tuple(tuple(100.0*object_sensors[13*i   :13*i+ 3]) for i in range(n))
-        quaternions  = tuple(tuple(      object_sensors[13*i+ 3:13*i+ 7]) for i in range(n))
-        # velocities_t = tuple(tuple(object_sensors[13*i+ 7:13*i+10]) for i in range(n))
-        # velocities_a = tuple(tuple(object_sensors[13*i+10:13*i+13]) for i in range(n))
+        n_objs = len(self.vrepcom.tracked_objects)
+        for k, obj_name in enumerate(self.vrepcom.tracked_objects):
+            n = int(len(object_sensors)/(13*n_objs))
+            positions    = tuple(tuple(100.0*object_sensors[13*(n_objs*i+k)   :13*(n_objs*i+k)+ 3]) for i in range(n))
+            quaternions  = tuple(tuple(      object_sensors[13*(n_objs*i+k)+ 3:13*(n_objs*i+k)+ 7]) for i in range(n))
+            # velocities_t = tuple(tuple(object_sensors[13*i+ 7:13*i+10]) for i in range(n))
+            # velocities_a = tuple(tuple(object_sensors[13*i+10:13*i+13]) for i in range(n))
 
-        raw_sensors['object_pos']   = positions
-        raw_sensors['object_ori']   = quaternions
-        # raw_sensors['object_vel_t'] = velocities_t
-        # raw_sensors['object_vel_a'] = velocities_a
+            raw_sensors['{}.pos'.format(obj_name)]   = positions
+            raw_sensors['{}.ori'.format(obj_name)]   = quaternions
+            # raw_sensors['object_vel_t'] = velocities_t
+            # raw_sensors['object_vel_a'] = velocities_a
 
         if self.cfg.sprims.tip:
-            assert raw_sensors['tip_sensors'] is not None
-            n = int(len(raw_sensors['tip_sensors'])/3)
-            tip_pos = tuple(tuple(raw_sensors['tip_sensors'][3*i:3*i+ 3]) for i in range(n))
+            assert raw_sensors['marker_sensors'] is not None
+            n = int(len(raw_sensors['marker_sensors'])/3)
+            tip_pos = tuple(tuple(raw_sensors['marker_sensors'][3*i:3*i+ 3]) for i in range(n))
             raw_sensors['tip_pos'] = tip_pos
 
         return raw_sensors

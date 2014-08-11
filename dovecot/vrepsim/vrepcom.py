@@ -23,9 +23,10 @@ class VRepCom(object):
         self.verbose = verbose
         self.setup   = setup
 
-        self.connected    = False
-        self.scene_loaded = False
-        self.ppf          = cfg.execute.simu.ppf
+        self.connected       = False
+        self.scene_loaded    = False
+        self.tracked_objects = []
+        self.tracked_handles = []
 
         if not calcheck:
             assert not cfg.execute.prefilter, 'Can\'t skip the calibration check and prefilter collisions. Choose.'
@@ -40,7 +41,6 @@ class VRepCom(object):
         self.scene = None
 
         if cfg.execute.simu.load:
-
             if self.cfg.execute.is_simulation:
                 self.load(script='robot', calcheck=calcheck)
             else:
@@ -148,19 +148,20 @@ class VRepCom(object):
         self._setup_robot(script)
 
     def _setup_objects(self):
-        obj_cfg = self.cfg.execute.scene.object
-        obj_h   = self._vrep_get_handle(obj_cfg.name)
-        obj_cal = self.caldata.objects[obj_cfg.name]
+        for obj_name, obj_cfg in self.cfg.execute.scene.objects._children_items():
+            obj_h   = self._vrep_get_handle(obj_name)
+            obj_cal = self.caldata.objects[obj_name]
 
-        if obj_cfg.mass is not None:
-            MASS_PARAM = 3005        # 3005 is mass param
-            assert self.vrep.simSetObjectFloatParameter(obj_h, MASS_PARAM, obj_cfg.mass) != -1
+            if obj_cfg.mass is not None:
+                MASS_PARAM = 3005        # 3005 is mass param
+                assert self.vrep.simSetObjectFloatParameter(obj_h, MASS_PARAM, obj_cfg.mass) != -1
 
-        obj_pos = obj_cal.actual_pos(obj_cal.pos_w, obj_cfg.pos)
-        self._vrep_set_pos(obj_h, -1, obj_pos)
-        self.objects_pos[obj_cfg.name] = obj_pos
-
-        self.handle_toy = obj_h
+            obj_pos = obj_cal.actual_pos(obj_cal.pos_w, obj_cfg.pos)
+            self._vrep_set_pos(obj_h, -1, obj_pos)
+            self.objects_pos[obj_name] = obj_pos
+            if obj_cfg.tracked:
+                self.tracked_objects.append(obj_name)
+                self.tracked_handles.append(obj_h)
 
     def _setup_robot(self, script):
         assert script in ('robot', 'solomarker', 'vizu')
@@ -249,9 +250,14 @@ class VRepCom(object):
             # max_speed        = Trajectory[3]
             # Trajectory[4] for motor 1, Trajectory[5] for motor 2, etc...
         """
-        traj = [float(self.handle_toy), float(len(trajectory)),
-                float(self.cfg.mprims.sim_end), np.radians(self.cfg.mprims.max_speed)] # motors_steps, max_steps, max_speed
+        assert len(trajectory) == self.cfg.mprims.traj_end
+        traj = ([float(len(trajectory)), float(self.cfg.mprims.sim_end),
+                 np.radians(self.cfg.mprims.max_speed)] +
+                 [float(len(self.tracked_handles))] +
+                 [float(obj_h) for obj_h in self.tracked_handles]
+               )
         traj = [len(traj)+1] + traj
+
         for pos_v in trajectory:
             traj.extend(pos_v)
         return traj
@@ -259,9 +265,13 @@ class VRepCom(object):
     def _prepare_marker_traj(self, trajectory):
         assert len(trajectory) > 0, "Trajectory to prepare is empty."
 
-        traj_prefix = [float(self.handle_toy), self.cfg.mprims.dt,
-                       float(self.cfg.mprims.sim_end)] # motors_steps, max_steps, max_speed
+        traj_prefix = ([float(len(trajectory)), self.cfg.mprims.dt,
+                        float(self.cfg.mprims.sim_end)] +
+                       [float(len(self.tracked_handles))] +
+                       [float(obj_h) for obj_h in self.tracked_handles]
+                      )
         traj_prefix = [len(traj_prefix)+1] + traj_prefix
+
         ts_ref = trajectory[0][0]
         new_traj = []
         for i in range(len(trajectory)):
@@ -288,7 +298,7 @@ class VRepCom(object):
 
         traj = self._prepare_traj(trajectory)
         self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "trajectory", traj)
-        self.vrep.simSetSimulationPassesPerRenderingPass(self.ppf)
+        self.vrep.simSetSimulationPassesPerRenderingPass(self.cfg.execute.simu.ppf)
 
         self.vrep.simSetFloatingParameter(pyvrep.constants.sim_floatparam_simulation_time_step, self.cfg.mprims.dt)
 
@@ -309,12 +319,9 @@ class VRepCom(object):
         object_sensors = np.array(self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "object_sensors"))
         collide_data   = np.array(self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "collide_data"))
 
-        tip_sensors = None
+        marker_sensors = None
         if self.cfg.sprims.tip:
-            if self.cfg.execute.is_simulation:
-                tip_sensors = self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "marker_sensors")
-            else:
-                tip_sensors = self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "marker_trajectory")
+            marker_sensors = self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "marker_sensors")
 
         # assert len(positions) == len(quaternions) == len(velocities)
 
@@ -327,5 +334,5 @@ class VRepCom(object):
 
         return {'object_sensors': object_sensors,
                 'joint_sensors' : joint_sensors,
-                'tip_sensors'   : tip_sensors,
+                'tip_sensors'   : marker_sensors,
                 'collide_data'  : collide_data}

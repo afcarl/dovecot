@@ -1,6 +1,7 @@
 import collections
 import numbers
 
+import forest
 import environments
 
 
@@ -81,14 +82,20 @@ desc._branch('execute.scene.object')
 # name of the scene
 desc._describe('execute.scene.name', instanceof=str)
 
-# name of the object to track
-desc._describe('execute.scene.object.name', instanceof=str)
+desc._branch('execute.scene.objects')
+desc.execute.scene.objects._strict(False)
+
+objdesc = forest.Tree()
+objdesc._strict(True)
 
 # x, y, z - if some dimension must be inchanged, set to None.
-desc._describe('execute.scene.object.pos', instanceof=collections.Iterable)
+objdesc._describe('pos', instanceof=collections.Iterable, default=(None, None, None))
 
 # mass of the object - set to None to leave to default.
-desc._describe('execute.scene.object.mass', instanceof=(None.__class__, numbers.Real))
+objdesc._describe('mass', instanceof=(None.__class__, numbers.Real), default=None)
+
+# if True, the object is tracked by the sensors
+objdesc._describe('tracked', instanceof=bool, default=False)
 
 
     # Sensory primitives
