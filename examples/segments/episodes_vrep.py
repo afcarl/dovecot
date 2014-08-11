@@ -29,6 +29,10 @@ cfg0.execute.scene.objects.cube45.pos     = (+60.0, 180.0, None)
 cfg0.execute.scene.objects.cube45.mass    = 0.500
 cfg0.execute.scene.objects.cube45.tracked = False
 
+cfg0.execute.scene.objects.y_objwall         = objdesc._deepcopy()
+cfg0.execute.scene.objects.y_objwall.pos     = (0.0, -30.0, None)
+cfg0.execute.scene.objects.y_objwall.mass    = None
+cfg0.execute.scene.objects.y_objwall.tracked = False
 
 total = 1
 if len(sys.argv) >= 2:
