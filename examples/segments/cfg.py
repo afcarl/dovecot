@@ -23,7 +23,8 @@ cfg0.execute.simu.ppf          = 200
 cfg0.execute.simu.load         = True
 cfg0.execute.simu.mac_folder   = '/Applications/VRep/vrep.app/Contents/MacOS/' # only for mac
 
-cfg0.execute.scene.name        = 'ball0'
+cfg0.execute.scene.name        = 'vanilla'
+cfg0.execute.scene.object.name = 'ball45'
 cfg0.execute.scene.object.mass = 0.050
 cfg0.execute.scene.object.pos  = (0.0, 0.0, None)
 

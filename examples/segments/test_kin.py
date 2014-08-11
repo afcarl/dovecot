@@ -7,8 +7,6 @@ from dovecot import KinEnvironment
 from cfg import cfg0
 
 
-
-
 class TestKin(unittest.TestCase):
 
     def test_kin(self):
