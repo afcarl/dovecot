@@ -88,27 +88,27 @@ def vrep_capture(poses):
     cfg.sprims.uniformize = False
     cfg.sprims.tip        = True
 
-    cfg.mprim.dt          = 0.01
-    cfg.mprim.name        = 'dmpg_sharedwidth'
-    cfg.mprim.motor_steps = 1000
-    cfg.mprim.max_steps   = 1000
-    cfg.mprim.uniformize  = False
-    cfg.mprim.n_basis     = 2
-    cfg.mprim.max_speed   = 1.0
-    cfg.mprim.end_time    = 2.0
+    cfg.mprims.dt           = 0.01
+    cfg.mprims.name         = 'dmp_sharedwidth'
+    cfg.mprims.target_end   =  500
+    cfg.mprims.traj_end     = 2000
+    cfg.mprims.sim_end      = 2000
+    cfg.mprims.uniformize   = False
+    cfg.mprims.n_basis      = 2
+    cfg.mprims.max_speed    = 30.0
 
-    cfg.mprim.init_states   = [-30.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    cfg.mprim.target_states = [  0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    cfg.mprim.angle_ranges  = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0, 120.0), (99.0, 99.0), (99.0, 99.0))
+    cfg.mprims.init_states   = [-30.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    cfg.mprims.target_states = [  0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    cfg.mprims.angle_ranges  = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0, 120.0), (99.0, 99.0), (99.0, 99.0))
 
     sb = sim_env.SimulationEnvironment(cfg)
 
     vrep_res = []
     for tg in poses:
-        cfg.mprim.target_states = tg
-        sb.m_prim = prims.create_mprim(cfg.mprim.name, cfg)
+        cfg.mprims.target_states = tg
+        sb.m_prim = prims.create_mprim(cfg.mprims.name, cfg)
 
-        m_signal = tools.to_signal((0.0, 0.0)*cfg.mprim.n_basis*6 + (0.20, 0.20),
+        m_signal = tools.to_signal((0.0, 0.0)*cfg.mprims.n_basis*6 + (0.20, 0.20),
                                    sb.m_channels)
         meta = {}
         sb.execute(m_signal, meta=meta)
