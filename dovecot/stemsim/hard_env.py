@@ -72,7 +72,7 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
 
 
             # check for collisions
-            motor_traj, max_steps = motor_command
+            motor_traj = motor_command
             motor_poses = self._trajs2poses(motor_traj)
             if not self._check_object_collision(motor_poses):
                 return meta
@@ -116,7 +116,7 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
             log['captured_marker_traj'] = vrep_traj
 
             # execute in vrep
-            raw_sensors = self.vrepcom.run_simulation(vrep_traj, self.cfg.mprim.max_steps)
+            raw_sensors = self.vrepcom.run_simulation(vrep_traj)
 
             log['raw_sensors'] = raw_sensors
 

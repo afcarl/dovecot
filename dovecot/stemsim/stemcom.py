@@ -141,7 +141,7 @@ class StemCom(object):
         assert self.zero_thread is None
 
         try:
-            pose       = np.degrees([tj_i.p(t)      for tj_i in trajectory])
+            pose       = [tj_i.p(t)      for tj_i in trajectory]
             if collider.collide(self.ms.pose):
                 return True
             max_speeds = [tj_i.max_speed for tj_i in trajectory]

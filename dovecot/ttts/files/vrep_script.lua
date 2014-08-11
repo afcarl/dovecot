@@ -16,6 +16,7 @@ if (simGetScriptExecutionCount() == 0) then
 
     marker = simGetObjectHandle("marker")
 
+
     -- settings
     simAddStatusbarMessage("info: setting parameters")
 
@@ -35,14 +36,15 @@ if (simGetScriptExecutionCount() == 0) then
         simSetObjectFloatParameter(joint_handles[i], 2017, max_speed)
     end
 
-    -- return structure
     sim_step = simGetScriptExecutionCount()
+    ended = false
+    collide = false
+
+    -- return structure
     marker_sensors = {}
     joint_sensors  = {}
     obj_sensors    = {}
-
-    collide = false
-    collide_data = {}
+    collide_data   = {}
 
     simAddStatusbarMessage("info: starting simulation")
 end
@@ -108,15 +110,18 @@ if (simGetScriptExecutionCount() > 0) then
     end
 
     if(sim_step > sim_end) then
-        simSetScriptSimulationParameter(sim_handle_self, "marker_sensors", simPackFloats(marker_sensors))
-        simSetScriptSimulationParameter(sim_handle_self, "object_sensors", simPackFloats(obj_sensors))
-        simSetScriptSimulationParameter(sim_handle_self, "joint_sensors",  simPackFloats(joint_sensors))
-        simSetScriptSimulationParameter(sim_handle_self, "collide_data",   simPackFloats(collide_data))
-        simPauseSimulation()
+        if (ended == false) then
+            ended = true
+            simSetScriptSimulationParameter(sim_handle_self, "marker_sensors", simPackFloats(marker_sensors))
+            simSetScriptSimulationParameter(sim_handle_self, "object_sensors", simPackFloats(obj_sensors))
+            simSetScriptSimulationParameter(sim_handle_self, "joint_sensors",  simPackFloats(joint_sensors))
+            simSetScriptSimulationParameter(sim_handle_self, "collide_data",   simPackFloats(collide_data))
+            simPauseSimulation()
+        end
     end
 end
 
--- Recommended in documentation : see doc
+-- end of simulation
 if (simGetSimulationState()==sim_simulation_advancing_lastbeforestop) then
     simAddStatusbarMessage("info: simulation ended")
 end

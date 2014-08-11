@@ -61,9 +61,9 @@ class StemBot(object):
 
     def _execute(self, motor_command):
 
-        motor_trajs, _ = motor_command
+        motor_trajs = motor_command
 
-        self.stemcom.setup(self.cfg.mprim.init_states, blocking=True)
+        self.stemcom.setup(self.cfg.mprims.init_states, blocking=True)
         time.sleep(0.1)
 
         assert all(not c for c in self.stemcom.ms.compliant)
@@ -76,7 +76,7 @@ class StemBot(object):
             collided = self.stemcom.step(motor_trajs, time.time()-start_time)
         end_time = time.time()
 
-        self.stemcom.setup(self.cfg.mprim.init_states, blocking=False)
+        self.stemcom.setup(self.cfg.mprims.init_states, blocking=False)
 
         return start_time, end_time
 

@@ -64,18 +64,18 @@ class VRepCom(object):
         lognumber = rand_log.randint(0, 1000000000)
         logname = '/tmp/vreplog{}'.format(lognumber)
 
+        flags = ''
+        if self.cfg.execute.simu.headless:
+            flags = '-h'
         if os.uname()[0] == "Linux":
             if self.cfg.execute.simu.headless:
-                cmd = "xvfb-run -a vrep >> {}".format(logname)
+                cmd = "xvfb-run -a vrep -h >> {}".format(logname)
             else:
                 if self.cfg.execute.simu.vglrun:
                     cmd = "vglrun vrep >> {}".format(logname)
                 else:
                     cmd = "DISPLAY=:0 vrep >> {}".format(logname)
         elif os.uname()[0] == "Darwin":
-            flags = ''
-            if self.cfg.execute.simu.headless:
-                flags = '-h'
             cmd = "cd {}; ./vrep {} >> {}".format(self.mac_folder, flags, logname)
         else:
             raise OSError
@@ -217,14 +217,14 @@ class VRepCom(object):
                      'vx64_1', 'bbHorn1',      'horn1',
                      'vx64_2', 'bbMotorHorn2', 'motor2', 'horn2',
                      'vx64_3', 'bbMotorHorn3', 'motor3', 'horn3',
-                     'vx64_4', 'bbMotorHorn4', 'motor4', 'horn4',
-                     'vx64_5', 'bbMotorHorn5', 'motor5', 'horn5',
-                     'vx64_6', 'bbMotor6',     'motor6', 'marker_joint', 'marker',
+                     'vx28_4', 'bbMotorHorn4', 'motor4', 'horn4',
+                     'vx28_5', 'bbMotorHorn5', 'motor5', 'horn5',
+                     'vx28_6', 'bbMotor6',     'motor6', 'marker_joint', 'marker',
                     ]
         else:
             names = []
 
-        return [self._get_handle(name) for name in names]
+        return [self._vrep_get_handle(name) for name in names]
 
     def close(self, kill=False):
         if self.connected:
@@ -259,6 +259,9 @@ class VRepCom(object):
     def _prepare_marker_traj(self, trajectory):
         assert len(trajectory) > 0, "Trajectory to prepare is empty."
 
+        traj_prefix = [float(self.handle_toy), self.cfg.mprims.dt,
+                       float(self.cfg.mprims.sim_end)] # motors_steps, max_steps, max_speed
+        traj_prefix = [len(traj_prefix)+1] + traj_prefix
         ts_ref = trajectory[0][0]
         new_traj = []
         for i in range(len(trajectory)):
@@ -268,7 +271,7 @@ class VRepCom(object):
 
         ts, pos_raw = zip(*new_traj)
         traj_x, traj_y, traj_z = zip(*pos_raw)
-        return list(traj_x + traj_y + traj_z)
+        return traj_prefix + list(traj_x + traj_y + traj_z)
 
 
     def run_simulation(self, trajectory):

@@ -11,16 +11,15 @@ import dovecot
 import cfg
 
 
-DEBUG = False
+DEBUG = True
 
 cfg_run = cfg.cfg0
-cfg_run.mprim.n_basis = 2
-cfg_run.execute.prefilter  = False
+cfg_run.execute.prefilter     = False
 cfg_run.execute.is_simulation = False
 
 if DEBUG:
-    cfg_run.vrep.headless = False
-    cfg_run.vrep.ppf = 1
+    cfg_run.execute.simu.headless = False
+    cfg_run.execute.simu.ppf = 1
 
 n = 1 if len(sys.argv) <= 1 else int(sys.argv[1])
 if len(sys.argv) >= 3:
