@@ -20,7 +20,6 @@ class Push(environments.SensoryPrimitive):
                 self.tracked_objects.append(obj_name)
 
         assert len(self.tracked_objects) == 1
-        #self.object_name = cfg.sprimitive.push.object_name
         self.object_name = self.tracked_objects[0]
 
     def required_channels(self):
@@ -30,7 +29,6 @@ class Push(environments.SensoryPrimitive):
         self.s_channels = [Channel('x', bounds=tuple(context['x_bounds']), unit='mm'),
                            Channel('y', bounds=tuple(context['y_bounds']), unit='mm'),
                            Channel('push_saliency', bounds=(0.0, 1000.0), fixed=1000.0)]
-        # self.null_effect = (context['obj_pos_world'][0], context['obj_pos_world'][1], 0)
 
     def process_raw_sensors(self, sensors_data):
         # if self.object_name + '_pos' not in sensors_data:

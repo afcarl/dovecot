@@ -15,8 +15,10 @@ from cfg import cfg0
 from environments import tools
 
 
+cfg0.sprims.names      = ['rollspin']
+
 cfg0.execute.simu.ppf              = 1
-cfg0.execute.simu.headless         = False
+cfg0.execute.simu.headless         = True
 cfg0.execute.prefilter             = False
 cfg0.execute.check_self_collisions = True
 
