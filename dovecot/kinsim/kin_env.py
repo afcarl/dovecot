@@ -18,8 +18,15 @@ class KinEnvironment(sim_env.SimulationEnvironment):
         self.caldata = ttts.TTTCalibrationData(self.scene_name, self.cfg.execute.simu.calibrdir)
         self.caldata.load()
 
-        obj = self.caldata.objects[self.cfg.execute.scene.object.name]
-        obj_pos = obj.actual_pos(obj.pos_w, self.cfg.execute.scene.object.pos)
+        self.tracked_objects = []
+        for obj_name, obj_cfg in cfg.execute.scene.objects._children_items():
+            if obj_cfg.tracked:
+                self.tracked_objects.append(obj_name)
+        assert len(self.tracked_objects) == 1
+
+        self.obj_name = self.tracked_objects[0]
+        obj = self.caldata.objects[self.obj_name]
+        obj_pos = obj.actual_pos(obj.pos_w, self.cfg.execute.scene.objects[self.obj_name].pos)
 
         self.collider = maycollide.FakeColliderCube(self.cfg, obj_pos,
                                                     obj.dim, self.MARKER_SIZE)
@@ -50,7 +57,7 @@ class KinEnvironment(sim_env.SimulationEnvironment):
         motor_poses = self._trajs2poses(motor_traj)
 
         obj_pos = self.collider.fake_collision(motor_poses)
-        raw_sensors = {'object_pos': obj_pos}
+        raw_sensors = {'{}.pos'.format(self.obj_name): obj_pos}
 
         meta['log']['raw_sensors'] = raw_sensors
         return raw_sensors
