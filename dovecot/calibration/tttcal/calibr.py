@@ -28,7 +28,7 @@ cfg.execute.prefilter = False
 # cfg.execute.scene.object.pos  = (None, None, None)
 
 
-OBJ_NAMES = ['ball25', 'ball45', 'ball60',
+OBJ_NAMES = ['ball25', 'ball45', 'ball45_2', 'ball60',
              'cube25', 'cube45', 'cube90', 'cube140',
              'tube40_80', 'x_objwall', 'y_objwall']
 
