@@ -30,7 +30,7 @@ cfg.execute.prefilter = False
 
 OBJ_NAMES = ['ball25', 'ball45', 'ball45_2', 'ball60',
              'cube25', 'cube45', 'cube90', 'cube140',
-             'tube40_80', 'x_objwall', 'y_objwall']
+             'tube40_80', 'x_objwall', 'y_objwall', 'y_armwall150']
 
 
 def process_scene(name, calibrate=True):
