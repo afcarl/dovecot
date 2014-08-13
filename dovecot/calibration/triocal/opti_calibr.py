@@ -14,7 +14,7 @@ import natnet
 from ...stemsim import stemcom
 from ...vrepsim import sim_env
 from ... import prims
-from ...cfgdesc import desc
+from ...cfgdesc import desc, objdesc
 
 def Rot(M33):
     R = np.eye(4)
@@ -74,9 +74,10 @@ def vrep_capture(poses):
     cfg.execute.check_self_collisions = False
 
     cfg.execute.scene.name        = 'vanilla'
-    cfg.execute.scene.object.name = 'cube45'
-    cfg.execute.scene.object.pos  = (None, None, None)
-    cfg.execute.scene.object.mass = 0.050
+    cfg.execute.scene.objects.ball45 = objdesc._deepcopy()
+    cfg.execute.scene.objects.ball45.pos     = (None, None, None)
+    cfg.execute.scene.objects.ball45.mass    = None
+    cfg.execute.scene.objects.ball45.tracked = True
 
     cfg.execute.simu.ppf        = 10
     cfg.execute.simu.mac_folder = '/Applications/V-REP/v_rep/bin'
@@ -106,6 +107,7 @@ def vrep_capture(poses):
     vrep_res = []
     for tg in poses:
         cfg.mprims.target_states = tg
+        print(tg)
         sb.m_prim = prims.create_mprim(cfg.mprims.name, cfg)
 
         m_signal = tools.to_signal((0.0, 0.0)*cfg.mprims.n_basis*6 + (0.20, 0.20),
@@ -148,6 +150,7 @@ def opti_capture(poses, stemcfg, fb=None):
         fb.stop()
         fb.join()
         m = np.mean([p[1] for p in pdata], axis=0)
+        print(np.std([p[1] for p in pdata], axis=0))
         if len(mean_p) > 0:
             if np.linalg.norm(m - mean_p[-1]) < 0.05:
                 print("{}error{}: the stem is not moving enough, is it the right marker ?".format(gfx.bred, gfx.end))

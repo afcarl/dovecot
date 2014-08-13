@@ -265,13 +265,6 @@ class VRepCom(object):
     def _prepare_marker_traj(self, trajectory):
         assert len(trajectory) > 0, "Trajectory to prepare is empty."
 
-        traj_prefix = ([float(len(trajectory)), self.cfg.mprims.dt,
-                        float(self.cfg.mprims.sim_end)] +
-                       [float(len(self.tracked_handles))] +
-                       [float(obj_h) for obj_h in self.tracked_handles]
-                      )
-        traj_prefix = [len(traj_prefix)+1] + traj_prefix
-
         ts_ref = trajectory[0][0]
         new_traj = []
         for i in range(len(trajectory)):
@@ -281,7 +274,17 @@ class VRepCom(object):
 
         ts, pos_raw = zip(*new_traj)
         traj_x, traj_y, traj_z = zip(*pos_raw)
-        return traj_prefix + list(traj_x + traj_y + traj_z)
+        traj = list(traj_x + traj_y + traj_z)
+
+        traj_prefix = ([float(len(new_traj)), self.cfg.mprims.dt,
+                        float(self.cfg.mprims.sim_end)] +
+                       [float(len(self.tracked_handles))] +
+                       [float(obj_h) for obj_h in self.tracked_handles]
+                      )
+        traj_prefix = [len(traj_prefix)+1] + traj_prefix
+        print(traj_prefix)
+
+        return traj_prefix + traj
 
 
     def run_simulation(self, trajectory):
@@ -334,5 +337,5 @@ class VRepCom(object):
 
         return {'object_sensors': object_sensors,
                 'joint_sensors' : joint_sensors,
-                'tip_sensors'   : marker_sensors,
+                'marker_sensors'   : marker_sensors,
                 'collide_data'  : collide_data}

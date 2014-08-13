@@ -1,21 +1,27 @@
 if (simGetScriptExecutionCount()==0) then
 
-	handle_marker = simGetObjectHandle("marker")
+	handle_marker = simGetObjectHandle("solomarker")
 
 	-- getting arguments
-    n_args     = math.floor(trajectory[1])
-    handle_toy = math.floor(trajectory[2])
-	dt         =            trajectory[3]
-    sim_end    = math.floor(trajectory[4])
-
 	trajectory = simUnpackFloats(simGetScriptSimulationParameter(sim_handle_self, "trajectory"))
+    n_args     = math.floor(trajectory[1])
+	traj_end   = math.floor(trajectory[2])
+    dt         =            trajectory[3]
+    sim_end    = math.floor(trajectory[4])
+    n_obj      = math.floor(trajectory[5])
+
+    obj_handles = {}
+    for i=1, n_obj do
+        table.insert(obj_handles, math.floor(trajectory[5+i]))
+    end
+
 	r_pos_old = simGetObjectPosition(handle_marker, -1)
-	t_pos_old = {marker_trajectory[n_args + 1],
-				 marker_trajectory[n_args + 1 + sim_end],
-				 marker_trajectory[n_args + 1 + 2 * sim_end]}
+	t_pos_old = {trajectory[n_args + 1],
+				 trajectory[n_args + 1 + traj_end],
+				 trajectory[n_args + 1 + 2 * traj_end]}
 
 	sim_step = simGetScriptExecutionCount()
-	ended   = true
+	ended   = false
 	collide = false
 
 	-- returned data
@@ -69,25 +75,36 @@ if (simGetScriptExecutionCount() > 0) then
 
 	sim_step = simGetScriptExecutionCount()
 
-	pc = simGetObjectPosition(handle_toy, -1)
-	for i = 1, 3 do table.insert(object_sensors, pc[i]) end
-	qc = simGetObjectQuaternion(handle_toy, -1)
-	for i = 1, 4 do table.insert(object_sensors, qc[i]) end
-	lvc, avc = simGetObjectVelocity(handle_toy)
-	for i = 1, 3 do table.insert(object_sensors, lvc[i]) end
-	for i = 1, 3 do table.insert(object_sensors, avc[i]) end
-
+    -- marker
 	if(sim_step < sim_end) then
+
+	    -- objects
+	    for i = 1, #obj_handles do
+	        pc = simGetObjectPosition(obj_handles[i], -1)
+	        for j = 1, 3 do table.insert(object_sensors, pc[j]) end
+
+	        qc = simGetObjectQuaternion(obj_handles[i], -1)
+	        for j = 1, 4 do table.insert(object_sensors, qc[j]) end
+
+	        lvc, avc = simGetObjectVelocity(obj_handles[i])
+	        for j = 1, 3 do table.insert(object_sensors, lvc[j]) end
+	        for j = 1, 3 do table.insert(object_sensors, avc[j]) end
+	    end
+
 		r_pos = simGetObjectPosition(handle_marker, -1)
 		for i = 1, 3 do table.insert(marker_real_trajectory, r_pos[i]) end
-		t_pos = {marker_trajectory[sim_step + n_args + 1], marker_trajectory[sim_step + n_args + 1 + sim_end], marker_trajectory[sim_step + n_args + 1 + 2 * sim_end]}
+		if(sim_step < traj_end) then
+			t_pos = {trajectory[sim_step + n_args + 1], trajectory[sim_step + n_args + 1 + traj_end], trajectory[sim_step + n_args + 1 + 2 * traj_end]}
+		else
+			t_pos = t_pos_old
+		end
 		force = computeForceAndTorque(r_pos, t_pos, r_pos_old, t_pos_old)
 		simAddForceAndTorque(handle_marker, force, nil)
 		r_pos_old = r_pos
 		t_pos_old = t_pos
 
 		if(collide == false) then
-			col, data = simCheckCollisionEx(handle_toy, handle_marker)
+			col, data = simCheckCollisionEx(obj_handles[1], handle_marker)
 			if (col > 0) then
 				data_tmp = {0.0, 0.0, 0.0}
 				for j = 1, col do

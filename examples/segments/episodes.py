@@ -14,6 +14,7 @@ import cfg
 DEBUG = True
 
 cfg_run = cfg.cfg0
+cfg_run.execute.simu.headless = False
 cfg_run.execute.prefilter     = False
 cfg_run.execute.is_simulation = False
 

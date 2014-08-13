@@ -83,7 +83,7 @@ if (simGetScriptExecutionCount() > 0) then
             table.insert(joint_sensors, simGetObjectFloatParameter(joint_handles[i], 2012))
 
             if(sim_step < traj_end) then
-                simSetJointTargetPosition(joint_handles[i], trajectory[(n_args + 1) + #joint_handles*(sim_step-1) + i])
+                simSetJointTargetPosition(joint_handles[i], trajectory[n_args + #joint_handles*(sim_step-1) + i])
             end
         end
 
