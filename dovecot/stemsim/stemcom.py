@@ -59,15 +59,16 @@ class RangedMotorSet(MotorSet):
         if not hasattr(values, '__iter__'):
             values = tuple(values for m in self.motors)
         # we enforce ranges
-        pose_range = tuple(max(zp-a_min, min(zp+a_max, p)) for p, zp, (a_min, a_max)
+        pose_range = tuple(max(zp-a_min, min(zp+a_max, p)) if p is not None else None for p, zp, (a_min, a_max)
                            in zip(values, self.zero_pose, self.angle_ranges))
         # we apply zero_pose
-        unzeroed = tuple(v+zp for v, zp in zip(pose_range, self.zero_pose))
+        unzeroed = tuple(v+zp if v is not None else None for v, zp in zip(pose_range, self.zero_pose))
         # we enforce angle_limits
-        pose_limits = tuple(max(a_min, min(a_max, p)) for p, (a_min, a_max)
+        pose_limits = tuple(max(a_min, min(a_max, p)) if p is not None else None for p, (a_min, a_max)
                            in zip(unzeroed, self.angle_limits))
         for m, p in zip(self.motors, pose_limits):
-            m.position = p
+            if p is not None:
+                m.position = p
 
 
 class StemCom(object):
@@ -120,6 +121,7 @@ class StemCom(object):
         self.ms.compliant    = False
         self.ms.moving_speed = 50
         self.ms.pose = rest_pose
+
         while max(abs(p - tg) for p, tg in zip(self.ms.pose, rest_pose)) > 20:
             time.sleep(0.05)
 
@@ -166,30 +168,31 @@ class StemCom(object):
         old_torque = list(self.ms.torque_limit)
         old_speed  = list(self.ms.moving_speed)
 
-        self.ms.torque_limit = [  100,   100,   100,    50,    25]
-        if speed is not None:
-            self.ms.speed    = [speed, speed, speed, speed, speed]
-        self.ms.compliant    = [False, False, False, False, False, True]
-        self.ms.pose         = pose[:5]
+        if self.dist([0.0, 0.0, 0.0, None, None, None]) > 10.0:
 
+            self.ms.compliant    = [False, False, False, True, True, True]
+            self.ms.moving_speed = [  100,   100,   100, None, None, None]
+            self.ms.torque_limit = [   50,    50,    50, None, None, None]
+            time.sleep(0.2)
 
-        start = time.time()
-        while max(abs(p - tg) for p, tg in zip(self.ms.pose, pose[:5])) > margin and time.time()-start<timeout:
-            time.sleep(0.05)
+            self.go_to([0.0, 0.0, 0.0, None, None, None])
 
         self.ms.compliant    = False
-        self.ms.torque_limit = old_torque
-        self.ms.speed        = old_speed
-        self.ms.pose         = pose
-
-        while max(abs(p - tg) for p, tg in zip(self.ms.pose, pose)) > margin and time.time()-start<1.0:
-            time.sleep(0.02)
+        self.ms.torque_limit = 50
+        self.ms.speed        = 100
+        self.go_to(pose)
 
         return self.ms.pose
+
+    def dist(self, pose):
+        if all(p is None for p in pose):
+            return 0.0
+        return max(abs(p-tg) for p, tg in zip(self.ms.pose, pose) if tg is not None)
 
     def go_to(self, pose, margin=3.0, timeout=10.0):
         self.ms.pose = pose
         start = time.time()
-        while max(abs(p - tg) for p, tg in zip(self.ms.pose, pose)) > margin and time.time()-start<timeout:
+        while (time.time() - start < timeout and
+               max(abs(p - tg) for p, tg in zip(self.ms.pose, pose) if tg is not None) > margin):
             time.sleep(0.05)
-        return tuple(p-tg for p, tg in zip(self.ms.pose, pose))
+        return tuple(p-tg for p, tg in zip(self.ms.pose, pose) if tg is not None)

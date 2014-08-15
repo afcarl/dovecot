@@ -53,10 +53,14 @@ class TTTCalibrationData(object):
 
         self.verbose    = True
 
-    def populate(self, objects, marker_dim):
-        self.md5 = md5sum(self.ttt_filepath)
-        self.objects = objects
-        self.marker_dim = marker_dim
+    def pos_r(self, p):
+        return tuple(np.array(p) + np.array(self.robot_pos_w))
+
+    def populate(self, objects, robot_pos_w, marker_dim):
+        self.md5         = md5sum(self.ttt_filepath)
+        self.objects     = objects
+        self.robot_pos_w = robot_pos_w
+        self.marker_dim  = marker_dim
 
     def save(self):
         print(self.objects)
@@ -84,8 +88,9 @@ class TTTCalibrationData(object):
         self.md5 = md5sum(self.ttt_filepath)
         assert caldata.md5 == self.md5, "{}cal: {}loaded scene calibration ({}:{}) differs from scene ({}:{}){}".format(gfx.grey, gfx.red, self.cal_filepath, caldata.md5, self.ttt_filepath, self.md5, gfx.end)
 
-        self.objects    = caldata.objects
-        self.marker_dim = caldata.marker_dim
+        self.objects     = caldata.objects
+        self.marker_dim  = caldata.marker_dim
+        self.robot_pos_w = caldata.robot_pos_w
 
     def __repr__(self):
         s  = 'ttt_file: {}, md5: {}\n'.format(self.ttt_filepath, self.md5)

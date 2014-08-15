@@ -14,6 +14,7 @@ from . import sprims
 class Push(environments.SensoryPrimitive):
 
     def __init__(self, cfg):
+        self.cfg = cfg
         self.tracked_objects = []
         for obj_name, obj_cfg in cfg.execute.scene.objects._children_items():
             if obj_cfg.tracked:
@@ -29,10 +30,17 @@ class Push(environments.SensoryPrimitive):
         self.s_channels = [Channel('x', bounds=tuple(context['x_bounds']), unit='mm'),
                            Channel('y', bounds=tuple(context['y_bounds']), unit='mm'),
                            Channel('push_saliency', bounds=(0.0, 1000.0), fixed=1000.0)]
+        objects = context['objects']
+        obj_cal = objects[self.object_name]
+        obj_pos = obj_cal.actual_pos(obj_cal.pos_w, self.cfg.execute.scene.objects[self.object_name].pos)
+
+        self.null_effect = (obj_pos[0], obj_pos[1], 0.0)
 
     def process_raw_sensors(self, sensors_data):
-        # if self.object_name + '_pos' not in sensors_data:
-        #     return tools.to_signal(self.null_effect, self.s_channels) # does this hide bugs ? when is it necessary ?
+        if self.object_name + '.pos' not in sensors_data:
+            assert False
+            return tools.to_signal(self.null_effect, self.s_channels) # does this hide bugs ? when is it necessary ?
+
         pos_array = sensors_data[self.object_name + '.pos']
         pos_a = pos_array[0]
         pos_b = pos_array[-1]

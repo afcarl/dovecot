@@ -69,21 +69,18 @@ class VRepCom(object):
             flags = '-h'
         if os.uname()[0] == "Linux":
             if self.cfg.execute.simu.headless:
-                cmd = "xvfb-run -a vrep -h >> {}".format(logname)
+                cmd = "xvfb-run -a vrep -h >> {} 2>> {}".format(logname, logname+'.err')
             else:
                 if self.cfg.execute.simu.vglrun:
-                    cmd = "vglrun vrep >> {}".format(logname)
+                    cmd = "vglrun vrep >> {} 2>> {}".format(logname, logname+'.err')
                 else:
-                    cmd = "DISPLAY=:0 vrep >> {}".format(logname)
+                    cmd = "DISPLAY=:0 vrep >> {} 2>> {}".format(logname, logname+'.err')
         elif os.uname()[0] == "Darwin":
-            cmd = "cd {}; ./vrep {} >> {}".format(self.mac_folder, flags, logname)
+            cmd = "cd {}; ./vrep {} >> {} 2>> {}".format(self.mac_folder, flags, logname, logname+'.err')
         else:
             raise OSError
         print(cmd)
-        self.vrep_proc = subprocess.Popen(cmd, stdout=None, stderr=None,
-                                shell=True)
-        # self.vrep_proc = subprocess.Popen(cmd, stdout=open(os.devnull, 'wb'), stderr=None,
-        #                         shell=True, preexec_fn=os.setsid)
+        self.vrep_proc = subprocess.Popen(cmd, stdout=None, stderr=None, shell=True)
         time.sleep(1)
 
         port =  None
@@ -156,6 +153,7 @@ class VRepCom(object):
                 MASS_PARAM = 3005        # 3005 is mass param
                 assert self.vrep.simSetObjectFloatParameter(obj_h, MASS_PARAM, obj_cfg.mass) != -1
 
+            obj_cal = self.caldata.objects[obj_name]
             obj_pos = obj_cal.actual_pos(obj_cal.pos_w, obj_cfg.pos)
             self._vrep_set_pos(obj_h, -1, obj_pos)
             self.objects_pos[obj_name] = obj_pos
