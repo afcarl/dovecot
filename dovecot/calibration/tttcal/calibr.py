@@ -61,6 +61,11 @@ def calibrate_scene(com):
     marker_h     = com.vrep.simGetObjectHandle("marker")
     solomarker_h = com.vrep.simGetObjectHandle("solomarker")
 
+    marker_pos_w     = tuple(100*p for p in com.vrep.simGetObjectPosition(marker_h, -1))
+    solomarker_pos_w = tuple(100*p for p in com.vrep.simGetObjectPosition(solomarker_h, -1))
+    robot_pos_w      = tuple(100*p for p in com.vrep.simGetObjectPosition(base_h, -1))
+    assert sum(abs(p_r - p_sr)**2 for p_r, p_sr in zip(marker_pos_w, solomarker_pos_w)) < 0.01
+
     assert marker_h != -1
     mark_dims, mark_mass = ttts.VRepObject.object_properties(com.vrep, marker_h)
 
@@ -81,7 +86,7 @@ def calibrate_scene(com):
         return None
     else:
         caldata = ttts.TTTCalibrationData(com.scene_name, com.cfg.execute.simu.calibrdir)
-        caldata.populate(objects, mark_dims)
+        caldata.populate(objects, robot_pos_w, mark_dims)
         print(caldata.md5)
         caldata.save()
         return caldata

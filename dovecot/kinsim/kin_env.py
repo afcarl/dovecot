@@ -1,6 +1,8 @@
 from __future__ import print_function, division, absolute_import
 import math
 
+import numpy as np
+
 import environments
 
 from ..vrepsim import sim_env
@@ -12,11 +14,11 @@ from .. import ttts
 class KinEnvironment(sim_env.SimulationEnvironment):
 
     def __init__(self, cfg):
-        environments.PrimitiveEnvironment.__init__(self, cfg)
-
-        self.scene_name = self.cfg.execute.scene.name
-        self.caldata = ttts.TTTCalibrationData(self.scene_name, self.cfg.execute.simu.calibrdir)
+        self.cfg = cfg
+        self.caldata = ttts.TTTCalibrationData(self.cfg.execute.scene.name, self.cfg.execute.simu.calibrdir)
         self.caldata.load()
+
+        environments.PrimitiveEnvironment.__init__(self, cfg)
 
         self.tracked_objects = []
         for obj_name, obj_cfg in cfg.execute.scene.objects._children_items():
@@ -26,27 +28,10 @@ class KinEnvironment(sim_env.SimulationEnvironment):
 
         self.obj_name = self.tracked_objects[0]
         obj = self.caldata.objects[self.obj_name]
-        obj_pos = obj.actual_pos(obj.pos_w, self.cfg.execute.scene.objects[self.obj_name].pos)
+        obj_pos_w = obj.actual_pos(obj.pos_w, self.cfg.execute.scene.objects[self.obj_name].pos)
 
-        self.collider = maycollide.FakeColliderCube(self.cfg, obj_pos,
+        self.collider = maycollide.FakeColliderCube(self.cfg, self.caldata.pos_r(obj_pos_w),
                                                     obj.dim, self.MARKER_SIZE)
-
-    def _create_primitives(self, cfg):
-        self.context = {'x_bounds': (-300.0, 300.0),
-                        'y_bounds': (-300.0, 300.0),
-                        'z_bounds': (   0.0, 330.0)}
-
-        # motor primitive
-        self.m_prim = prims.create_mprim(self.cfg.mprims.name, self.cfg)
-        self.m_prim.process_context(self.context)
-
-        # sensory primitive
-        self.s_prim = environments.ConcatSPrimitive()
-        for sprim_name in self.cfg.sprims.names:
-            sp = prims.create_sprim(sprim_name, self.cfg)
-            sp.process_context(self.context)
-            self.s_prim.add_s_prim(sp)
-
 
     def _execute_raw(self, motor_command, meta=None):
 

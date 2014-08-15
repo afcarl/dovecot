@@ -7,7 +7,7 @@ from dovecot import objdesc
 cfg0 = desc._copy(deep=True)
 
 cfg0.execute.partial_mvt = True
-cfg0.execute.prefilter   = True
+cfg0.execute.prefilter   = False
 
 cfg0.execute.check_self_collisions = True
 cfg0.execute.is_simulation	       = True
@@ -25,10 +25,10 @@ cfg0.execute.simu.load         = True
 cfg0.execute.simu.mac_folder   = '/Applications/VRep/vrep.app/Contents/MacOS/' # only for mac
 
 cfg0.execute.scene.name        = 'vanilla'
-cfg0.execute.scene.objects.ball45 = objdesc._deepcopy()
-cfg0.execute.scene.objects.ball45.mass    = 0.050
-cfg0.execute.scene.objects.ball45.pos     = (0.0, 0.0, None)
-cfg0.execute.scene.objects.ball45.tracked = True
+cfg0.execute.scene.objects.cube45 = objdesc._deepcopy()
+cfg0.execute.scene.objects.cube45.mass    = 0.050
+cfg0.execute.scene.objects.cube45.pos     = (0.0, 0.0, None)
+cfg0.execute.scene.objects.cube45.tracked = True
 
 cfg0.sprims.names      = ['push']
 cfg0.sprims.tip        = False

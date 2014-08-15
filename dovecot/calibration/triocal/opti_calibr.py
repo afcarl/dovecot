@@ -82,7 +82,7 @@ def vrep_capture(poses):
     cfg.execute.simu.ppf        = 10
     cfg.execute.simu.mac_folder = '/Applications/V-REP/v_rep/bin'
     cfg.execute.simu.load       = True
-    cfg.execute.simu.headless   = True
+    cfg.execute.simu.headless   = False
     cfg.execute.simu.calibrdir  = '~/.dovecot/tttcal/'
 
     cfg.sprims.names      = ['push']

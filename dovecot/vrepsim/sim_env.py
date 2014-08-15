@@ -18,6 +18,7 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
 
     def __init__(self, cfg):
         self.vrepcom = vrepcom.VRepCom(cfg, verbose=cfg.execute.simu.verbose)
+        self.caldata = self.vrepcom.caldata
 
         super(SimulationEnvironment, self).__init__(cfg)
 
@@ -31,7 +32,8 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
     def _create_primitives(self, cfg):
         self.context = {'x_bounds': (-300.0, 300.0),
                         'y_bounds': (-300.0, 300.0),
-                        'z_bounds': (   0.0, 330.0)}
+                        'z_bounds': (   0.0, 330.0),
+                        'objects': self.caldata.objects}
 
         # motor primitive
         self.m_prim = prims.create_mprim(self.cfg.mprims.name, self.cfg)
