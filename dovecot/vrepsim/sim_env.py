@@ -22,11 +22,21 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
 
         super(SimulationEnvironment, self).__init__(cfg)
 
+
         if cfg.execute.prefilter:
-            assert False # prefilter does not work properly !
+            tracked_objects = []
+            for obj_name, obj_cfg in self.cfg.execute.scene.objects._children_items():
+                if obj_cfg.tracked:
+                    tracked_objects.append(obj_name)
+            assert len(tracked_objects) == 1
+
+            obj_name = tracked_objects[0]
+            obj = self.caldata.objects[obj_name]
+            obj_pos_w = obj.actual_pos(obj.pos_w, self.cfg.execute.scene.objects[obj_name].pos)
+
             self._collision_filter = maycollide.CollisionFilter(self.cfg,
-                                                                self.vrepcom.caldata.position,
-                                                                self.vrepcom.caldata.dimensions,
+                                                                self.caldata.pos_r(obj_pos_w),
+                                                                obj.dim,
                                                                 self.MARKER_SIZE)
 
     def _create_primitives(self, cfg):
@@ -69,8 +79,7 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
 
     def _check_object_collision(self, motor_poses):
         if self.cfg.execute.prefilter:
-            a = self._collision_filter.may_collide(motor_poses)
-            return a
+            return self._collision_filter.may_collide(motor_poses)
         return True
 
     def _execute_raw(self, motor_command, meta=None):

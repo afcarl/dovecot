@@ -35,7 +35,7 @@ class CollisionFilter(object):
         if len(self.obj_geom) == 3: # cube
             obj_radius = math.sqrt((sorted(self.obj_geom)[2]/2)**2 + (sorted(self.obj_geom)[1]/2)**2)
 
-        self.min_d_sq = 9.0*((obj_radius + self.marker_radius)**2)
+        self.min_d_sq = 4.0*((obj_radius + self.marker_radius)**2)
 
 
     def may_collide(self, poses):

@@ -38,7 +38,6 @@ class Push(environments.SensoryPrimitive):
 
     def process_raw_sensors(self, sensors_data):
         if self.object_name + '.pos' not in sensors_data:
-            assert False
             return tools.to_signal(self.null_effect, self.s_channels) # does this hide bugs ? when is it necessary ?
 
         pos_array = sensors_data[self.object_name + '.pos']

@@ -15,21 +15,21 @@ from cfg import cfg0
 from environments import tools
 
 
-cfg0.sprims.names      = ['rollspin']
+cfg0.sprims.names      = ['push']
 
 cfg0.execute.simu.ppf              = 1
-cfg0.execute.simu.headless         = True
-cfg0.execute.prefilter             = False
+cfg0.execute.simu.headless         = False
+cfg0.execute.prefilter             = True
 cfg0.execute.check_self_collisions = True
 
 cfg0.execute.scene.name        = 'vanilla'
-cfg0.execute.scene.objects.ball45.mass = 0.050
-cfg0.execute.scene.objects.ball45.pos  = (-60.0, 0.0, None)
+cfg0.execute.scene.objects.cube45.mass = 0.050
+cfg0.execute.scene.objects.cube45.pos  = (-60.0, 0.0, None)
 
-cfg0.execute.scene.objects.cube45 = objdesc._deepcopy()
-cfg0.execute.scene.objects.cube45.pos     = (+60.0, 180.0, None)
-cfg0.execute.scene.objects.cube45.mass    = 0.500
-cfg0.execute.scene.objects.cube45.tracked = False
+cfg0.execute.scene.objects.ball45 = objdesc._deepcopy()
+cfg0.execute.scene.objects.ball45.pos     = (+60.0, 180.0, None)
+cfg0.execute.scene.objects.ball45.mass    = 0.500
+cfg0.execute.scene.objects.ball45.tracked = False
 
 cfg0.execute.scene.objects.y_objwall         = objdesc._deepcopy()
 cfg0.execute.scene.objects.y_objwall.pos     = (0.0, -30.0, None)
