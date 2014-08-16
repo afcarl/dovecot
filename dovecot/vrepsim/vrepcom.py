@@ -280,7 +280,6 @@ class VRepCom(object):
                        [float(obj_h) for obj_h in self.tracked_handles]
                       )
         traj_prefix = [len(traj_prefix)+1] + traj_prefix
-        print(traj_prefix)
 
         return traj_prefix + traj
 
