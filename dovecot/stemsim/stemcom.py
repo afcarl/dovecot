@@ -168,14 +168,14 @@ class StemCom(object):
         old_torque = list(self.ms.torque_limit)
         old_speed  = list(self.ms.moving_speed)
 
-        if self.dist([0.0, 0.0, 0.0, None, None, None]) > 10.0:
+        if self.dist([None, 0.0, 0.0, None, None, None]) > 10.0:
 
-            self.ms.compliant    = [False, False, False, True, True, True]
-            self.ms.moving_speed = [  100,   100,   100, None, None, None]
-            self.ms.torque_limit = [   50,    50,    50, None, None, None]
+            self.ms.compliant    = [True, False, False, True, True, True]
+            self.ms.moving_speed = [None,   100,   100, None, None, None]
+            self.ms.torque_limit = [None,    50,    50, None, None, None]
             time.sleep(0.2)
 
-            self.go_to([0.0, 0.0, 0.0, None, None, None])
+            self.go_to([None, 0.0, 0.0, None, None, None])
 
         self.ms.compliant    = False
         self.ms.torque_limit = 50

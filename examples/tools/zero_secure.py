@@ -40,12 +40,12 @@ def go_to(ms, pose, margin=10.0, timeout=5.0):
 
 if max(abs(p-0.0) for p in ms.pose[3:]) > 10.0:
 
-    ms.moving_speed = [  100,   100,   100, None, None, None]
-    ms.torque_limit = [   50,    50,    50, None, None, None]
-    ms.compliant    = [False, False, False, True, True, True]
+    ms.moving_speed = [ None,   100,   100, None, None, None]
+    ms.torque_limit = [ None,    50,    50, None, None, None]
+    ms.compliant    = [ True, False, False, True, True, True]
     time.sleep(0.1)
 
-    go_to(ms, [0.0, 0.0, 0.0, None, None, None])
+    go_to(ms, [None, 0.0, 0.0, None, None, None])
 
 ms.moving_speed = 100
 ms.torque_limit =  50
