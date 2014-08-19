@@ -32,7 +32,8 @@ attach(0, (  20,  20, 15), (0, -70, 7), meta='boltR', groups=[world_group])
 attach(0, (  40.004,   60,  45), (          0, 0, 22), meta='motor0_bind', groups=[world_group])
 
 # Ref1
-attach(1, (61.105, 40.2, 41), (22 - 61.1/2, 0, 0), meta='motor0',      groups=[world_group, ref1_group])
+#attach(1, (61.105, 40.2, 41), (22 - 61.1/2, 0, 0), meta='motor0',      groups=[world_group, ref1_group])
+attach(1, (61.105, 60.0, 41), (22 - 61.1/2, 0, 0), meta='motor0',      groups=[world_group, ref1_group])
 
 # Ref2
 attach(2, (34.006, 45, 60), (0,  13, 0), meta='horn0', groups=[ref2_group, world_group])
