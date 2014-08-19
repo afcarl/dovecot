@@ -141,8 +141,17 @@ class VRepCom(object):
     def setup_scene(self, script):
         assert self.scene_loaded
 
+        self._setup_arena()
         self._setup_objects()
         self._setup_robot(script)
+
+    def _setup_arena(self):
+        arena_h   = self._vrep_get_handle(self.cfg.execute.scene.arena.name)
+        arena_vrep_pos = self.vrep.simGetObjectPosition(arena_h, -1)
+        arena_pos = [a_p if a_p is not None else av_p for a_p, av_p in zip(self.cfg.execute.scene.arena.pos, arena_vrep_pos)]
+
+        self._vrep_set_pos(arena_h, -1, arena_pos)
+
 
     def _setup_objects(self):
         for obj_name, obj_cfg in self.cfg.execute.scene.objects._children_items():

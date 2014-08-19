@@ -77,13 +77,21 @@ desc._isinstance('execute.simu.mac_folder', str)
 
     # Scene Configuration
 desc._branch('execute.scene')
-desc._branch('execute.scene.object')
 
 # name of the scene
 desc._describe('execute.scene.name', instanceof=str)
 
+desc._branch('execute.scene.arena')
+# name of the arena in the scene
+desc._describe('execute.scene.arena.name', instanceof=str, default='arena6x6x4')
+# x, y, z - if some dimension must be inchanged, set to None.
+desc._describe('execute.scene.arena.pos', instanceof=collections.Iterable, default=(0.0, 0.0, None))
+
+
 desc._branch('execute.scene.objects')
 desc.execute.scene.objects._strict(False)
+
+
 
 objdesc = forest.Tree()
 objdesc._strict(True)
