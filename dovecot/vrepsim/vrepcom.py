@@ -150,6 +150,20 @@ class VRepCom(object):
         arena_vrep_pos = self.vrep.simGetObjectPosition(arena_h, -1)
         arena_pos = [a_p if a_p is not None else av_p for a_p, av_p in zip(self.cfg.execute.scene.arena.pos, arena_vrep_pos)]
 
+        x, y, z = arena_pos
+        contexts = {'arena6x6x4':    {'x_bounds': ( -300.0 + x,  300.0 + x),
+                                      'y_bounds': ( -300.0 + y,  300.0 + y),
+                                      'z_bounds': (    0.0 + z,  400.0 + z)},
+                    'arena10x10x4':  {'x_bounds': ( -500.0 + x,  500.0 + x),
+                                      'y_bounds': ( -500.0 + y,  500.0 + y),
+                                      'z_bounds': (    0.0 + z,  400.0 + z)},
+                    'arena20x20x10': {'x_bounds': (-1000.0 + x, 1000.0 + x),
+                                      'y_bounds': (-1000.0 + y, 1000.0 + y),
+                                      'z_bounds': (    0.0 + z, 1000.0 + z)},
+                   }
+
+        self.context = contexts[self.cfg.execute.scene.arena.name]
+
         self._vrep_set_pos(arena_h, -1, arena_pos)
 
 
@@ -251,15 +265,15 @@ class VRepCom(object):
 
     def _prepare_motor_traj(self, trajectory):
         """
-            In LUA code, a trajectory looks like this :
+            In LUA code, a trajectory looks like this : #NOTTRUEANYMORE #OBSOLETE
             # motors_sim_steps = math.floor(Trajectory[1])
             # max_sim_steps    = math.floor(Trajectory[2])
             # max_speed        = Trajectory[3]
             # Trajectory[4] for motor 1, Trajectory[5] for motor 2, etc...
         """
-        assert len(trajectory) == self.cfg.mprims.traj_end
+        assert len(trajectory) <= self.cfg.mprims.traj_end
         traj = ([float(len(trajectory)), float(self.cfg.mprims.sim_end),
-                 np.radians(self.cfg.mprims.max_speed)] +
+                 3*np.radians(self.cfg.mprims.max_speed)] +
                  [float(len(self.tracked_handles))] +
                  [float(obj_h) for obj_h in self.tracked_handles]
                )

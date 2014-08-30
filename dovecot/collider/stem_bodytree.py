@@ -24,16 +24,17 @@ tip_group   = 7
 
 
 # Ref0
-attach(0, (1000, 1000,  70), (-465, 0, -25), meta='table', groups=[world_group])
-#attach(0, (  55.002,   75, 165), (22/2,  75/2 + 30, -165/2 + 25), meta='clawL', groups=[world_group])
+#attach(0, (1000, 1000,  70), (-465, 0, -25), meta='table', groups=[world_group])
+attach(0, ( 100, 1000, 100), (-25,   0, -25), meta='beam', groups=[world_group])
+#attach(0, (  55.,   75, 165), (22/2,  75/2 + 30, -165/2 + 25), meta='clawL', groups=[world_group])
 #attach(0, (  55.003,   75, 165), (22/2, -75/2 - 30, -165/2 + 25), meta='clawR', groups=[world_group])
-attach(0, (  20,  20, 15), (0,  70, 7), meta='boltL', groups=[world_group])
-attach(0, (  20,  20, 15), (0, -70, 7), meta='boltR', groups=[world_group])
-attach(0, (  40.004,   60,  45), (          0, 0, 22), meta='motor0_bind', groups=[world_group])
+attach(0, (  20,   20,  15), (0,  70,   7), meta='boltL', groups=[world_group])
+attach(0, (  20,   20,  15), (0, -70,   7), meta='boltR', groups=[world_group])
+attach(0, (  40,   60,  45), (0,   0,  22), meta='motor0_bind', groups=[world_group])
 
 # Ref1
-#attach(1, (61.105, 40.2, 41), (22 - 61.1/2, 0, 0), meta='motor0',      groups=[world_group, ref1_group])
-attach(1, (61.105, 60.0, 41), (22 - 61.1/2, 0, 0), meta='motor0',      groups=[world_group, ref1_group])
+attach(1, (61.105, 40.2, 41), (22 - 61.1/2, 0, 0),  meta='motor0',          groups=[world_group, ref1_group])
+attach(1, (80.0, 100.0, 75.0), (22 - 61.1/2, 0, 0), meta='motor0_safezone', groups=[world_group, ref1_group])
 
 # Ref2
 attach(2, (34.006, 45, 60), (0,  13, 0), meta='horn0', groups=[ref2_group, world_group])

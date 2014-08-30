@@ -4,7 +4,7 @@ import math
 
 import pydyn
 
-import env
+import dotdot
 import dovecot
 from dovecot.stemsim import stemcfg
 from dovecot.stemsim import stemcom

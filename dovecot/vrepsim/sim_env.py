@@ -15,9 +15,10 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
 
     CollisionError = collider.CollisionError
     MARKER_SIZE = 11
+    com_class = vrepcom.VRepCom
 
     def __init__(self, cfg):
-        self.vrepcom = vrepcom.VRepCom(cfg, verbose=cfg.execute.simu.verbose)
+        self.vrepcom = self.com_class(cfg, verbose=cfg.execute.simu.verbose)
         self.caldata = self.vrepcom.caldata
 
         super(SimulationEnvironment, self).__init__(cfg)
@@ -40,10 +41,8 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
                                                                 self.MARKER_SIZE)
 
     def _create_primitives(self, cfg):
-        self.context = {'x_bounds': (-300.0, 300.0),
-                        'y_bounds': (-300.0, 300.0),
-                        'z_bounds': (   0.0, 330.0),
-                        'objects': self.caldata.objects}
+        self.context = {'objects': self.caldata.objects}
+        self.context.update(self.vrepcom.context)
 
         # motor primitive
         self.m_prim = prims.create_mprim(self.cfg.mprims.name, self.cfg)
@@ -60,9 +59,9 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
         if self.cfg.execute.check_self_collisions:
             for i, pose in enumerate(motor_poses):
                 if i % 3 == 0: # every 30ms.
-                    if len(collider.collide(pose)) > 0:
+                    if len(collider.collide([math.degrees(p) for p in pose])) > 0:
                         if self.cfg.execute.partial_mvt:
-                            return i-int(0.5/self.cfg.mprims.dt)
+                            return i-int(0.1/self.cfg.mprims.dt)
                         else:
                             raise self.CollisionError
         else:
@@ -87,6 +86,7 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
 
         motor_poses = self._trajs2poses(motor_command)
         max_index = self._check_self_collision(motor_command[0].ts, motor_poses)
+        print(max_index)
         motor_poses = motor_poses[:max_index]
         if not self._check_object_collision(motor_poses):
             return {}
@@ -123,5 +123,5 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
 
         return raw_sensors
 
-    def close(self):
-        self.vrepcom.close(kill=True)
+    def close(self, kill=True):
+        self.vrepcom.close(kill=kill)
