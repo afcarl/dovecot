@@ -79,10 +79,10 @@ def vrep_capture(poses):
     cfg.execute.scene.objects.ball45.mass    = None
     cfg.execute.scene.objects.ball45.tracked = True
 
-    cfg.execute.simu.ppf        = 10
+    cfg.execute.simu.ppf        = 200
     cfg.execute.simu.mac_folder = '/Applications/V-REP/v_rep/bin'
     cfg.execute.simu.load       = True
-    cfg.execute.simu.headless   = False
+    cfg.execute.simu.headless   = True
     cfg.execute.simu.calibrdir  = '~/.dovecot/tttcal/'
 
     cfg.sprims.names      = ['push']
@@ -92,8 +92,8 @@ def vrep_capture(poses):
     cfg.mprims.dt           = 0.01
     cfg.mprims.name         = 'dmp_sharedwidth'
     cfg.mprims.target_end   =  500
-    cfg.mprims.traj_end     = 2000
-    cfg.mprims.sim_end      = 2000
+    cfg.mprims.traj_end     = 1500
+    cfg.mprims.sim_end      = 1500
     cfg.mprims.uniformize   = False
     cfg.mprims.n_basis      = 2
     cfg.mprims.max_speed    = 30.0
@@ -134,30 +134,33 @@ def opti_capture(poses, stemcfg, fb=None):
     reached = []
     mean_p  = []
     for pose in poses:
+        print(pose)
         err_array = stem_com.go_to(pose, margin=1.0, timeout=4.0)
-        reached.append(np.array(pose)+np.array(err_array))
-        print("err: {}".format(gfx.ppv(err_array)))
 
-        fb = natnet.FrameBuffer(4.0, addr=stemcfg.optitrack_addr)
-        time.sleep(0.1)
-        assert fb.fps > 100.0
-        fb.track(stemcfg.optitrack_side)
-        start = time.time()
-        time.sleep(2.0)
-        end   = time.time()
-        fb.stop_tracking()
-        pdata = fb.tracking_slice(start, end)
-        fb.stop()
-        fb.join()
-        m = np.mean([p[1] for p in pdata], axis=0)
-        print(np.std([p[1] for p in pdata], axis=0))
-        if len(mean_p) > 0:
-            if np.linalg.norm(m - mean_p[-1]) < 0.05:
-                print("{}error{}: the stem is not moving enough, is it the right marker ?".format(gfx.bred, gfx.end))
-                stem_com.rest()
-                time.sleep(1.0)
-                sys.exit(1)
-        mean_p.append(m)
+        if len(pose) < 7 or pose[6]:
+            reached.append(np.array(pose)+np.array(err_array))
+            print("err: {}".format(gfx.ppv(err_array)))
+
+            fb = natnet.FrameBuffer(4.0, addr=stemcfg.optitrack_addr)
+            time.sleep(0.1)
+            assert fb.fps > 100.0
+            fb.track(stemcfg.optitrack_side)
+            start = time.time()
+            time.sleep(1.0)
+            end   = time.time()
+            fb.stop_tracking()
+            pdata = fb.tracking_slice(start, end)
+            fb.stop()
+            fb.join()
+            m = np.mean([p[1] for p in pdata], axis=0)
+            print(np.std([p[1] for p in pdata], axis=0))
+            if len(mean_p) > 0:
+                if np.linalg.norm(m - mean_p[-1]) < 0.05:
+                    print("{}error{}: the stem is not moving enough, is it the right marker ?".format(gfx.bred, gfx.end))
+                    stem_com.rest()
+                    time.sleep(1.0)
+                    sys.exit(1)
+            mean_p.append(m)
 
 
     stem_com.rest()

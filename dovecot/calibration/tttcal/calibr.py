@@ -72,7 +72,7 @@ def calibrate_scene(com):
     if solomarker_h != -1:
         solo_dims, solo_mass = ttts.VRepObject.object_properties(com.vrep, solomarker_h)
         assert solo_dims == mark_dims
-        assert solo_mass == mark_mass
+        #assert solo_mass == mark_mass
 
     objects = {}
     for name in OBJ_NAMES:
