@@ -86,7 +86,6 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
 
         motor_poses = self._trajs2poses(motor_command)
         max_index = self._check_self_collision(motor_command[0].ts, motor_poses)
-        print(max_index)
         motor_poses = motor_poses[:max_index]
         if not self._check_object_collision(motor_poses):
             return {}
