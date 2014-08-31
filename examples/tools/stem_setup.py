@@ -14,7 +14,7 @@ if len(sys.argv) >= 2:
     uid = int(sys.argv[1])
 else:
     uid = dovecot.stem_uid()
-    
+
 stem = stemcfg.stems[uid]
 stem.cycle_usb()
 
@@ -42,11 +42,11 @@ def observe_max_angles():
 ms.max_torque            = 100
 ms.ccw_angle_limit       =  150
 ms.cw_angle_limit        = -150
-ms.ccw_compliance_margin = 1.0
-ms.cw_compliance_margin  = 1.0
+ms.ccw_compliance_margin = 0.3
+ms.cw_compliance_margin  = 0.3
 #ms.compliance_margines  = (1.0, 1.0)
-ms.ccw_compliance_slope_bytes  = 16
-ms.cw_compliance_slope_bytes   = 16
+ms.ccw_compliance_slope_bytes  = 32
+ms.cw_compliance_slope_bytes   = 32
 #ms.compliance_slopes    = (16, 16)
 ms.return_delay_time     = 0
 ms.status_return_level   = 1
