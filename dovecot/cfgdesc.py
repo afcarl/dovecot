@@ -100,7 +100,7 @@ objdesc._strict(True)
 objdesc._describe('pos', instanceof=collections.Iterable, default=(None, None, None))
 
 # mass of the object - set to None to leave to default.
-objdesc._describe('mass', instanceof=(None.__class__, numbers.Real), default=None)
+objdesc._describe('mass', instanceof=numbers.Real, default=-1)
 
 # if True, the object is tracked by the sensors
 objdesc._describe('tracked', instanceof=bool, default=False)

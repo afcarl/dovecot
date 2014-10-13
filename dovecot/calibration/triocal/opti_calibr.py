@@ -76,7 +76,7 @@ def vrep_capture(poses):
     cfg.execute.scene.name        = 'vanilla'
     cfg.execute.scene.objects.ball45 = objdesc._deepcopy()
     cfg.execute.scene.objects.ball45.pos     = (None, None, None)
-    cfg.execute.scene.objects.ball45.mass    = None
+    cfg.execute.scene.objects.ball45.mass    = -1
     cfg.execute.scene.objects.ball45.tracked = True
 
     cfg.execute.simu.ppf        = 200

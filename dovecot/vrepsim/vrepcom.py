@@ -172,7 +172,7 @@ class VRepCom(object):
             obj_h   = self._vrep_get_handle(obj_name)
             obj_cal = self.caldata.objects[obj_name]
 
-            if obj_cfg.mass is not None:
+            if obj_cfg.mass >= 0:
                 MASS_PARAM = 3005        # 3005 is mass param
                 assert self.vrep.simSetObjectFloatParameter(obj_h, MASS_PARAM, obj_cfg.mass) != -1
 
