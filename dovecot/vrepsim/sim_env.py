@@ -10,6 +10,18 @@ from ..collider import collider
 from .. import prims
 from . import vrepcom
 
+# NOT DRY
+x, y, z = 0.0, 0.0, 0.0
+contexts = {'arena6x6x4':    {'x_bounds': ( -300.0 + x,  300.0 + x),
+                              'y_bounds': ( -300.0 + y,  300.0 + y),
+                              'z_bounds': (    0.0 + z,  400.0 + z)},
+            'arena10x10x4':  {'x_bounds': ( -500.0 + x,  500.0 + x),
+                              'y_bounds': ( -500.0 + y,  500.0 + y),
+                              'z_bounds': (    0.0 + z,  400.0 + z)},
+            'arena20x20x10': {'x_bounds': (-1000.0 + x, 1000.0 + x),
+                              'y_bounds': (-1000.0 + y, 1000.0 + y),
+                              'z_bounds': (    0.0 + z, 1000.0 + z)},
+           }
 
 class SimulationEnvironment(environments.PrimitiveEnvironment):
 
@@ -42,7 +54,9 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
 
     def _create_primitives(self, cfg):
         self.context = {'objects': self.caldata.objects}
-        self.context.update(self.vrepcom.context)
+        self.context.update(contexts[self.cfg.execute.scene.arena.name]) # HACK
+        if hasattr(self, 'vrepcom'):
+            self.context.update(self.vrepcom.context)
 
         # motor primitive
         self.m_prim = prims.create_mprim(self.cfg.mprims.name, self.cfg)
@@ -88,7 +102,7 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
         max_index = self._check_self_collision(motor_command[0].ts, motor_poses)
         motor_poses = motor_poses[:max_index]
         if not self._check_object_collision(motor_poses):
-            return {}
+            return {'flag': 'no_collision'}
 
         raw_sensors = self.vrepcom.run_simulation(motor_poses)
         raw_sensors = self._process_sensors(raw_sensors)
@@ -99,6 +113,9 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
     def _process_sensors(self, raw_sensors):
         """Compute processed sensors data"""
         object_sensors = raw_sensors['object_sensors']
+        import sys
+        # print('traked_objects: {}'.format(self.vrepcom.tracked_objects), file=sys.stderr)
+        # print('object_sensors: {}'.format(object_sensors), file=sys.stderr)
 
         assert len(object_sensors) % (3+4+3+3) == 0
         n_objs = len(self.vrepcom.tracked_objects)

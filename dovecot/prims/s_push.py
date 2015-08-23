@@ -1,4 +1,5 @@
 from __future__ import print_function, division, absolute_import
+import random
 
 import numpy as np
 
@@ -30,6 +31,7 @@ class Push(environments.SensoryPrimitive):
         self.s_channels = [Channel('x', bounds=tuple(context['x_bounds']), unit='mm'),
                            Channel('y', bounds=tuple(context['y_bounds']), unit='mm'),
                            Channel('push_saliency', bounds=(0.0, 1000.0), fixed=1000.0)]
+        self._s_channels = self.s_channels
         objects = context['objects']
         obj_cal = objects[self.object_name]
         obj_pos = obj_cal.actual_pos(obj_cal.pos_w, self.cfg.execute.scene.objects[self.object_name].pos)
@@ -38,15 +40,29 @@ class Push(environments.SensoryPrimitive):
 
     def process_raw_sensors(self, sensors_data):
         if self.object_name + '.pos' not in sensors_data:
-            return tools.to_signal(self.null_effect, self.s_channels) # does this hide bugs ? when is it necessary ?
+            return tools.to_signal(self.null_effect, self._s_channels) # does this hide bugs ? when is it necessary ?
 
         pos_array = sensors_data[self.object_name + '.pos']
         pos_a = pos_array[0]
         pos_b = pos_array[-1]
         collision = 0.0 if dist(pos_a[:2], pos_b[:2]) < 1.0 else 1000.0
 
-        return tools.to_signal((pos_b[0], pos_b[1]) + (collision,), self.s_channels)
-#        return tools.to_signal((pos_b[0]-pos_a[0], pos_b[1]-pos_a[1]) + (collision,), self.s_channels)
+        return tools.to_signal((pos_b[0], pos_b[1]) + (collision,), self._s_channels)
+#        return tools.to_signal((pos_b[0]-pos_a[0], pos_b[1]-pos_a[1]) + (collision,), self._s_channels)
+
+class PushCollision(Push):
+
+    def process_context(self, context):
+        super(PushCollision, self).process_context(context)
+        self.s_channels = [Channel('c', bounds=(0.0, 1.0))]
+
+    def process_raw_sensors(self, sensors_data):
+        s_signal = super(PushCollision, self).process_raw_sensors(sensors_data)
+        if s_signal['push_saliency'] == 0:
+            return {'c': random.uniform(0.0, 0.5)}
+        else:
+            return {'c': random.uniform(0.5, 1.0)}
 
 
 sprims['push'] = Push
+sprims['push_collision'] = PushCollision

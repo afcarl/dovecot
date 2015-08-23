@@ -60,7 +60,7 @@ class CollisionFilter(object):
             #print('{:.1f} {:.1f}'.format(toolbox.dist_sq(tip_pos, self.obj_pos), self.min_d_sq))
             if self._collision_detected(tip_pos):
                 displacement = self.cfg.execute.kin.force*np.average([np.array(tip_poses[j]) - np.array(tip_poses[j-1]) for j in range(max(i-10, 0), i)], axis=0)
-                print(displacement)
+                #print(displacement)
                 return [self.obj_pos, np.array(self.obj_pos) + displacement]
         return [self.obj_pos, self.obj_pos]
 

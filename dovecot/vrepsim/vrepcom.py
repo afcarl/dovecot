@@ -117,7 +117,7 @@ class VRepCom(object):
 
         # check calibration data
         if calcheck:
-            self.caldata = ttts.TTTCalibrationData(self.scene_name, self.cfg.execute.simu.calibrdir)
+            self.caldata = ttts.TTTCalibrationData(self.scene_name, self.cfg.execute.simu.calibrdir, self.cfg.execute.simu.calibr_check)
             self.caldata.load()
 
         # check vrep connectivity
@@ -180,6 +180,7 @@ class VRepCom(object):
             obj_pos = obj_cal.actual_pos(obj_cal.pos_w, obj_cfg.pos)
             self._vrep_set_pos(obj_h, -1, obj_pos)
             self.objects_pos[obj_name] = obj_pos
+
             if obj_cfg.tracked:
                 self.tracked_objects.append(obj_name)
                 self.tracked_handles.append(obj_h)
@@ -249,7 +250,9 @@ class VRepCom(object):
         return [self._vrep_get_handle(name) for name in names]
 
     def close(self, kill=False):
+
         if self.connected:
+            self.vrep.simStopSimulation()
             if not kill:
                 self.vrep.disconnect()
             else:
@@ -315,6 +318,7 @@ class VRepCom(object):
                 2. The second vector is the max velocity of the motor in rad/s.
         """
         #return {}
+        self.vrep.simStopSimulation()
 
         if self.verbose:
             print("Setting parameters...")
@@ -348,7 +352,7 @@ class VRepCom(object):
 
         # assert len(positions) == len(quaternions) == len(velocities)
 
-        self.vrep.simStopSimulation()
+        self.vrep.simPauseSimulation()
 
         if self.verbose:
             print("End of simulation.")
@@ -357,5 +361,5 @@ class VRepCom(object):
 
         return {'object_sensors': object_sensors,
                 'joint_sensors' : joint_sensors,
-                'marker_sensors'   : marker_sensors,
+                'marker_sensors': marker_sensors,
                 'collide_data'  : collide_data}

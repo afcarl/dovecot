@@ -35,7 +35,7 @@ class TTTFile(object):
 class TTTCalibrationData(object):
     """Hold the calibration data of a scene"""
 
-    def __init__(self, name, folder):
+    def __init__(self, name, folder, check_md5=True):
         """
         :param name:   the name of the scene (ie. 'ar_center_cube')
                        the name of the ttt file will be deduced by adding '.ttt',
@@ -49,6 +49,7 @@ class TTTCalibrationData(object):
         self.ttt_filepath = ttt_file.filepath
         self.cal_filepath = cleanpath(os.path.join(self.folder, ttt_file.filename + '.cal'))
 
+        self.check_md5  = check_md5
         self.md5        = None
         self.objects    = {}
         self.marker_dim = None
@@ -87,8 +88,10 @@ class TTTCalibrationData(object):
 
         with open(self.cal_filepath, 'r') as f:
             caldata = pickle.load(f)
+
         self.md5 = md5sum(self.ttt_filepath)
-        assert caldata.md5 == self.md5, "{}cal: {}loaded scene calibration ({}:{}) differs from scene ({}:{}){}".format(gfx.grey, gfx.red, self.cal_filepath, caldata.md5, self.ttt_filepath, self.md5, gfx.end)
+        if self.check_md5:
+            assert caldata.md5 == self.md5, "{}cal: {}loaded scene calibration ({}:{}) differs from scene ({}:{}){}".format(gfx.grey, gfx.red, self.cal_filepath, caldata.md5, self.ttt_filepath, self.md5, gfx.end)
 
         self.objects     = caldata.objects
         self.marker_dim  = caldata.marker_dim

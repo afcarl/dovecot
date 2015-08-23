@@ -28,7 +28,7 @@ cfg.execute.prefilter = False
 # cfg.execute.scene.object.pos  = (None, None, None)
 
 
-OBJ_NAMES = ['ball25', 'ball45', 'ball45_2', 'ball60',
+OBJ_NAMES = ['ball15', 'ball25', 'ball45', 'ball45_2', 'ball45_3', 'ball45_light', 'ball60', 'ball90',
              'cube25', 'cube45', 'cube90', 'cube140',
              'tube40_80', 'x_objwall', 'y_objwall', 'y_armwall150']
 
@@ -76,6 +76,7 @@ def calibrate_scene(com):
 
     objects = {}
     for name in OBJ_NAMES:
+        print(name)
         obj = ttts.VRepObject(name)
         obj.load(com, base_h)
         objects[name] = obj

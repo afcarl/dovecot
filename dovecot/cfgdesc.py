@@ -68,6 +68,9 @@ desc._describe('execute.simu.vglrun', instanceof=bool, default=False)
 # the location of the calibration folder
 desc._isinstance('execute.simu.calibrdir', str)
 
+# check the calibration data against the md5 to detect changes.
+desc._describe('execute.simu.calibr_check', instanceof=bool, default=True)
+
 # on mac, we need to know where vrep is
 desc._isinstance('execute.simu.mac_folder', str)
 
