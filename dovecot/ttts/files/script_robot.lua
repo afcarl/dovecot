@@ -21,7 +21,6 @@ if (simGetScriptExecutionCount() == 0) then
     simAddStatusbarMessage("info: setting parameters")
 
     trajectory = simUnpackFloats(simGetScriptSimulationParameter(sim_handle_self, "trajectory"))
-    simSetScriptSimulationParameter(sim_handle_self, "trajectory", "")
 
     n_args    = math.floor(trajectory[1])
     traj_end  = math.floor(trajectory[2])
@@ -48,6 +47,8 @@ if (simGetScriptExecutionCount() == 0) then
     joint_sensors  = {}
     obj_sensors    = {}
     collide_data   = {}
+    contact_type   = {}
+    contact_data   = {}
 
     simAddStatusbarMessage("info: starting simulation")
 end
@@ -88,6 +89,33 @@ if (simGetScriptExecutionCount() > 0) then
         end
 
 
+        -- contacts
+        contact_index = 0
+        while(contact_index >= 0) do
+            contact_handles, contact_point, contact_force = simGetContactInfo(sim_handle_all, marker, contact_index)
+            if (contact_point == nil) then
+                -- if (contact_index > 0) then
+                --    simAddStatusbarMessage(contact_index)
+                -- end
+                contact_index = -1
+            else
+                -- if (contact_handles[1] == obj_handles[1] or contact_handles[2] == obj_handles[1]) then
+                table.insert(contact_type, sim_step)
+                for i = 1, #contact_handles do
+                    table.insert(contact_type, contact_handles[i])
+                end
+                for i = 1, #contact_point do
+                    table.insert(contact_data, contact_point[i])
+                end
+                for i = 1, #contact_force do
+                    table.insert(contact_data, contact_force[i])
+                end
+                -- end
+                contact_index = contact_index + 1
+            end
+        end
+
+
         -- collisions
         if(collide == false) then
             col, data = simCheckCollisionEx(obj_handles[1], marker)
@@ -119,6 +147,8 @@ if (simGetScriptExecutionCount() > 0) then
             simSetScriptSimulationParameter(sim_handle_self, "object_sensors", simPackFloats(obj_sensors))
             simSetScriptSimulationParameter(sim_handle_self, "joint_sensors",  simPackFloats(joint_sensors))
             simSetScriptSimulationParameter(sim_handle_self, "collide_data",   simPackFloats(collide_data))
+            simSetScriptSimulationParameter(sim_handle_self, "contact_data",   simPackFloats(contact_data))
+            simSetScriptSimulationParameter(sim_handle_self, "contact_type",   simPackInts(contact_type))
             simPauseSimulation()
         end
     end

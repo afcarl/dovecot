@@ -11,7 +11,30 @@ import pyvrep
 
 from .. import ttts
 
+
 CONNECTION_TIMEOUT = 120
+ROBOT_ELEMENTS = [          'bbMotor1',     'motor1',
+                  'vx64_1', 'bbHorn1',      'horn1',
+                  'vx64_2', 'bbMotorHorn2', 'motor2', 'horn2',
+                  'vx64_3', 'bbMotorHorn3', 'motor3', 'horn3',
+                  'vx28_4', 'bbMotorHorn4', 'motor4', 'horn4',
+                  'vx28_5', 'bbMotorHorn5', 'motor5', 'horn5',
+                  'vx28_6', 'bbMotor6',     'motor6', 'marker_joint', 'marker',
+                 ]
+
+
+class Contact(object):
+
+    def __init__(self, step, contact_names, contact_data):
+        self.step       = step
+        self.obj_names  = sorted(contact_names)
+        self.pos        = contact_data[:3]
+        self.force      = contact_data[3:]
+        self.force_norm_sq = sum([x*x for x in self.force])
+
+    def __repr__(self):
+        return 'Contact({}, {}|{}, {})'.format(self.step, self.obj_names[0], self.obj_names[1], self.force_norm_sq)
+
 
 class VRepCom(object):
     """
@@ -27,6 +50,7 @@ class VRepCom(object):
         self.scene_loaded    = False
         self.tracked_objects = []
         self.tracked_handles = []
+        self.handles         = {}
 
         if not calcheck:
             assert not cfg.execute.prefilter, 'Can\'t skip the calibration check and prefilter collisions. Choose.'
@@ -165,6 +189,8 @@ class VRepCom(object):
         self.context = contexts[self.cfg.execute.scene.arena.name]
 
         self._vrep_set_pos(arena_h, -1, arena_pos)
+        for floor in ['floor_respondable', 'floor_respondable0', 'floor_respondable1']:
+            self._vrep_get_handle(floor)
 
 
     def _setup_objects(self):
@@ -196,7 +222,8 @@ class VRepCom(object):
                     self._vrep_del_object(h)
 
         self.handle_script = self.vrep.simGetScriptHandle(script)
-
+        for element in ROBOT_ELEMENTS:
+            self._vrep_get_handle(element)
 
     def _vrep_set_pos(self, handle, handle_rel, pos, tries=10, fail=True):
         r, trycount = -1, 0
@@ -220,6 +247,7 @@ class VRepCom(object):
         if fail and h == -1:
             raise IOError("could not get handle for object named '{}'".format(name))
         #print(name, h)
+        self.handles[h] = name
         return h
 
     def _vrep_del_object(self, handle, tries=3, fail=True):
@@ -236,14 +264,7 @@ class VRepCom(object):
     def _get_children(self, obj_handle):
         assert self.scene_loaded
         if obj_handle == 'robot':
-            names = [          'bbMotor1',     'motor1',
-                     'vx64_1', 'bbHorn1',      'horn1',
-                     'vx64_2', 'bbMotorHorn2', 'motor2', 'horn2',
-                     'vx64_3', 'bbMotorHorn3', 'motor3', 'horn3',
-                     'vx28_4', 'bbMotorHorn4', 'motor4', 'horn4',
-                     'vx28_5', 'bbMotorHorn5', 'motor5', 'horn5',
-                     'vx28_6', 'bbMotor6',     'motor6', 'marker_joint', 'marker',
-                    ]
+            names = ROBOT_ELEMENTS
         else:
             names = []
 
@@ -345,6 +366,26 @@ class VRepCom(object):
 
         object_sensors = np.array(self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "object_sensors"))
         collide_data   = np.array(self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "collide_data"))
+        contact_type   = np.array(self.vrep.simGetScriptSimulationParameterInt(self.handle_script, "contact_type"))
+        contact_data   = np.array(self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "contact_data"))
+
+        contacts = []
+        for i in range(0, len(contact_type), 3):
+            step      = contact_type[i]
+            obj_names = [self.handles[contact_type[i+1]],self.handles[contact_type[i+2]]]
+            data      = contact_data[2*i:2*i+6]
+            contacts.append(Contact(step, obj_names, data))
+
+        first_c, last_c = None, None
+        max_f, max_c = 0.0, None
+        for c in contacts:
+            if c.obj_names[0] in self.tracked_objects or c.obj_names[1] in self.tracked_objects:
+                if first_c is None:
+                    first_c = c
+                last_c = c
+            if max_f < c.force_norm_sq:
+                max_f, max_c = c.force_norm_sq, c
+        salient_contacts = {'first': first_c, 'last': last_c, 'max': max_c}
 
         marker_sensors = None
         if self.cfg.sprims.tip:
@@ -359,7 +400,9 @@ class VRepCom(object):
 
         joint_sensors = None
 
-        return {'object_sensors': object_sensors,
-                'joint_sensors' : joint_sensors,
-                'marker_sensors': marker_sensors,
-                'collide_data'  : collide_data}
+        return {'object_sensors'  : object_sensors,
+                'joint_sensors'   : joint_sensors,
+                'marker_sensors'  : marker_sensors,
+                'collide_data'    : collide_data,
+                'contacts'        : contacts,
+                'salient_contacts': salient_contacts}

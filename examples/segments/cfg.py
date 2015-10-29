@@ -38,6 +38,7 @@ cfg0.execute.scene.objects.cube45.tracked = True
 cfg0.sprims.names      = ['push']
 cfg0.sprims.tip        = False
 cfg0.sprims.uniformize = False
+cfg0.sprims.max_force  = 3000
 
 cfg0.mprims.name        = 'dmp_sharedwidth'
 cfg0.mprims.dt          = 0.020

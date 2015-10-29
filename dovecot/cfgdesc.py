@@ -57,6 +57,10 @@ desc._describe('execute.simu.verbose', instanceof=bool, default=False)
 desc._isinstance('execute.simu.load', bool)
 
 # pass of the physic engine per frame (max 200)
+# BULLET, ODE, VORTEX, NEWTON = 0, 1, 2, 3
+desc._isinstance('execute.simu.physic_engine', str)
+
+# pass of the physic engine per frame (max 200)
 desc._isinstance('execute.simu.ppf', numbers.Integral)
 
 # will run with xfvb if True
@@ -118,6 +122,9 @@ desc._isinstance('sprims.names', collections.Iterable)
 # do we track the tip during sim ?
 desc._isinstance('sprims.tip', bool)
 
+# maximum force allowed before the trial is discarded
+desc._describe('sprims.max_force', instanceof=numbers.Real, default=10000)
+
 # recast every sensory dimension between 0 and 1 ?
 desc._isinstance('sprims.uniformize', bool)
 
@@ -157,4 +164,3 @@ desc._describe('mprims.target_states', instanceof=collections.Iterable)
 
 desc._describe('mprims.angle_ranges', instanceof=collections.Iterable,
                docstring='The range of the angles of the joints around the zero position the motor primitives bounds its values into')
-

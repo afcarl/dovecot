@@ -39,6 +39,10 @@ class Push(environments.SensoryPrimitive):
         self.null_effect = (obj_pos[0], obj_pos[1], 0.0)
 
     def process_raw_sensors(self, sensors_data):
+        if self.cfg.sprims.max_force > 0:
+            for contact in sensors_data.get('contacts', []):
+                if contact.force_norm_sq > self.cfg.sprims.max_force:
+                    return tools.to_signal(self.null_effect, self._s_channels)
         if self.object_name + '.pos' not in sensors_data:
             return tools.to_signal(self.null_effect, self._s_channels) # does this hide bugs ? when is it necessary ?
 
