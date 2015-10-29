@@ -1,9 +1,12 @@
 import os
 from distutils.core import setup
 
+import versioneer
+
 setup(
     name         = 'dovecot',
-    version      = '2.0',
+    version      = '3.0',
+    cmdclass     = versioneer.get_cmdclass(),
     author       = 'Fabien Benureau, Paul Fudal',
     author_email = 'fabien.benureau@inria.fr',
     description  = ('A python library to drive the hardware and simulation experiment of the author PhD thesis'),
