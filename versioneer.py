@@ -1511,7 +1511,7 @@ def get_cmdclass():
             self._versioneer_generated_versions = versions
             # unless we update this, the command will keep using the old
             # version
-            self.distribution.metadata.version = versions["version"]
+            # self.distribution.metadata.version = versions["version"]
             return _sdist.run(self)
 
         def make_release_tree(self, base_dir, files):
@@ -1697,3 +1697,4 @@ if __name__ == "__main__":
         errors += scan_setup_py()
         if errors:
             sys.exit(1)
+	
