@@ -5,13 +5,13 @@ import threading
 
 import numpy as np
 
-import forest
+import scicfg
 from pydyn.msets import MotorSet
 
 from ..collider import collider
 from . import stemcfg
 
-defcfg = forest.Tree()
+defcfg = scicfg.SciConfig()
 defcfg['execute.hard.verbose_dyn'] = True
 
 class ZeroError(Exception):

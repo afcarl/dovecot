@@ -2,12 +2,12 @@
 
 from __future__ import division, print_function
 import sys
-import forest
+import scicfg
 
 import env
 from dovecot.stemsim import stemcom
 
-cfg = forest.Tree()
+cfg = scicfg.SciConfig()
 cfg._branch('stem')
 cfg.stem.uid = int(sys.argv[1])
 cfg.stem.verbose_com = True

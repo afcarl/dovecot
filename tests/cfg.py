@@ -1,6 +1,6 @@
-import forest
+import scicfg
 
-cfg = forest.Tree()
+cfg = scicfg.SciConfig()
 cfg.vrep.ppf = 10
 
 cfg.sprims.names = ['push']

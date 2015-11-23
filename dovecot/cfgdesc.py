@@ -1,7 +1,7 @@
 import collections
 import numbers
 
-import forest
+import scicfg
 import environments
 
 
@@ -100,7 +100,7 @@ desc.execute.scene.objects._strict(False)
 
 
 
-objdesc = forest.Tree()
+objdesc = scicfg.SciConfig()
 objdesc._strict(True)
 
 # x, y, z - if some dimension must be inchanged, set to None.

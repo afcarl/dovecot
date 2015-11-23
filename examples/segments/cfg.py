@@ -1,10 +1,10 @@
-import forest
+import scicfg
 
 import dotdot
 from dovecot import desc
 from dovecot import objdesc
 
-cfg0 = desc._copy(deep=True)
+cfg0 = desc._deepcopy()
 
 cfg0.execute.partial_mvt = True
 cfg0.execute.prefilter   = False
@@ -55,7 +55,7 @@ cfg0.mprims.angle_ranges  = ((110.0,  110.0), (99.0, 99.0), (99.0, 99.0), (120.0
 
 cfg0.execute.simu.calibrdir = '~/.dovecot/tttcal/'
 
-cfg1 = cfg0._copy(deep=True)
+cfg1 = cfg0._deepcopy()
 """#TODO can't create new leaf 'scene' in a strict tree without a type or validation function declared"""
 #cfg1.vrep.scene       = 'vrep_cylinder.ttt'
 cfg1.sprims.names      = ['rollspin']

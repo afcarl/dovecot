@@ -10,7 +10,7 @@ import os
 import random
 import time
 
-import forest
+import scicfg
 from dovecot.vrepsim import vrepcom
 from dovecot.cfgdesc import desc
 from dovecot.logger import logger
@@ -21,7 +21,7 @@ VECT_C = [0.85, 0.356, 0.31, 0]
 MARKER_C = [0.325, 0.46, 0.478, 0]
 OBJ_C = [0.752, 0.16, 0.258, 0]
 
-cfg = desc._copy(deep=True)
+cfg = desc._deepcopy()
 cfg.vrep.ppf         = 200
 cfg.vrep.headless    = True
 cfg.vrep.vglrun      = False

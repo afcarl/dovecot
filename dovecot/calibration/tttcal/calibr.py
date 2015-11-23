@@ -1,7 +1,7 @@
 from __future__ import print_function, division, absolute_import
 import os
 
-import forest
+import scicfg
 from toolbox import gfx
 
 from ...vrepsim import vrepcom
@@ -11,7 +11,7 @@ from ...cfgdesc import desc, objdesc
 from ...vizu import vrepvizu
 
 
-cfg = desc._copy(deep=True)
+cfg = desc._deepcopy()
 cfg.execute.is_simulation    = True
 cfg.execute.simu.ppf         = 10
 cfg.execute.simu.headless    = True

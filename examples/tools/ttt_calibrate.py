@@ -1,4 +1,4 @@
-import forest
+import scicfg
 import traceback
 
 import sys

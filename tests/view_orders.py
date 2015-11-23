@@ -3,7 +3,7 @@ import sys
 import random
 import time
 
-import forest
+import scicfg
 
 import env
 from dovecot.vrepsim import vrepbot

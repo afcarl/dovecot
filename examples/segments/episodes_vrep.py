@@ -4,7 +4,7 @@ import sys
 import random
 import time
 
-import forest
+import scicfg
 from toolbox import gfx
 
 import dotdot

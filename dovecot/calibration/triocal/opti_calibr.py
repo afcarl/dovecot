@@ -4,7 +4,7 @@ import os
 import sys
 
 import numpy as np
-import forest
+import scicfg
 
 
 from environments import tools
@@ -67,7 +67,7 @@ def transform_3D(A, B, scaling=True):
 
 def vrep_capture(poses):
 
-    cfg = desc._copy(deep=True)
+    cfg = desc._deepcopy()
 
     cfg.execute.is_simulation         = True
     cfg.execute.prefilter             = False
@@ -120,7 +120,7 @@ def vrep_capture(poses):
     return vrep_res
 
 def opti_capture(poses, stemcfg, fb=None):
-    cfg = desc._copy(deep=True)
+    cfg = desc._deepcopy()
     cfg.execute.hard.uid = stemcfg.uid
     stem_com = stemcom.StemCom(cfg)
 
