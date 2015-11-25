@@ -1,13 +1,15 @@
 from __future__ import print_function, division, absolute_import
 import os
 import time
+import signal
 import subprocess
 import random
 import string
+import ctypes
 
 import numpy as np
 
-import pyvrep
+import vrep as remote_api
 
 from .. import ttts
 
@@ -22,6 +24,8 @@ ROBOT_ELEMENTS = [          'bbMotor1',     'motor1',
                   'vx28_6', 'bbMotor6',     'motor6', 'marker_joint', 'marker',
                  ]
 
+def get_bit(val, idx):
+    return (val & (1<<idx)) != 0
 
 class Contact(object):
 
@@ -43,7 +47,7 @@ class VRepCom(object):
 
     def __init__(self, cfg, verbose=False, calcheck=True, setup=True):
         self.cfg     = cfg
-        self.verbose = verbose
+        self.verbose = True#verbose
         self.setup   = setup
 
         self.connected       = False
@@ -57,10 +61,11 @@ class VRepCom(object):
 
         self.vrep_proc = None
         self.mac_folder = os.path.expanduser(cfg.execute.simu.mac_folder)
-        self.port = self.launch_sim()
+        self.launch_sim()
         self.objects_pos = {}
 
-        self.vrep = pyvrep.PyVrep()
+        remote_api.simxFinish(-1)
+        self.api_id = remote_api.simxStart('127.0.0.1', self.port, True, False, 5000, 5)
 
         self.scene = None
 
@@ -70,62 +75,48 @@ class VRepCom(object):
             else:
                 self.load(script='solomarker', calcheck=calcheck)
 
+        # one streaming command so that replies to simxGetInMessageInfo will be up-to-date.
+        remote_api.simxGetIntegerParameter(self.api_id,
+                                           remote_api.sim_intparam_program_version,
+                                           remote_api.simx_opmode_streaming)
+
 
     def __del__(self):
+        pass
         self.close(kill=True)
 
     def __exit__(self, etype, evalue, etraceback):
+        pass
         self.close(kill=True)
 
     def launch_sim(self):
-        """Launch a subprocess of V-Rep"""
+        """Launch V-Rep as a subprocess"""
 
-        # port = random.randint(0, 1000000000)
-        # while os.path.exists('/tmp/vrep{}'.format(port)):
-        #     port = random.randint(0, 1000000000)
+        self.port = random.randint(2000, 65535) # we avoid the default 19997 port.
+        # TODO: figure out if/how port number collision have to be handled
+
         rand_log = random.Random()
         rand_log.seed(time.time())
         lognumber = rand_log.randint(0, 1000000000)
         logname = '/tmp/vreplog{}'.format(lognumber)
+        self.logfile_out = logname + '.out'
+        self.logfile_err = logname + '.err'
+        log_cmd =  '>> {} 2>> {}'.format(self.logfile_out, self.logfile_err)
 
-        flags = ''
+        flags = '-gREMOTEAPISERVERSERVICE_{}_FALSE_FALSE'.format(self.port)
         if self.cfg.execute.simu.headless:
-            flags = '-h'
+            flags += ' -h'
+
         if os.uname()[0] == "Linux":
-            if self.cfg.execute.simu.headless:
-                cmd = "xvfb-run -a vrep -h >> {} 2>> {}".format(logname, logname+'.err')
-            else:
-                if self.cfg.execute.simu.vglrun:
-                    cmd = "vglrun vrep >> {} 2>> {}".format(logname, logname+'.err')
-                else:
-                    cmd = "DISPLAY=:0 vrep >> {} 2>> {}".format(logname, logname+'.err')
+            # if self.cfg.execute.simu.headless:
+            cmd = "xvfb-run -a vrep {} {}".format(flags, log_cmd)
         elif os.uname()[0] == "Darwin":
-            cmd = "cd {}; ./vrep {} >> {} 2>> {}".format(self.mac_folder, flags, logname, logname+'.err')
+            cmd = "cd {}; ./vrep {} {}".format(self.mac_folder, flags, log_cmd)
         else:
             raise OSError
+
         print(cmd)
-        self.vrep_proc = subprocess.Popen(cmd, stdout=None, stderr=None, shell=True)
-        time.sleep(1)
-
-        port =  None
-        start_time = time.time()
-
-        while port is None:
-            if time.time() - start_time > CONNECTION_TIMEOUT:
-                raise IOError('Could not read port in vrep logfile {}:\n{}'.format(logname, output))
-
-            print("trying to read {}".format(logname))
-            with open(logname, 'r') as f:
-                output = f.read()
-
-            prefix = 'INFO : network use endPoint ipc:///tmp/vrep_'
-            for line in output.split('\n'):
-                if string.find(line, prefix) == 0:
-                    port = line[len(prefix):]
-                    print("found port {}".format(port))
-            time.sleep(2)
-
-        return port
+        self.vrep_proc = subprocess.Popen(cmd, stdout=None, stderr=None, shell=True, preexec_fn=os.setsid)
 
     def flush_proc(self):
         if self.vrep_proc is not None:
@@ -144,34 +135,46 @@ class VRepCom(object):
             self.caldata = ttts.TTTCalibrationData(self.scene_name, self.cfg.execute.simu.calibrdir, self.cfg.execute.simu.calibr_check)
             self.caldata.load()
 
-        # check vrep connectivity
-        if not self.connected:
-            if not self.vrep.connect_str(self.port):
-                raise IOError("Unable to connect to vrep")
-            self.connected = True
+        # # check vrep connectivity
+        # if not self.connected:
+        #     if not self.vrep.connect_str(self.port):
+        #         raise IOError("Unable to connect to vrep")
+        # self.connected = True
 
         # loading scene
         scene_filepath = ttts.TTTFile(self.scene_name).filepath
         assert os.path.isfile(scene_filepath), "scene file {} not found".format(scene_filepath)
 
         print("loading v-rep scene {}".format(scene_filepath))
-        if self.vrep.simLoadScene(scene_filepath) == -1:
-            raise IOError
+        if remote_api.simxLoadScene(self.api_id, scene_filepath, 1, remote_api.simx_opmode_oneshot_wait) == -1:
+            raise IOError("scene could not be loaded by v-rep. Check logs file {} and {}".format(self.logfile_out, self.logfile_err))
         self.scene_loaded = True
 
         if self.setup:
             self.setup_scene(script)
 
+    def _setup_simulation(self):
+        # assert remote_api.simxSetIntegerParameter(self.api_id,
+        #            remote_api.sim_intparam_dynamic_step_divider, self.cfg.execute.simu.ppf,
+        #            remote_api.simx_opmode_oneshot_wait) == 0
+
+        assert remote_api.simxSetFloatingParameter(self.api_id,
+                   remote_api.sim_floatparam_simulation_time_step, self.cfg.mprims.dt,
+                   remote_api.simx_opmode_oneshot_wait) == 0
+
+
     def setup_scene(self, script):
         assert self.scene_loaded
 
+        self._setup_simulation()
         self._setup_arena()
         self._setup_objects()
         self._setup_robot(script)
 
     def _setup_arena(self):
         arena_h   = self._vrep_get_handle(self.cfg.execute.scene.arena.name)
-        arena_vrep_pos = self.vrep.simGetObjectPosition(arena_h, -1)
+        res, arena_vrep_pos = remote_api.simxGetObjectPosition(self.api_id, arena_h, -1, remote_api.simx_opmode_oneshot_wait)
+        assert res == 0
         arena_pos = [a_p if a_p is not None else av_p for a_p, av_p in zip(self.cfg.execute.scene.arena.pos, arena_vrep_pos)]
 
         x, y, z = arena_pos
@@ -200,7 +203,9 @@ class VRepCom(object):
 
             if obj_cfg.mass >= 0:
                 MASS_PARAM = 3005        # 3005 is mass param
-                assert self.vrep.simSetObjectFloatParameter(obj_h, MASS_PARAM, obj_cfg.mass) != -1
+                assert remote_api.simxSetObjectFloatParameter(self.api_id, obj_h, MASS_PARAM,
+                                                              obj_cfg.mass,
+                                                              remote_api.simx_opmode_oneshot_wait) == 0
 
             obj_cal = self.caldata.objects[obj_name]
             obj_pos = obj_cal.actual_pos(obj_cal.pos_w, obj_cfg.pos)
@@ -221,7 +226,8 @@ class VRepCom(object):
                 for h in [robot_handle]+children_handles:
                     self._vrep_del_object(h)
 
-        self.handle_script = self.vrep.simGetScriptHandle(script)
+        # self.handle_script = remote_api.simxGetScriptHandle(self.api_id, script,
+        #                                                     remote_api.simx_opmode_oneshot_wait)
         for element in ROBOT_ELEMENTS:
             self._vrep_get_handle(element)
 
@@ -231,20 +237,21 @@ class VRepCom(object):
             if trycount > 0:
                 time.sleep(0.2)
             trycount += 1
-            r = self.vrep.simSetObjectPosition(handle, handle_rel, [p/100.0 for p in pos])
+            r = remote_api.simxSetObjectPosition(self.api_id, handle, handle_rel, [p/100.0 for p in pos],
+                    remote_api.simx_opmode_oneshot_wait)
         if fail and r == -1:
             raise IOError("could not set position for object (handle: '{}')".format(handle))
         return r
 
 
     def _vrep_get_handle(self, name, tries=3, fail=True):
-        h, trycount = -1, 0
-        while h == -1 and trycount < tries:
+        res, trycount = -1, 0
+        while res == -1 and trycount < tries:
             if trycount > 0:
                 time.sleep(0.2)
             trycount += 1
-            h = self.vrep.simGetObjectHandle(name)
-        if fail and h == -1:
+            res, h = remote_api.simxGetObjectHandle(self.api_id, name, remote_api.simx_opmode_oneshot_wait)
+        if fail and res == -1:
             raise IOError("could not get handle for object named '{}'".format(name))
         #print(name, h)
         self.handles[h] = name
@@ -256,7 +263,7 @@ class VRepCom(object):
             if trycount > 0:
                 time.sleep(0.2)
             trycount += 1
-            r = self.vrep.simRemoveObject(handle)
+            r = remote_api.simxRemoveObject(self.api_id, handle, remote_api.simx_opmode_oneshot_wait)
         if fail and r == -1:
             raise IOError('could not get remove object (handle: {})'.format(handle))
         return r
@@ -271,14 +278,12 @@ class VRepCom(object):
         return [self._vrep_get_handle(name) for name in names]
 
     def close(self, kill=False):
-
         if self.connected:
-            self.vrep.simStopSimulation()
-            if not kill:
-                self.vrep.disconnect()
-            else:
-                self.vrep.disconnectAndQuit()
-            self.connected = False
+            remote_api.simxStopSimulation(self.api_id, remote_api.simx_opmode_oneshot_wait)
+            remote_api.simxFinish(self.api_id)
+        self.connected = False
+        if kill and self.vrep_proc is not None:
+            os.killpg(self.vrep_proc.pid, signal.SIGTERM)
 
 
     def _prepare_traj(self, trajectory):
@@ -330,6 +335,25 @@ class VRepCom(object):
 
         return traj_prefix + traj
 
+    def simulation_paused(self):
+        """Returns True if the simulation is paused but not stopped"""
+        res, v = remote_api.simxGetInMessageInfo(self.api_id, remote_api.simx_headeroffset_server_state)
+        if res == -1:
+            return False
+        else:
+            return get_bit(v, 0) and get_bit(v, 1)
+
+    def _get_signal(self, name, int_type=False):
+        res, s = remote_api.simxGetStringSignal(self.api_id, name,
+                                                remote_api.simx_opmode_oneshot_wait)
+        assert res == 0, 'getting signal `{}` returned error code {}'.format(name, res)
+        if int_type:
+            data = remote_api.simxUnpackInts(s)
+        else:
+            data = remote_api.simxUnpackFloats(s)
+        return np.array(data)
+
+
 
     def run_simulation(self, trajectory):
         """
@@ -338,36 +362,36 @@ class VRepCom(object):
                 1. The first vector is the position of the motor in rad.
                 2. The second vector is the max velocity of the motor in rad/s.
         """
-        #return {}
-        self.vrep.simStopSimulation()
+        assert remote_api.simxStopSimulation(self.api_id, remote_api.simx_opmode_oneshot_wait) == 0
 
         if self.verbose:
             print("Setting parameters...")
 
         traj = self._prepare_traj(trajectory)
-        self.vrep.simSetScriptSimulationParameterDouble(self.handle_script, "trajectory", traj)
-        self.vrep.simSetSimulationPassesPerRenderingPass(self.cfg.execute.simu.ppf)
+        packed_data = remote_api.simxPackFloats(traj)
+        raw_bytes = (ctypes.c_ubyte * len(packed_data)).from_buffer_copy(packed_data)
+        assert remote_api.simxSetStringSignal(self.api_id, 'trajectory', raw_bytes,
+                                              remote_api.simx_opmode_oneshot_wait) == 0
 
-        self.vrep.simSetFloatingParameter(pyvrep.constants.sim_floatparam_simulation_time_step, self.cfg.mprims.dt)
-
-        self.vrep.simStartSimulation()
+        time.sleep(0.1)
+        assert remote_api.simxStartSimulation(self.api_id, remote_api.simx_opmode_oneshot_wait) == 0
 
         if self.verbose:
             print("Simulation started.")
 
-        wait = True
-        while wait:
-            time.sleep(0.0001) # probably useless; let's be defensive.
-            if self.vrep.simGetSimulationState() == pyvrep.constants.sim_simulation_paused:
-                wait = False
+        time.sleep(0.01)
+        while not self.simulation_paused():
+            time.sleep(0.005)
+
+        time.sleep(1.0)
 
         if self.verbose:
             print("Getting resulting parameters.")
 
-        object_sensors = np.array(self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "object_sensors"))
-        collide_data   = np.array(self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "collide_data"))
-        contact_type   = np.array(self.vrep.simGetScriptSimulationParameterInt(self.handle_script, "contact_type"))
-        contact_data   = np.array(self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "contact_data"))
+        object_sensors = self._get_signal('object_sensors')
+        collide_data   = self._get_signal('collide_data')
+        contact_data   = self._get_signal('contact_data')
+        contact_type   = self._get_signal('contact_type', int_type=True)
 
         contacts = []
         for i in range(0, len(contact_type), 3):
@@ -389,11 +413,11 @@ class VRepCom(object):
 
         marker_sensors = None
         if self.cfg.sprims.tip:
-            marker_sensors = self.vrep.simGetScriptSimulationParameterDouble(self.handle_script, "marker_sensors")
+            marker_sensors = np.array(remote_api.simxUnpackFloats(
+                                          remote_api.simxGetStringSignal(self.api_id, 'marker_sensors',
+                                          remote_api.simx_opmode_oneshot_wait)))
 
         # assert len(positions) == len(quaternions) == len(velocities)
-
-        self.vrep.simPauseSimulation()
 
         if self.verbose:
             print("End of simulation.")

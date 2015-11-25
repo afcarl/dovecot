@@ -60,7 +60,7 @@ vrepb = sim_env.SimulationEnvironment(cfg0)
 cols = 0
 col_orders = []
 
-random.seed(0)
+random.seed(3)
 
 hard_col = []
 start = time.time()
