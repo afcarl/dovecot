@@ -8,8 +8,6 @@ from ...vrepsim import vrepcom
 from ... import ttts
 from ...cfgdesc import desc, objdesc
 
-from ...vizu import vrepvizu
-
 
 cfg = desc._deepcopy()
 cfg.execute.is_simulation    = True
@@ -19,8 +17,10 @@ cfg.execute.simu.vglrun      = False
 cfg.execute.simu.calibrdir   = '~/.dovecot/tttcal/'
 cfg.execute.simu.mac_folder  = '/Applications/VRep/vrep.app/Contents/MacOS/'
 
+cfg.mprims.dt = 0.010
+
 #cfg.execute.simu.mac_folder  ='/Users/pfudal/Stuff/VREP/3.0.5/vrep.app/Contents/MacOS'
-cfg.execute.simu.load        = True
+cfg.execute.simu.load = True
 cfg.execute.prefilter = False
 
 # cfg.execute.scene.objects.'ball25'
@@ -58,22 +58,42 @@ def process_scene(name, calibrate=True):
         return com.caldata
 
 
+import vrep as remote_api
+
 
 def calibrate_scene(com):
-    base_h       = com.vrep.simGetObjectHandle("base")
-    marker_h     = com.vrep.simGetObjectHandle("marker")
-    solomarker_h = com.vrep.simGetObjectHandle("solomarker")
+    res, base_h       = remote_api.simxGetObjectHandle(com.api_id, "base",
+                                                       remote_api.simx_opmode_oneshot_wait)
+    assert res == 0
+    res, marker_h     = remote_api.simxGetObjectHandle(com.api_id, "marker",
+                                                       remote_api.simx_opmode_oneshot_wait)
+    assert res == 0
+    res, solomarker_h = remote_api.simxGetObjectHandle(com.api_id, "solomarker",
+                                                       remote_api.simx_opmode_oneshot_wait)
+    assert res == 0
 
-    marker_pos_w     = tuple(100*p for p in com.vrep.simGetObjectPosition(marker_h, -1))
-    solomarker_pos_w = tuple(100*p for p in com.vrep.simGetObjectPosition(solomarker_h, -1))
-    robot_pos_w      = tuple(100*p for p in com.vrep.simGetObjectPosition(base_h, -1))
+    res, marker_pos_w     = remote_api.simxGetObjectPosition(com.api_id, marker_h, -1,
+                                                             remote_api.simx_opmode_oneshot_wait)
+    assert res == 0
+    marker_pos_w = tuple(100*p for p in marker_pos_w)
+
+    res, solomarker_pos_w = remote_api.simxGetObjectPosition(com.api_id, solomarker_h, -1,
+                                                             remote_api.simx_opmode_oneshot_wait)
+    assert res == 0
+    solomarker_pos_w = tuple(100*p for p in solomarker_pos_w)
+
+    res, robot_pos_w      = remote_api.simxGetObjectPosition(com.api_id, base_h, -1,
+                                                             remote_api.simx_opmode_oneshot_wait)
+    assert res == 0
+    robot_pos_w = tuple(100*p for p in robot_pos_w)
+
     assert sum(abs(p_r - p_sr)**2 for p_r, p_sr in zip(marker_pos_w, solomarker_pos_w)) < 0.01
 
     assert marker_h != -1
-    mark_dims, mark_mass = ttts.VRepObject.object_properties(com.vrep, marker_h)
+    mark_dims, mark_mass = ttts.VRepObject.object_properties(com, marker_h)
 
     if solomarker_h != -1:
-        solo_dims, solo_mass = ttts.VRepObject.object_properties(com.vrep, solomarker_h)
+        solo_dims, solo_mass = ttts.VRepObject.object_properties(com, solomarker_h)
         assert solo_dims == mark_dims
         #assert solo_mass == mark_mass
 

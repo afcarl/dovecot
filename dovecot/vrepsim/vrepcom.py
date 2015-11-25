@@ -46,9 +46,10 @@ class VRepCom(object):
     """
 
     def __init__(self, cfg, verbose=False, calcheck=True, setup=True):
-        self.cfg     = cfg
-        self.verbose = True#verbose
-        self.setup   = setup
+        self.cfg      = cfg
+        self.verbose  = verbose
+        self.calcheck = calcheck
+        self.setup    = setup
 
         self.connected       = False
         self.scene_loaded    = False
@@ -69,11 +70,11 @@ class VRepCom(object):
 
         self.scene = None
 
-        if cfg.execute.simu.load:
+        if setup and cfg.execute.simu.load:
             if self.cfg.execute.is_simulation:
-                self.load(script='robot', calcheck=calcheck)
+                self.setup_scene('robot')
             else:
-                self.load(script='solomarker', calcheck=calcheck)
+                self.setup_scene('solomarker')
 
         # one streaming command so that replies to simxGetInMessageInfo will be up-to-date.
         remote_api.simxGetIntegerParameter(self.api_id,
@@ -92,6 +93,8 @@ class VRepCom(object):
     def launch_sim(self):
         """Launch V-Rep as a subprocess"""
 
+        scene_filepath = self.preload_scenefile()
+
         self.port = random.randint(2000, 65535) # we avoid the default 19997 port.
         # TODO: figure out if/how port number collision have to be handled
 
@@ -109,49 +112,34 @@ class VRepCom(object):
 
         if os.uname()[0] == "Linux":
             # if self.cfg.execute.simu.headless:
-            cmd = "xvfb-run -a vrep {} {}".format(flags, log_cmd)
+            cmd = "xvfb-run -a vrep {} {} {}".format(flags, scene_filepath, log_cmd)
         elif os.uname()[0] == "Darwin":
-            cmd = "cd {}; ./vrep {} {}".format(self.mac_folder, flags, log_cmd)
+            cmd = "cd {}; ./vrep {} {} {}".format(self.mac_folder, flags, scene_filepath, log_cmd)
         else:
             raise OSError
 
         print(cmd)
         self.vrep_proc = subprocess.Popen(cmd, stdout=None, stderr=None, shell=True, preexec_fn=os.setsid)
+        self.scene_loaded = True
 
     def flush_proc(self):
         if self.vrep_proc is not None:
             self.vrep_proc.stdout.read()
             self.vrep_proc.stderr.read()
 
-    def load(self, script='robot', calcheck=True):
-        """
-
-        :param ar:  if True, load augmented reality scene, else, vrep ones.
-        """
+    def preload_scenefile(self):
+        """Check the scene file calibration file"""
         self.scene_name =  self.cfg.execute.scene.name
 
         # check calibration data
-        if calcheck:
+        if self.calcheck:
             self.caldata = ttts.TTTCalibrationData(self.scene_name, self.cfg.execute.simu.calibrdir, self.cfg.execute.simu.calibr_check)
             self.caldata.load()
 
-        # # check vrep connectivity
-        # if not self.connected:
-        #     if not self.vrep.connect_str(self.port):
-        #         raise IOError("Unable to connect to vrep")
-        # self.connected = True
-
-        # loading scene
         scene_filepath = ttts.TTTFile(self.scene_name).filepath
         assert os.path.isfile(scene_filepath), "scene file {} not found".format(scene_filepath)
 
-        print("loading v-rep scene {}".format(scene_filepath))
-        if remote_api.simxLoadScene(self.api_id, scene_filepath, 1, remote_api.simx_opmode_oneshot_wait) == -1:
-            raise IOError("scene could not be loaded by v-rep. Check logs file {} and {}".format(self.logfile_out, self.logfile_err))
-        self.scene_loaded = True
-
-        if self.setup:
-            self.setup_scene(script)
+        return scene_filepath
 
     def _setup_simulation(self):
         # assert remote_api.simxSetIntegerParameter(self.api_id,

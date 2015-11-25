@@ -4,6 +4,7 @@ import hashlib
 import pickle
 
 import numpy as np
+import vrep as remote_api
 
 from toolbox import gfx
 
@@ -121,9 +122,15 @@ class VRepObject(object):
 
     def load(self, com, base_h):
         self.handle = com._vrep_get_handle(self.name)
-        self.pos    = tuple(100*p for p in com.vrep.simGetObjectPosition(self.handle, base_h))
-        self.pos_w  = tuple(100*p for p in com.vrep.simGetObjectPosition(self.handle, -1))
-        self.dim, self.mass = self.object_properties(com.vrep, self.handle)
+        res, pos = remote_api.simxGetObjectPosition(com.api_id, self.handle, base_h,
+                                                    remote_api.simx_opmode_oneshot_wait)
+        assert res == 0
+        self.pos    = tuple(100*p for p in pos)
+        res, pos_w = remote_api.simxGetObjectPosition(com.api_id, self.handle, -1,
+                                                      remote_api.simx_opmode_oneshot_wait)
+        assert res == 0
+        self.pos_w  = tuple(100*p for p in pos_w)
+        self.dim, self.mass = self.object_properties(com, self.handle)
 
     def actual_pos(cls, start_pos, cfg_pos):
         """Return the position of the object after it has been moved by configuration defined postion"""
@@ -131,16 +138,34 @@ class VRepObject(object):
         return tuple(p_c if p_c is not None else p_s for p_c, p_s in zip(cfg_pos, start_pos))
 
     @classmethod
-    def object_properties(cls, vrep, handle):
-        min_x = vrep.simGetObjectFloatParameter(handle,   21)[0] * 100
-        max_x = vrep.simGetObjectFloatParameter(handle,   24)[0] * 100
-        min_y = vrep.simGetObjectFloatParameter(handle,   22)[0] * 100
-        max_y = vrep.simGetObjectFloatParameter(handle,   25)[0] * 100
-        min_z = vrep.simGetObjectFloatParameter(handle,   23)[0] * 100
-        max_z = vrep.simGetObjectFloatParameter(handle,   26)[0] * 100
-        mass  = vrep.simGetObjectFloatParameter(handle, 3005)[0]
+    def object_properties(cls, com, handle):
+        res, min_x = remote_api.simxGetObjectFloatParameter(com.api_id, handle,   21,
+                                                            remote_api.simx_opmode_oneshot_wait)
+        assert res == 0
+        min_x = 100*min_x
+        res, max_x = remote_api.simxGetObjectFloatParameter(com.api_id, handle,   24,
+                                                            remote_api.simx_opmode_oneshot_wait)
+        assert res == 0
+        res, min_y = remote_api.simxGetObjectFloatParameter(com.api_id, handle,   22,
+                                                            remote_api.simx_opmode_oneshot_wait)
+        min_y = 100*min_y
+        assert res == 0
+        res, max_y = remote_api.simxGetObjectFloatParameter(com.api_id, handle,   25,
+                                                            remote_api.simx_opmode_oneshot_wait)
+        max_x = 100*max_x
+        assert res == 0
+        res, min_z = remote_api.simxGetObjectFloatParameter(com.api_id, handle,   23,
+                                                            remote_api.simx_opmode_oneshot_wait)
+        min_z = 100*min_z
+        assert res == 0
+        res, max_z = remote_api.simxGetObjectFloatParameter(com.api_id, handle,   26,
+                                                            remote_api.simx_opmode_oneshot_wait)
+        max_z = 100*max_z
+        assert res == 0
+        res, mass  = remote_api.simxGetObjectFloatParameter(com.api_id, handle, 3005,
+                                                            remote_api.simx_opmode_oneshot_wait)
+        assert res == 0
 
         dims = (max_x - min_x, max_y - min_y, max_z - min_z)
 
         return dims, mass
-
