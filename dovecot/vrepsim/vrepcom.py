@@ -56,6 +56,7 @@ class VRepCom(object):
         self.tracked_objects = []
         self.tracked_handles = []
         self.handles         = {}
+        self.info = {}
 
         if not calcheck:
             assert not cfg.execute.prefilter, 'Can\'t skip the calibration check and prefilter collisions. Choose.'
@@ -140,6 +141,30 @@ class VRepCom(object):
         assert os.path.isfile(scene_filepath), "scene file {} not found".format(scene_filepath)
 
         return scene_filepath
+
+    def get_info(self):
+        res, v = remote_api.simxGetIntegerParameter(self.api_id,
+                                                    remote_api.sim_intparam_program_version,
+                                                    remote_api.simx_opmode_oneshot_wait)
+        assert res == 0
+        self.info['vrep_version'] = v
+        res, v = remote_api.simxGetIntegerParameter(self.api_id,
+                                                    remote_api.sim_intparam_program_revision,
+                                                    remote_api.simx_opmode_oneshot_wait)
+        assert res == 0
+        self.info['vrep_revision'] = v
+        res, v = remote_api.simxGetIntegerParameter(self.api_id,
+                                                    remote_api.sim_intparam_platform,
+                                                    remote_api.simx_opmode_oneshot_wait)
+        assert res == 0
+        self.info['vrep_platform'] = ['Windows', 'Darwin', 'Linux'][v]
+        res, v = remote_api.simxGetIntegerParameter(self.api_id,
+                                                    remote_api.sim_intparam_dynamic_engine,
+                                                    remote_api.simx_opmode_oneshot_wait)
+        assert res == 0
+        self.info['physic_engine'] = ['Bullet', 'ODE', 'Vortex', 'Newton'][v]
+
+        return self.info
 
     def _setup_simulation(self):
         # assert remote_api.simxSetIntegerParameter(self.api_id,

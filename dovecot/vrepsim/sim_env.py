@@ -34,7 +34,7 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
         self.caldata = self.vrepcom.caldata
 
         super(SimulationEnvironment, self).__init__(cfg)
-
+        self._info = self.vrepcom.get_info()
 
         if cfg.execute.prefilter:
             tracked_objects = []
@@ -51,6 +51,9 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
                                                                 self.caldata.pos_r(obj_pos_w),
                                                                 obj.dim,
                                                                 self.MARKER_SIZE)
+
+    def info(self):
+        return self._info
 
     def _create_primitives(self, cfg):
         self.context = {'objects': self.caldata.objects}
