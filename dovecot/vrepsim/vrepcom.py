@@ -77,12 +77,6 @@ class VRepCom(object):
             else:
                 self.setup_scene('solomarker')
 
-        # one streaming command so that replies to simxGetInMessageInfo will be up-to-date.
-        remote_api.simxGetIntegerParameter(self.api_id,
-                                           remote_api.sim_intparam_program_version,
-                                           remote_api.simx_opmode_streaming)
-
-
     def __del__(self):
         pass
         self.close(kill=True)
@@ -350,11 +344,11 @@ class VRepCom(object):
 
     def simulation_paused(self):
         """Returns True if the simulation is paused but not stopped"""
-        res, v = remote_api.simxGetInMessageInfo(self.api_id, remote_api.simx_headeroffset_server_state)
-        if res == -1:
-            return False
-        else:
-            return get_bit(v, 0) and get_bit(v, 1)
+        res, state = remote_api.simxGetIntegerSignal(self.api_id, 'state',
+                                                     remote_api.simx_opmode_buffer)
+        if res == 0:
+            return state == 0
+        return False
 
     def _get_signal(self, name, int_type=False):
         res, s = remote_api.simxGetStringSignal(self.api_id, name,
@@ -365,8 +359,6 @@ class VRepCom(object):
         else:
             data = remote_api.simxUnpackFloats(s)
         return np.array(data)
-
-
 
     def run_simulation(self, trajectory):
         """
@@ -385,6 +377,12 @@ class VRepCom(object):
         raw_bytes = (ctypes.c_ubyte * len(packed_data)).from_buffer_copy(packed_data)
         assert remote_api.simxSetStringSignal(self.api_id, 'trajectory', raw_bytes,
                                               remote_api.simx_opmode_oneshot_wait) == 0
+
+        assert remote_api.simxSetIntegerSignal(self.api_id, 'state', 1,
+                                               remote_api.simx_opmode_oneshot_wait) == 0
+        res, _ = remote_api.simxGetIntegerSignal(self.api_id, 'state',
+                                                 remote_api.simx_opmode_streaming)
+        assert res in [0, 1]
 
         time.sleep(0.1)
         assert remote_api.simxStartSimulation(self.api_id, remote_api.simx_opmode_oneshot_wait) == 0
@@ -427,8 +425,8 @@ class VRepCom(object):
         marker_sensors = None
         if self.cfg.sprims.tip:
             marker_sensors = np.array(remote_api.simxUnpackFloats(
-                                          remote_api.simxGetStringSignal(self.api_id, 'marker_sensors',
-                                          remote_api.simx_opmode_oneshot_wait)))
+                                        remote_api.simxGetStringSignal(self.api_id, 'marker_sensors',
+                                        remote_api.simx_opmode_oneshot_wait)))
 
         # assert len(positions) == len(quaternions) == len(velocities)
 

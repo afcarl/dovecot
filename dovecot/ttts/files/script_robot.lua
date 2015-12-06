@@ -180,6 +180,7 @@ if (sim_call_type==sim_childscriptcall_actuation) then
                     simSetStringSignal("contact_data",   simPackFloats(contact_data, 0, #contact_data))
                     simSetStringSignal("contact_type",   simPackInts(contact_type))
                 end
+				simSetIntegerSignal("state", 0)
                 simPauseSimulation()
             end
         end

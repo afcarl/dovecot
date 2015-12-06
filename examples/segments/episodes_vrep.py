@@ -18,7 +18,7 @@ from environments import tools
 cfg0.sprims.names      = ['push']
 
 cfg0.execute.simu.ppf              = 5
-cfg0.execute.simu.headless         = True
+cfg0.execute.simu.headless         = False
 cfg0.execute.simu.calibr_check     = False
 cfg0.execute.prefilter             = True
 cfg0.execute.check_self_collisions = False
