@@ -6,7 +6,7 @@ import pickle
 import numpy as np
 import vrep as remote_api
 
-from toolbox import gfx
+from ..ext.toolbox import gfx
 
 def cleanpath(path):
     return os.path.normpath(os.path.abspath(os.path.expanduser(path)))

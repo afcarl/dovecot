@@ -3,7 +3,7 @@ import random
 
 import numpy as np
 
-from toolbox import dist
+from ..ext.toolbox import dist
 
 from environments import Channel
 import environments

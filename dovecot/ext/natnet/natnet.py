@@ -2,7 +2,7 @@ import socket
 import struct
 import time
 
-from toolbox import gfx
+from ..toolbox import gfx
 
 _sizeref = {
     'h': 2,
@@ -285,5 +285,3 @@ def _pp(d, ident = 0, keys = None):
     elif type(d) == int:
         return '{}{}{}'.format(gfx.red, d, gfx.end)
     return str(d)
-
-

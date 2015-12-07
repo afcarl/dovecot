@@ -10,7 +10,7 @@ cycle device:
 
 import os
 
-from toolbox import execute
+from ...ext.toolbox import execute
 
 def usb_syspath():
     import pyudev

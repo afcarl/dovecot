@@ -2,7 +2,7 @@ from __future__ import print_function, division
 import cPickle
 import os
 
-from toolbox import gfx
+from ...ext.toolbox import gfx
 from . import opti_calibr
 
 def calibrate(stemcfg, cached_opti=False, cached_vrep=False):

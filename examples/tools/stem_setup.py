@@ -2,12 +2,12 @@ from __future__ import print_function, division
 import time
 import sys
 
-from toolbox import gfx
 from pydyn import MotorSet
 
 import powerswitch
-import env
+import dotdot
 import dovecot
+from dovecot.ext.toolbox import gfx
 from dovecot.stemsim import stemcfg
 
 if len(sys.argv) >= 2:

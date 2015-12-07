@@ -1,10 +1,10 @@
 from __future__ import division, print_function, absolute_import
 import time
 
-from toolbox import gfx
 import powerswitch as ps
 import pydyn
 
+from ..ext.toolbox import gfx
 from . import stemcfg
 from . import stemcom
 

@@ -4,8 +4,7 @@ import math
 
 import numpy as np
 
-import toolbox
-from toolbox import gfx
+from ..ext import toolbox
 from ..ext.dynamics.fwdkin import smodel
 
 
@@ -56,7 +55,7 @@ class CollisionFilter(object):
             pose_r = [p*o for p, o in zip(pose, orientation)]
             tip_pos = self.tip(pose_r)
             tip_poses.append(tip_pos)
-            #print(gfx.ppv(pose), gfx.ppv(tip_pos), gfx.ppv(self.obj_pos))
+            #print(toolbox.gfx.ppv(pose), toolbox.gfx.ppv(tip_pos), toolbox.gfx.ppv(self.obj_pos))
             #print('{:.1f} {:.1f}'.format(toolbox.dist_sq(tip_pos, self.obj_pos), self.min_d_sq))
             if self._collision_detected(tip_pos):
                 displacement = self.cfg.execute.kin.force*np.average([np.array(tip_poses[j]) - np.array(tip_poses[j-1]) for j in range(max(i-10, 0), i)], axis=0)

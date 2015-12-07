@@ -5,9 +5,9 @@ import random
 import time
 
 import scicfg
-from toolbox import gfx
 
 import dotdot
+from dovecot.ext.toolbox import gfx
 from dovecot import objdesc
 from dovecot.vrepsim import sim_env
 from cfg import cfg0 as vrep_cfg

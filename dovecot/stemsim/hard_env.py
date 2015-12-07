@@ -4,9 +4,9 @@ import sys
 import os
 import atexit
 
-from toolbox import gfx
 import pydyn
 
+from ..ext.toolbox import gfx
 from ..ext import natnet
 from ..vrepsim import sim_env
 from . import triopost

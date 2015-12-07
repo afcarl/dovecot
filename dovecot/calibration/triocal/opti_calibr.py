@@ -8,7 +8,7 @@ import scicfg
 
 
 from environments import tools
-from toolbox import gfx
+from ...ext.toolbox import gfx
 from ...ext import natnet
 
 from ...stemsim import stemcom
