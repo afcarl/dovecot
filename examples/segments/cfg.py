@@ -18,11 +18,12 @@ cfg0.execute.hard.verbose_com  = True
 cfg0.execute.hard.verbose_dyn  = True
 cfg0.execute.hard.powerswitch  = True
 
-cfg0.execute.simu.headless     = False
-cfg0.execute.simu.vglrun       = False
-cfg0.execute.simu.ppf          = 200
-cfg0.execute.simu.load         = True
-cfg0.execute.simu.mac_folder   = '/Applications/VRep/vrep.app/Contents/MacOS/' # only for mac
+cfg0.execute.simu.headless      = False
+cfg0.execute.simu.vglrun        = False
+cfg0.execute.simu.physic_engine = 'ode'
+cfg0.execute.simu.ppf           = 200
+cfg0.execute.simu.load          = True
+cfg0.execute.simu.mac_folder    = '/Applications/VRep/vrep.app/Contents/MacOS/' # only for mac
 
 cfg0.execute.scene.name        = 'vanilla'
 cfg0.execute.scene.arena.name  = 'arena20x20x10'

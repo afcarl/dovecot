@@ -161,9 +161,13 @@ class VRepCom(object):
         return self.info
 
     def _setup_simulation(self):
-        # assert remote_api.simxSetIntegerParameter(self.api_id,
-        #            remote_api.sim_intparam_dynamic_step_divider, self.cfg.execute.simu.ppf,
+        # assert remote_api.simxSetIntegerSignal(self.api_id, 'ppf', self.cfg.execute.simu.ppf,
         #            remote_api.simx_opmode_oneshot_wait) == 0
+
+        engine_id = {'bullet':0, 'ode':1, 'vortex':2, 'newton':3}[self.cfg.execute.simu.physic_engine.lower()]
+        assert remote_api.simxSetIntegerParameter(self.api_id,
+                   remote_api.sim_intparam_dynamic_engine, engine_id,
+                   remote_api.simx_opmode_oneshot_wait) == 0
 
         assert remote_api.simxSetFloatingParameter(self.api_id,
                    remote_api.sim_floatparam_simulation_time_step, self.cfg.mprims.dt,

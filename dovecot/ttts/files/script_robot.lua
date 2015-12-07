@@ -60,6 +60,9 @@ if (sim_call_type==sim_childscriptcall_actuation) then
             simSetObjectFloatParameter(joint_handles[i], 2017, max_speed)
         end
 
+		-- ppf = simGetIntegerSignal("ppf")
+		-- simSetSimulationPassesPerRenderingPass(ppf) -- not present in lua
+
         sim_step = simGetScriptExecutionCount()
         ended = false
         collide = false
