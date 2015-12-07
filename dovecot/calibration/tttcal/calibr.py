@@ -64,7 +64,7 @@ import vrep as remote_api
 def calibrate_scene(com):
     res, base_h       = remote_api.simxGetObjectHandle(com.api_id, "base",
                                                        remote_api.simx_opmode_oneshot_wait)
-    assert res == 0
+    assert res == 0, 'result is {}, should be 0'.format(res)
     res, marker_h     = remote_api.simxGetObjectHandle(com.api_id, "marker",
                                                        remote_api.simx_opmode_oneshot_wait)
     assert res == 0
