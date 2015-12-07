@@ -9,7 +9,7 @@ import scicfg
 
 from environments import tools
 from toolbox import gfx
-import natnet
+from ...ext import natnet
 
 from ...stemsim import stemcom
 from ...vrepsim import sim_env

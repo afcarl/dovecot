@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 import versioneer
 
@@ -14,21 +14,7 @@ setup(
     license      = 'Open Science License',
     keywords     = 'science experiment hardware simulation robots',
     url          = 'https://github.com/humm/dovecot',
-    packages     = ['dovecot',
-                    'dovecot.vizu',
-                    'dovecot.prims',
-                    'dovecot.ttts',
-                    'dovecot.ttts.files',
-                    'dovecot.kinsim',
-                    'dovecot.vrepsim',
-                    'dovecot.stemsim',
-                    'dovecot.stemsim',
-                    'dovecot.stemsim.stemcfg',
-                    'dovecot.collider',
-                    'dovecot.calibration',
-                    'dovecot.calibration.triocal',
-                    'dovecot.calibration.tttcal'
-                   ],
+    packages     = find_packages(),
     classifiers  = [],
     package_data = {'dovecot.ttts.files'    : ['vanilla.ttt'],
                     'dovecot.collider'      : ['stem.smodel'],

@@ -5,9 +5,9 @@ import os
 import atexit
 
 from toolbox import gfx
-import natnet
 import pydyn
 
+from ..ext import natnet
 from ..vrepsim import sim_env
 from . import triopost
 from . import stembot

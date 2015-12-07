@@ -9,7 +9,6 @@ import random
 
 from ..vrepsim import vrepcom
 from .. import ttts
-import pyvrep
 
 OBJECT_TYPE = {'point' : 0, 'line' : 1, 'sphere' : 2, 'curve' : 1}
 OBJECT_SIZE = {'point' : 3, 'line' : 6, 'sphere' : 3, 'curve' : 3}
@@ -187,4 +186,3 @@ class VizuVrep(vrepcom.VRepCom):
                 wait = False
         raw_input("Press Enter to stop Vrep...")
         self.vrep.simStopSimulation()
-
