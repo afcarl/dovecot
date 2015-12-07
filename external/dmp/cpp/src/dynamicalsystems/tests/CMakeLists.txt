@@ -1,0 +1,9 @@
+add_executable(testDynamicalSystemSerialization testDynamicalSystemSerialization.cpp getDynamicalSystemsVector.cpp)
+target_link_libraries(testDynamicalSystemSerialization dynamicalsystems)
+install(TARGETS testDynamicalSystemSerialization DESTINATION bin_test)
+
+add_executable(testDynamicalSystemCloning testDynamicalSystemCloning.cpp getDynamicalSystemsVector.cpp)
+target_link_libraries(testDynamicalSystemCloning dynamicalsystems)
+install(TARGETS testDynamicalSystemCloning DESTINATION bin_test)
+
+

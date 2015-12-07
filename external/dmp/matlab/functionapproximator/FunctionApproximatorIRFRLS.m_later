@@ -1,0 +1,148 @@
+classdef FunctionApproximatorIRFRLS < FunctionApproximator
+  %FunctionApproximatorIRFRLS Summary of this class goes here
+  %   Detailed explanation goes here
+
+  properties
+    model_filename
+    nbf
+    weights
+    lambda
+    gamma
+    data_scaling
+  end
+  properties (GetAccess = private,SetAccess = private)
+    % Useful paths
+    path_to_irfrls
+    path_to_temporary_data
+  end
+
+  methods
+    function obj = FunctionApproximatorIRFRLS(model_filename,nbf,lambda,gamma,data_scaling)
+      if (nargin<5), data_scaling=1; end
+      if (nargin<4), error('ERROR: Available interface is : FunctionApproximatorIRFRLS(ID,nbf,lambda,gamma)'); end
+      obj.name = 'irfrls';
+
+      obj.model_filename = model_filename;
+      obj.nbf = nbf;
+      obj.lambda = lambda;
+      obj.gamma = gamma;
+      obj.data_scaling = data_scaling;
+      obj.weights = [];
+
+      % Paths
+      obj.path_to_irfrls = sprintf('%s/function_approximator/irfrls_files',pwd);
+      obj.path_to_temporary_data = sprintf('%s/function_approximator/irfrls_files/temporary_data',pwd);
+
+      % Create the bin
+      predict_bin = sprintf('%s/IRFRLS_PREDICT',obj.path_to_irfrls);
+      train_bin = sprintf('%s/IRFRLS_TRAIN',obj.path_to_irfrls);
+      if (~exist(predict_bin,'file') || ~exist(train_bin,'file'))
+        error('ERROR: To create the binaries call make in %s',obj.path_to_irfrls)
+      end
+    end
+    function obj = FunctionApproximatorIRFRLS_parameters(parameters)
+      required_fields = {'ID','nbf','lambda','gamma'};
+      for rr=1:length(required_fields)
+        if (~isfield(parameters,required_fields{rr}))
+          error('irfrls parameters must have field "%s"',required_fields{rr})
+        end
+      end
+      obj = FunctionApproximatorIRFRLS(parameters.ID,parameters.nbf,parameters.lambda,parameters.gamma);
+    end
+    function [label] = get_label(obj)
+      label = sprintf('irfrls_%04d_%07.4f_%07.4f',obj.nbf,obj.lambda,obj.gamma);
+    end
+    function [inputs_scaled] = scale_inputs(obj,inputs)
+      if (any(obj.data_scaling~=1))
+        inputs_scaled = zeros(size(inputs));
+        for ii=1:size(inputs,2)
+          inputs_scaled(:,ii) = inputs(:,ii)*obj.data_scaling(ii);
+        end
+      else
+        inputs_scaled = inputs;
+      end
+    end
+    function [ outputs activations ] = predict(obj,inputs)
+      %Usage: ./IRFRLS_PREDICT <model_file> <input_data.arff> <output.arff>
+
+      % Create the temporary folder
+      if (~exist(obj.path_to_temporary_data,'dir'))
+        mkdir(obj.path_to_temporary_data);
+      end
+
+      % Create the data_test.arff
+      inputs = obj.scale_inputs(inputs);      
+      write_arff(sprintf('%s/data_predict',obj.path_to_temporary_data),inputs);
+
+      % Define the system calling
+      tp = obj.path_to_temporary_data; % Abbreviation
+      system_calling = sprintf('%s/./IRFRLS_PREDICT %s %s/data_predict.arff %s/output_predict.arff',...
+        obj.path_to_irfrls,obj.model_filename,tp,tp);
+      
+      % Predict
+      system(system_calling);
+
+      % Extract the outputs
+      outputs = read_arff(sprintf('%s/output_predict.arff',obj.path_to_temporary_data));
+
+      % IRFRLS does not have basis function activations
+      activations = [];
+
+    end
+    function [obj outputs weights] = train(obj,inputs,targets)
+
+      %Usage: ./IRFRLS_TRAIN <data.arff> <model_file> <output.arff> <nb_rf> <lambda> <gamma> <input_dim> <output_dim>
+      
+      % Create the temporary folder
+      if (~exist(obj.path_to_temporary_data,'dir'))
+        mkdir(obj.path_to_temporary_data);
+      end
+
+      % Create the data_train.arff
+      inputs = obj.scale_inputs(inputs);      
+      write_arff(sprintf('%s/data_train',obj.path_to_temporary_data),inputs,targets);
+
+      %system_calling = sprintf('%s/./IRFRLS_TRAIN data_train.arff model output_train.arff %d %f %f %d %d',...
+      %path_to_irfrls,obj.nbf,obj.lambda,obj.gamma,size(inputs,2),size(targets,2));
+
+      % Define the system calling
+      system_calling = sprintf('%s/IRFRLS_TRAIN %s/data_train.arff %s %s/output_train.arff %d %f %f %d %d',...
+        obj.path_to_irfrls,...
+        obj.path_to_temporary_data,...
+        obj.model_filename,...
+        obj.path_to_temporary_data,...
+        obj.nbf,obj.lambda,obj.gamma,size(inputs,2),size(targets,2));
+      
+      % Train the model
+      system(system_calling);
+
+      
+      % Extract the outputs
+      outputs = read_arff(sprintf('%s/output_train.arff',obj.path_to_temporary_data));
+
+      % Extract the weights (do not exist for IRFRLS)
+      weights = 0;
+
+      obj.last_inputs  = inputs;
+      obj.last_targets = targets;
+      obj.last_outputs = outputs;
+    end
+    function visualizefa(obj,inputs,targets) %#ok<INUSD>
+      plot([0 0],[1 1],'.')
+      hold on
+      text(0.1,0.5,'visualization not implemented yet for irfrls');
+      hold off
+    end
+    function obj = clear(obj)
+      % Erase the folder for this ID
+      %system(sprintf('rm -r %s',obj.path_to_temporary_data));
+      obj.weights = [];
+    end
+    function n_basis_functions = get_n_basis_functions(obj)
+      % Doesn't really make sense for IRFRLS
+      n_basis_functions = 1;
+    end
+  end
+
+
+end

@@ -1,0 +1,44 @@
+This project uses the cmake build program. To compile, just do
+
+    mkdir -p build_dir
+    cd build_dir                                                                                                                              
+    cmake .. -DCMAKE_BUILD_TYPE=Release
+    make install
+    make Docs
+
+________________________________________________________________________________
+DEBUG VERSION
+
+To compile a version that has debugging symbols included, compiles tests also and has a more verbose
+make do:
+
+    mkdir -p build_dir_debug
+    cd build_dir_debug                                                                                                                           
+    cmake .. -DCMAKE_BUILD_TYPE=Debug
+    make VERBOSE=1 install
+    make Docs
+
+________________________________________________________________________________    
+DEPENDENCIES
+
+Using this code depends on 
+  * boost modules "filesystem" and "system" (version >=1.34)
+  * Eigen (version >= 3.2, i.e. you need Eigen3)
+  * doxygen to generate documentation with "make Docs" (version >1.7.5, for the \cite command)
+  
+On Ubuntu, you can install them with:
+    sudo apt-get install libboost-filesystem-dev libboost-system-dev libeigendev3-dev doxygen
+
+For other operating systems, see here:
+  http://eigen.tuxfamily.org/dox/GettingStarted.html
+  http://www.boost.org/doc/libs/1_55_0/more/getting_started/
+  http://www.boost.org/doc/libs/1_55_0/libs/filesystem/doc/
+  http://www.boost.org/doc/libs/1_55_0/libs/system/doc/
+  http://www.stack.nl/~dimitri/doxygen/download.html#srcbin
+
+________________________________________________________________________________    
+ORGANIZATION
+
+For the code organization, I've used the directory structure recommended here:
+http://stackoverflow.com/questions/13521618/c-project-organisation-with-gtest-cmake-and-doxygen/13522826#13522826
+

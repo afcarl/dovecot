@@ -1,0 +1,1 @@
+g++ -g -I/home/optistem/prefix/include -L/home/optistem/prefix/lib -I/usr/local/include/ -std=c++0x -ldmp -lbbo -lfunctionapproximators -lboost_python -lboost_system -lboost_filesystem -lboost_serialization -ldynamicalsystems -ldmp_bbo pydmp.cpp  demoPyDmp.cpp -o demo_pydmp

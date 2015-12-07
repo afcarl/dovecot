@@ -1,0 +1,10 @@
+To get more interesting function approximators than locally weighted regression, you should install the following thirdparty software here:
+
+Locally Weighted Projection Regression (for Matlab and C++ code)
+  Where to get it: http://wcms.inf.ed.ac.uk/ipab/slmc/research/software-lwpr
+  Where to put it: in a directory called "lwpr"
+
+
+Gaussian Process Regression (for Matlab only)
+  Where to get it: http://www.gaussianprocess.org/gpml/code/matlab/doc/
+  Where to put it: in a directory called "gpml"

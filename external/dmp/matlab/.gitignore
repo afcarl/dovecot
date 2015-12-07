@@ -1,0 +1,6 @@
+distributions/
+dmp/DmpContextual.m
+evolutionstrategies/later/
+functionapproximator/tests/testfunctionapproximatorsold.m
+runImitationAndOptimizationResults.m
+

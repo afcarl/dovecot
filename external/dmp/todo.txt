@@ -1,0 +1,73 @@
+________________________________________________________________________________
+Release 1:
+  C++ functionapproximators + /demos
+  C++ dynamicalsystems + /demos
+  C++ dmp + /demos
+Release 2:
+  C++ evolutionstrategies
+  C++ dmp_bbo
+Release 3:
+  Same but then for Matlab
+  
+________________________________________________________________________________
+ESSENTIAL BEFORE C++ RELEASE
+  C++
+    Rename cpp to src
+    Get rid of boost
+    CostFunction::costFunction -> evaluate
+    Task::costFunction -> evaluate
+    namespaces?
+    Test y0-g scaling
+    Finish documentation
+      Add \cite and bib file => Requires new Doxygen version (on robolab2!)
+    Headers + License
+    fix README.txt
+    
+/******************************************************************************/
+
+integrateDynamicalSystem json_filename dt n_time_steps [euler|analytical|rungekutta|perturb] [--output_file filename] // Also for DMP
+
+trainDmp json_filename trajectory_filename 
+
+generateTargetData (already done) 
+
+demos in a separate directory?
+  trainAndIntegrateDmp.cpp
+  trainAndIntegrateDmp.py
+  integrateExponentialSystem.cpp
+  integrateExponentialSystem.py
+  trainFunctionApproximator.cpp
+  trainFunctionApproximator.py -> call executable, plot results
+  
+/******************************************************************************/
+
+motivate manual JSON in docs
+
+/******************************************************************************/
+
+________________________________________________________________________________
+POSSIBLE ALSO AFTER RELEASE
+  Both
+    Implement halting with fileio (copy from dmp_bbo)  
+    covar bounding
+    Discuss when to introduce ModelParametersLocalLinear (virtual void getSlopes() = 0;
+      => TRY IN A BRANCH, PERHAPS LWPR FOR LATER
+    Implement deserialization of MetaParameters: allows to tune parameters
+      
+________________________________________________________________________________
+ESSENTIAL BEFORE Matlab RELEASE
+    Headers + License
+    consistent naming: x_attr => y_attr
+    covar bounding
+    fix readmes
+    fix demos
+    getModelParameterValueRanges for all FA
+    See which functions can be made static (copy from C++)
+    ModelParametersLWPR/GPR must inherit from ModelParameters
+    DmpContextual
+    Check documentation
+    Simplify plotstates
+    Optimization: only return [x xd] if 2 arguments asked (analytical solution and integrateStart)
+
+
+

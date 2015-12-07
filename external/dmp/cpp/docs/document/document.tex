@@ -1,0 +1,49 @@
+\documentclass[a4paper,11pt]{book}
+\usepackage{doxygen_custom}
+\usepackage{enumitem}
+\setlist[1]{itemsep=-5pt,topsep=0pt}
+
+\usepackage{titlesec}
+
+%\titleformat{command}[shape]{format}{label}{sep}{before}[after]
+%\titleformat{\section}      [runin]{\normalfont\LARGE\bfseries}{\thesection}{}{}
+%\titleformat{\subsection}   [runin]{\normalfont\Large\bfseries}{\thesubsection}{}{}
+\titleformat{\subsubsection}[runin]{\normalfont\bfseries}{\thesubsubsection}{1em}{}[.]
+
+
+%\newcommand{\chaptermark}{}
+\input{preamble}
+
+\graphicspath{{../images/}}
+
+\author{Freek Stulp}
+\title{Dynamical Movement Primitives Tutorial}
+
+\begin{document}
+
+\maketitle
+
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+\newpage
+
+
+
+%\input{../latex/index}
+%
+%\newpage
+
+\chapter{Dynamical Systems}
+\input{../latex/page__dyn__sys}
+
+\chapter{Dynamical Movement Primitives}
+
+\input{../latex/page__dmp}
+
+\chapter{Function Approximation for the Forcing Term}
+
+\input{../latex/page__func__approx}
+
+\end{document}
