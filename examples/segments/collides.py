@@ -1,9 +1,9 @@
 from __future__ import print_function, division
 import sys, time
 
-import pydyn
 
 import env
+from dovecot.ext import pydyn
 from dovecot.stemsim.collider import collider
 from dovecot.stemsim import stemcfg
 

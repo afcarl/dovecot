@@ -1,8 +1,7 @@
 from __future__ import division, print_function, absolute_import
 import time
 
-import pydyn
-
+from ..ext import pydyn
 from ..ext import powerswitch as ps
 from ..ext.toolbox import gfx
 from . import stemcfg

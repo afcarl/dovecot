@@ -1,6 +1,8 @@
 from __future__ import print_function, division
 import time
-from pydyn import MotorSet
+
+
+from ..ext.pydyn import MotorSet
 
 
 def observe_max_angles(ms):

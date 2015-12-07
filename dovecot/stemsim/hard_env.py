@@ -4,14 +4,14 @@ import sys
 import os
 import atexit
 
-import pydyn
-
+from ..ext import pydyn
 from ..ext.toolbox import gfx
 from ..ext import natnet
 from ..vrepsim import sim_env
 from . import triopost
 from . import stembot
 from . import stemcfg
+
 
 # trio framebuffer buffer duration in seconds.
 FB_DURATION = 40.0

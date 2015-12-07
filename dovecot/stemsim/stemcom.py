@@ -6,8 +6,8 @@ import threading
 import numpy as np
 
 import scicfg
-from pydyn.msets import MotorSet
 
+from ..ext.pydyn.msets import MotorSet
 from ..collider import collider
 from . import stemcfg
 

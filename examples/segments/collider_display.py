@@ -2,7 +2,7 @@ from __future__ import print_function, division
 import sys, time, os
 import math
 
-import pydyn
+import dovecot.ext.pydyn
 
 import dotdot
 import dovecot

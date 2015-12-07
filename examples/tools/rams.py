@@ -1,7 +1,7 @@
 from __future__ import division, print_function
 import sys
 
-from pydyn import MotorSet
+from dovecot.ext.pydyn import MotorSet
 import dotdot
 import dovecot
 from dovecot.stemsim import stemcfg

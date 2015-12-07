@@ -2,7 +2,7 @@ from __future__ import print_function, division
 import time
 import sys
 
-from pydyn import MotorSet
+from dovecot.ext.pydyn import MotorSet
 
 import dotdot
 import dovecot
