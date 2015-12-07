@@ -3,7 +3,7 @@ from __future__ import print_function, division, absolute_import
 import sympy
 from sympy import pi, cos, sin
 
-import ..ext.dynamics.fwdkin import smodel
+from ..ext.dynamics.fwdkin import smodel
 
 
 A, B, C, D, E, F, G = map(sympy.Symbol, ['A', 'B', 'C', 'D', 'E', 'F', 'G'])
