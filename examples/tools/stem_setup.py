@@ -4,9 +4,9 @@ import sys
 
 from pydyn import MotorSet
 
-import powerswitch
 import dotdot
 import dovecot
+from dovecot.ext import powerswitch
 from dovecot.ext.toolbox import gfx
 from dovecot.stemsim import stemcfg
 

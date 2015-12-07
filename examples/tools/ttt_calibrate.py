@@ -3,6 +3,7 @@ import traceback
 
 import sys
 
+import dotdot
 from dovecot.calibration import tttcal
 
 names=['vanilla',

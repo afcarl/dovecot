@@ -4,7 +4,7 @@ from __future__ import division, print_function
 import sys
 import scicfg
 
-import env
+import dotdot
 from dovecot.stemsim import stemcom
 
 cfg = scicfg.SciConfig()

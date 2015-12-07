@@ -2,11 +2,12 @@ from __future__ import print_function, division
 import sys
 import time
 
-import env
+import dotdot
 import dovecot
 from dovecot.stemsim import stemcfg
 from dovecot.calibration import triocal
-import powerswitch
+from dovecot.ext import powerswitch
+
 
 robots = []
 

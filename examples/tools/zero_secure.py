@@ -3,9 +3,9 @@ import sys
 import time
 
 from pydyn import MotorSet
-import env
-import powerswitch
+import dotdot
 import dovecot
+from dovecot.ext import powerswitch
 from dovecot.stemsim import stemcfg
 
 if len(sys.argv) >= 2:

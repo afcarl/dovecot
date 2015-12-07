@@ -11,6 +11,7 @@ import random
 import time
 
 import scicfg
+import dotdot
 from dovecot.vrepsim import vrepcom
 from dovecot.cfgdesc import desc
 from dovecot.logger import logger

@@ -3,9 +3,9 @@ import sys
 import time
 
 from pydyn import MotorSet
-import env
+import dotdot
 import dovecot
-import powerswitch
+from dovecot.ext import powerswitch
 from dovecot.stemsim import stemcfg
 
 uid = dovecot.stem_uid()

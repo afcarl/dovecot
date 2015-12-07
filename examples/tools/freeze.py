@@ -3,7 +3,7 @@ import sys
 import time
 
 from pydyn import MotorSet
-import env
+import dotdot
 import dovecot
 from dovecot.stemsim import stemcfg
 

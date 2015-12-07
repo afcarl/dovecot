@@ -1,6 +1,9 @@
 import sys
-import powerswitch
+
+import dotdot
 import dovecot
+from dovecot.ext import powerswitch
+
 
 if len(sys.argv) >= 2:
     uid = int(sys.argv[1])
