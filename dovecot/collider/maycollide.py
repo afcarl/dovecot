@@ -6,7 +6,7 @@ import numpy as np
 
 import toolbox
 from toolbox import gfx
-import dynamics.fwdkin.smodel as smodel
+from ..ext.dynamics.fwdkin import smodel
 
 
 class CollisionFilter(object):
@@ -81,4 +81,3 @@ class FakeColliderCube(CollisionFilter):
     def _collision_detected(self, tip_pos):
         return all(o_center - o_dim/2.0 - self.marker_radius < t_center < o_center + o_dim/2.0 + self.marker_radius
                    for t_center, o_center, o_dim in zip(tip_pos, self.obj_pos, self.obj_geom))
-

@@ -4,10 +4,10 @@ import sys
 import numpy as np
 
 from toolbox import dist
-from dynamics.fwdkin import matrices
 from environments import Channel
 from environments import tools
 
+from ..ext.dynamics.fwdkin import matrices
 from . import sprims
 from . import s_push
 

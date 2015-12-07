@@ -5,9 +5,9 @@ import math
 
 import numpy as np
 
-from dynamics.fwdkin import matrices
 
-import env
+import dotdot
+from dovecot.ext.dynamics.fwdkin import matrices
 from dovecot.prims.s_roll import Roll
 
 class TestRoll(unittest.TestCase):

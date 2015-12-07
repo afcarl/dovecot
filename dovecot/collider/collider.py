@@ -2,8 +2,7 @@ from __future__ import print_function, division
 import os
 import math
 
-from dynamics.fwdkin import fcls
-
+from ..ext.dynamics.fwdkin import fcls
 from .stem_bodytree import bt
 
 fs = fcls.FclSpace()
