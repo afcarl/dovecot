@@ -68,6 +68,8 @@ class VRepCom(object):
 
         remote_api.simxFinish(-1)
         self.api_id = remote_api.simxStart('127.0.0.1', self.port, True, False, 5000, 5)
+        assert self.api_id != -1
+        time.sleep(1)
 
         self.scene = None
 
