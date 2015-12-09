@@ -98,7 +98,7 @@ class VRepCom(object):
         rand_log = random.Random()
         rand_log.seed(time.time())
         lognumber = rand_log.randint(0, 1000000000)
-        logname = '/tmp/vreplog{}'.format(lognumber)
+        logname = '/scratch/fbenurea/tmp/vreplog{}'.format(lognumber)
         self.logfile_out = logname + '.out'
         self.logfile_err = logname + '.err'
         log_cmd =  '>> {} 2>> {}'.format(self.logfile_out, self.logfile_err)
