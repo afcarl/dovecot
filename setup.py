@@ -16,7 +16,7 @@ setup(
     url          = 'https://github.com/humm/dovecot',
     packages     = find_packages(),
     classifiers  = [],
-    package_data = {'dovecot.ttts.files'    : ['vanilla.ttt'],
+    package_data = {'dovecot.ttts.files'    : ['vanilla.ttt', 'script_robot.lua'],
                     'dovecot.collider'      : ['stem.smodel'],
                     'dovecot.calibration.triocal' : ['calib0.data',
                                                      'calib1.data',
