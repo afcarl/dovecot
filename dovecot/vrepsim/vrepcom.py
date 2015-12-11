@@ -67,7 +67,12 @@ class VRepCom(object):
         self.objects_pos = {}
 
         remote_api.simxFinish(-1)
-        self.api_id = remote_api.simxStart('127.0.0.1', self.port, True, False, 5000, 5)
+        trycount = 0
+        while trycount < 5:
+            self.api_id = remote_api.simxStart('127.0.0.1', self.port, True, False, 5000, 5)
+            if self.api_id != -1:
+                break
+            trycount += 1
         assert self.api_id != -1
         time.sleep(1)
 
