@@ -361,10 +361,24 @@ class VRepCom(object):
             return state == 0
         return False
 
+    def _com(self, func, *args, **kwargs):
+        mode  = kwargs.get('mode', remote_api.simx_opmode_oneshot_wait)
+        tries = kwargs.get('tries', 5)
+        get   = kwargs.get('get', False)
+        trycount = 0
+        while trycount < tries:
+            args = args + (mode,)
+            res = func(self.api_id, *args)
+            if get:
+                res, data = res
+            if res == 0:
+                break
+        assert res == 0, 'com with `{}` returned error code {} (tried {} times)'.format(func, res, tries)
+        if get:
+            return data
+
     def _get_signal(self, name, int_type=False):
-        res, s = remote_api.simxGetStringSignal(self.api_id, name,
-                                                remote_api.simx_opmode_oneshot_wait)
-        assert res == 0, 'getting signal `{}` returned error code {}'.format(name, res)
+        s = self._com(remote_api.simxGetStringSignal, name, get=True)
         if int_type:
             data = remote_api.simxUnpackInts(s)
         else:
