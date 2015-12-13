@@ -172,13 +172,8 @@ class VRepCom(object):
         #            remote_api.simx_opmode_oneshot_wait) == 0
 
         engine_id = {'bullet':0, 'ode':1, 'vortex':2, 'newton':3}[self.cfg.execute.simu.physic_engine.lower()]
-        assert remote_api.simxSetIntegerParameter(self.api_id,
-                   remote_api.sim_intparam_dynamic_engine, engine_id,
-                   remote_api.simx_opmode_oneshot_wait) == 0
-
-        assert remote_api.simxSetFloatingParameter(self.api_id,
-                   remote_api.sim_floatparam_simulation_time_step, self.cfg.mprims.dt,
-                   remote_api.simx_opmode_oneshot_wait) == 0
+        self._com(remote_api.simxSetIntegerParameter, remote_api.sim_intparam_dynamic_engine, engine_id, get=False)
+        self._com(remote_api.simxSetFloatingParameter, remote_api.sim_floatparam_simulation_time_step, self.cfg.mprims.dt, get=False)
 
 
     def setup_scene(self, script):
@@ -365,9 +360,9 @@ class VRepCom(object):
         mode  = kwargs.get('mode', remote_api.simx_opmode_oneshot_wait)
         tries = kwargs.get('tries', 5)
         get   = kwargs.get('get', False)
+        args = args + (mode,)
         trycount = 0
         while trycount < tries:
-            args = args + (mode,)
             res = func(self.api_id, *args)
             if get:
                 res, data = res
