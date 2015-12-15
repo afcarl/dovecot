@@ -387,7 +387,7 @@ class VRepCom(object):
                 1. The first vector is the position of the motor in rad.
                 2. The second vector is the max velocity of the motor in rad/s.
         """
-        assert remote_api.simxStopSimulation(self.api_id, remote_api.simx_opmode_oneshot_wait) == 0
+        self._com(remote_api.simxStopSimulation, get=False)
 
         if self.verbose:
             print("Setting parameters...")
@@ -405,7 +405,7 @@ class VRepCom(object):
         assert res in [0, 1]
 
         time.sleep(0.1)
-        assert remote_api.simxStartSimulation(self.api_id, remote_api.simx_opmode_oneshot_wait) == 0
+        self._com(remote_api.simxStartSimulation, get=False)
 
         if self.verbose:
             print("Simulation started.")
