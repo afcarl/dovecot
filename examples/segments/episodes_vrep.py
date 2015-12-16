@@ -84,8 +84,8 @@ for i in range(total):
         max_force = -1.0
         salient_contacts = meta['log']['raw_sensors']['salient_contacts']
         if salient_contacts['max'] is not None:
-            max_force = salient_contacts['max'].force_norm_sq
-        #max_force = max([-1.0] + [c.force_norm_sq for c in meta['log']['raw_sensors']['contacts']])
+            max_force = salient_contacts['max'].force_norm
+        #max_force = max([-1.0] + [c.force_norm for c in meta['log']['raw_sensors']['contacts']])
         print('max_force_sq: {} N'.format(max_force))
         if max_force > 10000.0:
             hard_col.append(m_signal)

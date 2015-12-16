@@ -8,7 +8,6 @@ import string
 import ctypes
 
 import numpy as np
-
 import vrep as remote_api
 
 from .. import ttts
@@ -34,10 +33,10 @@ class Contact(object):
         self.obj_names  = sorted(contact_names)
         self.pos        = contact_data[:3]
         self.force      = contact_data[3:]
-        self.force_norm_sq = sum([x*x for x in self.force])
+        self.force_norm = np.sqrt(sum([x*x for x in self.force]))
 
     def __repr__(self):
-        return 'Contact({}, {}|{}, {})'.format(self.step, self.obj_names[0], self.obj_names[1], self.force_norm_sq)
+        return 'Contact({}, {}|{}, {})'.format(self.step, self.obj_names[0], self.obj_names[1], self.force_norm)
 
 
 class VRepCom(object):
@@ -357,18 +356,19 @@ class VRepCom(object):
         return False
 
     def _com(self, func, *args, **kwargs):
-        mode  = kwargs.get('mode', remote_api.simx_opmode_oneshot_wait)
-        tries = kwargs.get('tries', 5)
-        get   = kwargs.get('get', False)
+        mode   = kwargs.get('mode', remote_api.simx_opmode_oneshot_wait)
+        tries  = kwargs.get('tries', 5)
+        get    = kwargs.get('get', False)
+        ret_ok = kwargs.get('ret_ok', (0,))
         args = args + (mode,)
         trycount = 0
         while trycount < tries:
             res = func(self.api_id, *args)
             if get:
                 res, data = res
-            if res == 0:
+            if res in ret_ok:
                 break
-        assert res == 0, 'com with `{}` returned error code {} (tried {} times)'.format(func, res, tries)
+        assert res in ret_ok, 'com with `{}` returned code {}, instead of {} (tried {} times)'.format(func, res, ret_ok, tries)
         if get:
             return data
 
@@ -398,11 +398,9 @@ class VRepCom(object):
         assert remote_api.simxSetStringSignal(self.api_id, 'trajectory', raw_bytes,
                                               remote_api.simx_opmode_oneshot_wait) == 0
 
-        assert remote_api.simxSetIntegerSignal(self.api_id, 'state', 1,
-                                               remote_api.simx_opmode_oneshot_wait) == 0
-        res, _ = remote_api.simxGetIntegerSignal(self.api_id, 'state',
-                                                 remote_api.simx_opmode_streaming)
-        assert res in [0, 1]
+        self._com(remote_api.simxSetIntegerSignal, 'state', 1, get=False)
+        self._com(remote_api.simxGetIntegerSignal, 'state', get=True,
+                  mode=remote_api.simx_opmode_streaming, ret_ok=(0, 1))
 
         time.sleep(0.1)
         self._com(remote_api.simxStartSimulation, get=False)
@@ -438,9 +436,10 @@ class VRepCom(object):
                 if first_c is None:
                     first_c = c
                 last_c = c
-            if max_f < c.force_norm_sq:
-                max_f, max_c = c.force_norm_sq, c
+            if max_f < c.force_norm:
+                max_f, max_c = c.force_norm, c
         salient_contacts = {'first': first_c, 'last': last_c, 'max': max_c}
+        print('contact, max force: {:.2f} N'.format(max_f))
 
         marker_sensors = None
         if self.cfg.sprims.tip:
