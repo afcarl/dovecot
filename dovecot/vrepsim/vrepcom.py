@@ -1,5 +1,6 @@
 from __future__ import print_function, division, absolute_import
 import os
+import sys
 import time
 import signal
 import subprocess
@@ -409,8 +410,14 @@ class VRepCom(object):
             print("Simulation started.")
 
         time.sleep(0.01)
+        start_time = time.time()
         while not self.simulation_paused():
+            if time.time() - start_time > 60.0:
+                print("Simulation seems hung. Exiting...")
+                sys.exit(1)
             time.sleep(0.005)
+
+
 
         time.sleep(1.0)
 
