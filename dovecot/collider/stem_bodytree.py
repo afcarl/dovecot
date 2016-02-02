@@ -3,7 +3,15 @@ import os
 
 from ..ext.dynamics.fwdkin import bodytree, smodel
 
-sm = smodel.SymbolicModel.from_file(os.path.abspath(os.path.join(__file__, '..')) + '/' + 'stem.smodel')
+sm_path = os.path.abspath(os.path.join(__file__, '..', 'stem.smodel'))
+try:
+    sm = smodel.SymbolicModel.from_file(os.path.abspath(os.path.join(__file__, '..', 'stem.smodel')))
+except Exception:
+    from . import stem_model
+    print('dovecot is precomputing some cache (may take a few moments), that should happen only once.')
+    stem_model.sm.save(sm_path)
+    sm = smodel.SymbolicModel.from_file(os.path.abspath(os.path.join(__file__, '..', 'stem.smodel')))
+
 bt = bodytree.BodyTree(sm)
 
 

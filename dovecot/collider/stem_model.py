@@ -30,6 +30,3 @@ sm.add_joint(srj5)
 sm.add_joint(srj6)
 
 sm.subs_constants(d_constants)
-
-if __name__ == "__main__":
-    sm.save('stem.smodel')
