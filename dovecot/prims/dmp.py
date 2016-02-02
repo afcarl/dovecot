@@ -8,13 +8,13 @@ from __future__ import print_function, division, absolute_import
 
 import numpy as np
 
-import pydmp
+from ..ext import pydmp
 
 
 class DMP(object):
 
     def __init__(self, dt):
-        self.dmp = pydmp.PyDMP(1)
+        self.dmp = pydmp.DMP(1)
         duration = 2.0
 
         self.dmp.set_timesteps(int(1000/dt*duration), 0.0, duration)
@@ -55,6 +55,3 @@ class DMP(object):
         assert self.n_bases == len(self.centers) == len(self.widths) == len(self.slopes) == len(self.offsets)
         self.dmp.set_lwr_model_parameters(list(self.centers), list(self.widths),
                                           list(self.slopes), list(self.offsets))
-
-
-

@@ -33,16 +33,30 @@ try:
 except ImportError:
 	ext = 'cpp'
 
-ext_modules = [Extension(
-    name         = 'dovecot.ext.dynamics.fcl',
-    sources      = ['dovecot/ext/dynamics/fcl/fcl.' + ext,
-                    'dovecot/ext/dynamics/fcl/_fcl.cpp',
-                   ],
-    include_dirs = [],
-    language     = 'c++',
-    # libraries=
-    extra_compile_args = compile_args(['fcl']) + ['-O3', '-std=c++0x'], # include
-    extra_link_args    = link_args(['fcl']) # libs
+ext_modules = [
+    Extension(
+        name         = 'dovecot.ext.dynamics.fcl',
+        sources      = ['dovecot/ext/dynamics/fcl/fcl.' + ext,
+                        'dovecot/ext/dynamics/fcl/_fcl.cpp',
+                       ],
+        include_dirs = [],
+        language     = 'c++',
+        # libraries=
+        extra_compile_args = compile_args(['fcl']) + ['-O3', '-std=c++0x'], # include
+        extra_link_args    = link_args(['fcl']) # libs
+    ),
+    Extension(
+        name         = 'dovecot.ext.pydmp',
+        sources      = ['dovecot/ext/pydmp/pydmp.' + ext,
+                        'dovecot/ext/pydmp/_dmp.cpp',
+                       ],
+        include_dirs = ['/usr/local/include/', '~/prefix/'],
+        language     = 'c++',
+        # libraries=
+        extra_compile_args = ['-O3', '-std=c++0x'], # include
+        extra_link_args    = ['-L/usr/local/lib', '-L~/prefix/',
+	                          '-ldmp', '-lfunctionapproximators', '-ldynamicalsystems',
+						      '-lboost_filesystem', '-lboost_serialization', '-lboost_system'] # libs
     )]
 
 if ext == 'pyx':
