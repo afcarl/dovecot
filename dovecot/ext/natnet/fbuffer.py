@@ -2,6 +2,7 @@ import threading
 from collections import deque
 import time
 import atexit
+import six
 
 from . import natnet
 
@@ -148,7 +149,7 @@ class FrameBuffer(threading.Thread):
 
     def tracking_slice(self, start, end):
         if self.exc_info:
-            raise self.exc_info[1], None, self.exc_info[2]
+            six.reraise(*self.exc_info)
 
         tdata = []
         for ts, p in self.trackdata:
