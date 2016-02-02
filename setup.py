@@ -1,8 +1,54 @@
-from setuptools import setup, find_packages
+#!/usr/bin/env python
+import subprocess
+
+from setuptools           import setup, find_packages
+from setuptools.extension import Extension
 
 import versioneer
 
+
+
 VERSION = '3.1'
+
+def compile_args(packages):
+	args = []
+	for pkg in packages:
+		p = subprocess.Popen('pkg-config {} --cflags'.format(pkg).split(), stdout=subprocess.PIPE)
+		args += p.communicate()[0].decode('utf-8').split()
+	return args
+
+def link_args(packages):
+	args = []
+	for pkg in packages:
+		p = subprocess.Popen('pkg-config {} --libs'.format(pkg).split(), stdout=subprocess.PIPE)
+		args += p.communicate()[0].decode('utf-8').split()
+	return args
+
+cmdclass = versioneer.get_cmdclass()
+
+
+try:
+    from Cython.Build         import cythonize
+    ext = 'pyx'
+except ImportError:
+	ext = 'cpp'
+
+ext_modules = [Extension(
+    name         = 'dovecot.ext.dynamics.fcl',
+    sources      = ['dovecot/ext/dynamics/fcl/fcl.' + ext,
+                    'dovecot/ext/dynamics/fcl/_fcl.cpp',
+                   ],
+    include_dirs = [],
+    language     = 'c++',
+    # libraries=
+    extra_compile_args = compile_args(['fcl']) + ['-O3', '-std=c++0x'], # include
+    extra_link_args    = link_args(['fcl']) # libs
+    )]
+
+if ext == 'pyx':
+    ext_modules = cythonize(ext_modules)
+
+
 
 setup(
     name         = 'dovecot',
@@ -22,5 +68,6 @@ setup(
                                                      'calib1.data',
                                                      'calib2.data',
                                                      'calib3.data']}, # FIXME should be dynamic
-    install_requires = ['scicfg', 'environments', 'numpy', 'sympy'],
+    install_requires = ['six', 'scicfg', 'environments', 'numpy', 'sympy'],
+    ext_modules = ext_modules
 )

@@ -1,4 +1,4 @@
-import pyfcl
+from .. import fcl
 
 
 class FclSpace(object):
@@ -8,7 +8,7 @@ class FclSpace(object):
         self.contacts = []
         self._bodymap = {}
         self._bodydict = {}
-        self._pyfcl = pyfcl.Fcl()
+        self._pyfcl = fcl.Fcl()
 
     def register_body(self, body):
         if body.meta is not None:

@@ -1,5 +1,5 @@
 """Symbolic Model module"""
-import cPickle
+import pickle
 
 import sympy
 from . import matrices as mt
@@ -56,12 +56,12 @@ class SymbolicModel(object):
 
     def save(self, filename):
         with open(filename, 'wb') as f:
-            cPickle.dump(self, f)
+            pickle.dump(self, f)
 
     @classmethod
     def from_file(cls, filename):
         with open(filename, 'rb') as f:
-            return cPickle.load(f)
+            return pickle.load(f)
 
     def functionnalize(self):
         self.hms_f = [sympy.lambdify(self.params, hms) for hms in self.hms]
