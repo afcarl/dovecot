@@ -3,7 +3,7 @@ Functions to post-process the trio signal.
 """
 from __future__ import print_function, division, absolute_import
 import os
-import cPickle
+import pickle
 
 import numpy as np
 
@@ -50,5 +50,5 @@ def opti2vrep(opti_traj, M):
 
 def load_triomatrix(stemcfg):
     with open(os.path.abspath(os.path.join(__file__, '..')) + '/../calibration/triocal/' + stemcfg.calib_file, 'r') as f:
-        m = cPickle.load(f)
+        m = pickle.load(f)
     return m
