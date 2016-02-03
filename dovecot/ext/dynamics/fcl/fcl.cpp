@@ -5,13 +5,8 @@
     "distutils": {
         "depends": [], 
         "extra_compile_args": [
-            "-I/usr/local/include", 
             "-O3", 
             "-std=c++0x"
-        ], 
-        "extra_link_args": [
-            "-L/usr/local/lib", 
-            "-lfcl"
         ], 
         "language": "c++"
     }
