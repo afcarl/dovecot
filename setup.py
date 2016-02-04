@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import os
+import glob
 import subprocess
 
 from setuptools           import setup, find_packages
@@ -9,6 +11,24 @@ import versioneer
 
 
 VERSION = '3.1'
+
+LD_LIBRARY_PATH = os.environ.get('LD_LIBRARY_PATH', '').split(':')
+INCLUDE_PATH = (os.environ.get('C_INCLUDE_PATH', '').split(':') +
+			    os.environ.get('CPLUS_INCLUDE_PATH', '').split(':'))
+
+
+def boost_libname(name):
+	"""Find which boost library version exist on the system,
+	between multi-threaded and not. If both exists, choose the
+	non multi-threaded.
+	"""
+	for path in LD_LIBRARY_PATH + ['/usr/local/lib/']:
+		if len(glob.glob(os.path.join(path, 'lib' + name + '.*'))) > 0:
+			return '-l{}'.format(name)
+		elif len(glob.glob(os.path.join(path, 'lib' + name + '-mt.*'))) > 0:
+			return '-l{}-mt'.format(name)
+	raise IOError("Library {} was not found".format(name))
+
 
 def compile_args(packages):
 	args = []
@@ -35,28 +55,28 @@ except ImportError:
 
 ext_modules = [
     Extension(
-        name         = 'dovecot.ext.dynamics.fcl',
-        sources      = ['dovecot/ext/dynamics/fcl/fcl.' + ext,
-                        'dovecot/ext/dynamics/fcl/_fcl.cpp',
-                       ],
-        include_dirs = [],
-        language     = 'c++',
-        # libraries=
-        extra_compile_args = compile_args(['fcl']) + ['-O3', '-std=c++0x'], # include
-        extra_link_args    = link_args(['fcl']) # libs
+        name     = 'dovecot.ext.dynamics.fcl',
+        language = 'c++',
+        sources  = ['dovecot/ext/dynamics/fcl/fcl.' + ext,
+                    'dovecot/ext/dynamics/fcl/_fcl.cpp'],
+
+        include_dirs       = INCLUDE_PATH + ['/usr/local/include/'],
+		library_dirs       = LD_LIBRARY_PATH + ['/usr/local/lib/'],
+        extra_compile_args = compile_args(['fcl', 'ccd']) + ['-O3', '-std=c++0x'],
+        extra_link_args    = (link_args(['fcl', 'ccd'])
+		 					  + [boost_libname('boost_thread'), '-lboost_date_time', '-lboost_filesystem'])
     ),
     Extension(
-        name         = 'dovecot.ext.pydmp',
-        sources      = ['dovecot/ext/pydmp/pydmp.' + ext,
-                        'dovecot/ext/pydmp/_dmp.cpp',
-                       ],
-        include_dirs = ['/usr/local/include/', '~/prefix/'],
-        language     = 'c++',
-        # libraries=
-        extra_compile_args = ['-O3', '-std=c++0x'], # include
-        extra_link_args    = ['-L/usr/local/lib', '-L~/prefix/',
-	                          '-ldmp', '-lfunctionapproximators', '-ldynamicalsystems',
-						      '-lboost_filesystem', '-lboost_serialization', '-lboost_system'] # libs
+        name     = 'dovecot.ext.pydmp',
+        language = 'c++',
+        sources  = ['dovecot/ext/pydmp/pydmp.' + ext,
+                    'dovecot/ext/pydmp/_dmp.cpp'],
+
+        include_dirs       = INCLUDE_PATH + ['/usr/local/include/'],
+		library_dirs       = LD_LIBRARY_PATH + ['/usr/local/lib/'],
+        extra_compile_args = ['-O3', '-std=c++0x'],
+        extra_link_args    = ['-ldmp', '-lfunctionapproximators', '-ldynamicalsystems',
+						      '-lboost_filesystem', '-lboost_serialization', '-lboost_system']
     )]
 
 if ext == 'pyx':
