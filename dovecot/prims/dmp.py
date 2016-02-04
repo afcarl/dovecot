@@ -29,8 +29,8 @@ class DMP(object):
         self.lwr_meta_params(1, 0.1)
 
     def trajectory(self):
-        traj = self.dmp.generate_trajectory()
-        return traj[::3], traj[1::3], traj[2::3]
+        return self.dmp.generate_trajectory()
+        # return traj[::3], traj[1::3], traj[2::3]
 
     def lwr_meta_params(self, n_bases, overlap=0.01):
         self.n_bases = n_bases
