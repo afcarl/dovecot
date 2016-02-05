@@ -1,6 +1,9 @@
 hard_col.m_signals
 arch*.graffle
 bins.png
+fcl.cpp
+pydmp.cpp
+vrep_pos.data
 
 *~
 *.py[cod]
