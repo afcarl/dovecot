@@ -1,5 +1,16 @@
 from __future__ import absolute_import, division, print_function
 
+# versioneer
+from ._version import get_versions
+__version__ = get_versions()["version"]
+__commit__ = get_versions()["full-revisionid"]
+__dirty__ = get_versions()["dirty"]
+del get_versions
+
+__url__ = 'https://github.com/humm/dovecot'
+
+
+# intra-package imports
 from .cfgdesc import desc
 from .cfgdesc import objdesc
 
@@ -15,9 +26,3 @@ except ImportError:
 
 from . import vrepsim
 from . import prims
-
-from ._version import get_versions
-__version__ = get_versions()["version"]
-__commit__ = get_versions()["full-revisionid"]
-__dirty__ = get_versions()["dirty"]
-del get_versions
