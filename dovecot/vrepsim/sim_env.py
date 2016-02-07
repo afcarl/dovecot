@@ -52,9 +52,6 @@ class SimulationEnvironment(environments.PrimitiveEnvironment):
                                                                 obj.dim,
                                                                 self.MARKER_SIZE)
 
-    def info(self):
-        return self._info
-
     def _create_primitives(self, cfg):
         self.context = {'objects': self.caldata.objects}
         self.context.update(contexts[self.cfg.execute.scene.arena.name]) # HACK

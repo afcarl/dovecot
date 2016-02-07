@@ -15,6 +15,8 @@ class KinEnvironment(sim_env.SimulationEnvironment):
 
     def __init__(self, cfg):
         self.cfg = cfg
+        self._info = {}
+
         self.caldata = ttts.TTTCalibrationData(self.cfg.execute.scene.name, self.cfg.execute.simu.calibrdir)
         self.caldata.load()
 
@@ -49,4 +51,3 @@ class KinEnvironment(sim_env.SimulationEnvironment):
 
     def close(self):
         pass
-
