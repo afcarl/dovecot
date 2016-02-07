@@ -446,7 +446,10 @@ class VRepCom(object):
             if max_f < c.force_norm:
                 max_f, max_c = c.force_norm, c
         salient_contacts = {'first': first_c, 'last': last_c, 'max': max_c}
-        print('contact, max force: {:.2f} N'.format(max_f))
+        if first_c is not None:
+            print('first contact: {} {:.2f} N'.format('|'.join(first_c.obj_names), first_c.force_norm))
+        if max_c is not None:
+            print('  max contact: {} {:.2f} N'.format('|'.join(max_c.obj_names), max_c.force_norm))
 
         marker_sensors = None
         if self.cfg.sprims.tip:
