@@ -5,8 +5,9 @@ import numpy as np
 
 from numpy import cos, sin
 
-import env
+import dotdot
 from dovecot.calibration.triocal import opti_calibr
+
 
 class TestCalibration(unittest.TestCase):
 
@@ -37,8 +38,6 @@ class TestCalibration(unittest.TestCase):
             R = Rx*Ry*Rz
             T = np.mat(np.random.rand(3,1))
             s = random.uniform(0.0, 10.0)
-
-            n = 10
 
             A = np.mat(np.random.rand(5,3))
             B = R*s*A.T + np.tile(T, (1, 5))

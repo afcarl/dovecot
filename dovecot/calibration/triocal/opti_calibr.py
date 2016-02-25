@@ -1,10 +1,8 @@
 from __future__ import print_function, division, absolute_import
 import time
-import os
 import sys
 
 import numpy as np
-import scicfg
 
 
 from environments import tools

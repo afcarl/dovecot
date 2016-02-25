@@ -1,15 +1,13 @@
 from __future__ import print_function, division, absolute_import
 import unittest
-import random
-import numpy as np
 
-from numpy import cos, sin
-
-import env
+import dotdot
 from dovecot.stemsim import triopost
+
 
 def ts(pos):
     return [(i, t_i) for i, t_i in enumerate(pos)]
+
 
 class TestTransform(unittest.TestCase):
 

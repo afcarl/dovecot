@@ -78,7 +78,7 @@ class FrameBuffer(threading.Thread):
                         self.frames.popleft()
                         timestamp, frame = self.frames[0]
                 time.sleep(0.001)
-        except Exception as e:
+        except Exception:
             import sys
             self.exc_info = sys.exc_info()
 

@@ -16,7 +16,7 @@ bblack  = ''
 bred    = ''
 bgreen  = ''
 byellow = ''
-bylue   = ''
+bblue   = ''
 bpurple = ''
 bcyan   = ''
 bgrey   = ''
@@ -65,7 +65,7 @@ def enable():
     bred    = '\033[1;31m'
     bgreen  = '\033[1;32m'
     byellow = '\033[1;33m'
-    bylue   = '\033[1;34m'
+    bblue   = '\033[1;34m'
     bpurple = '\033[1;35m'
     bcyan   = '\033[1;36m'
     bgrey   = '\033[1;37m'
@@ -113,7 +113,7 @@ def disable():
     bred    = ''
     bgreen  = ''
     byellow = ''
-    bylue   = ''
+    bblue   = ''
     bpurple = ''
     bcyan   = ''
     bgrey   = ''
@@ -137,5 +137,5 @@ def disable():
     bipurple= ''
     bicyan  = ''
     bigrey  = ''
-    
+
 enable()

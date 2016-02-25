@@ -1,12 +1,10 @@
 from __future__ import print_function, division, absolute_import
-import sys
 
 import numpy as np
 
 from environments import Channel
 from environments import tools
 
-from ..ext.toolbox import dist
 from ..ext.dynamics.fwdkin import matrices
 from . import sprims
 from . import s_push

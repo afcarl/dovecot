@@ -1,7 +1,6 @@
 import numbers
 import random
 
-import numpy as np
 
 class MeshCell(object):
 

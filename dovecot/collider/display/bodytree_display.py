@@ -1,5 +1,3 @@
-import random
-
 import pyglet.gl as gl
 
 from . import cube_display

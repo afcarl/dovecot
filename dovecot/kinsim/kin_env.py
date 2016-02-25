@@ -1,13 +1,9 @@
 from __future__ import print_function, division, absolute_import
-import math
-
-import numpy as np
 
 import environments
 
 from ..vrepsim import sim_env
 from ..collider import maycollide
-from .. import prims
 from .. import ttts
 
 

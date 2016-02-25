@@ -1,6 +1,5 @@
 import socket
 import struct
-import time
 
 from ..toolbox import gfx
 

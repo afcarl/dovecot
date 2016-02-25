@@ -1,12 +1,10 @@
 from __future__ import print_function, division, absolute_import
 import os
 
-import scicfg
-
 from ...ext.toolbox import gfx
 from ...vrepsim import vrepcom
 from ... import ttts
-from ...cfgdesc import desc, objdesc
+from ...cfgdesc import desc
 
 
 cfg = desc._deepcopy()

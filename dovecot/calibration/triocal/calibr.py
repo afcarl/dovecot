@@ -2,8 +2,8 @@ from __future__ import print_function, division
 import pickle
 import os
 
-from ...ext.toolbox import gfx
 from . import opti_calibr
+
 
 def calibrate(stemcfg, cached_opti=False, cached_vrep=False):
     poses = [(  0.0,   0.0,   0.0,   0.0,   0.0,   0.0),

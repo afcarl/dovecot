@@ -1,7 +1,7 @@
 from __future__ import print_function, division, absolute_import
 
 import sympy
-from sympy import pi, cos, sin
+from sympy import pi
 
 from ..ext.dynamics.fwdkin import smodel
 

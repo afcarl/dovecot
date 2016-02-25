@@ -52,10 +52,10 @@ class Model(object):
 
     def generate(self, vs):
         raise NotImplementedError
-        self.hms_solo = [j.hm(v) for v, j in zip(vs, self.joints)]
-        self.hms = [np.matrix(np.identity(4))]
-        for hm in self.hms_solo:
-            self.hms.append(self.hms[-1]*hm)
+        # self.hms_solo = [j.hm(v) for v, j in zip(vs, self.joints)]
+        # self.hms = [np.matrix(np.identity(4))]
+        # for hm in self.hms_solo:
+        #     self.hms.append(self.hms[-1]*hm)
 
     def generate_inverse(self, vs):
         self.ihms_solo = [j.inverse_hm(v) for v, j in zip(vs, self.joints)]

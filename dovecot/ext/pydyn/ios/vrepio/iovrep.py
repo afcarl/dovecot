@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import array
-import threading
 import math
 
 import pyvrep
@@ -352,7 +350,7 @@ class DynamixelIOVRep(object):
 
     def _set_sync_speed(self, id_pos_pairs):
         return
-        speeds_rads = []
+        speed_rads = []
 
         id_speed_dict = dict(id_speed_pairs)
         for handle in self.handles:

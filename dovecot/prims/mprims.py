@@ -2,7 +2,6 @@
 Computing motor primitives from high-level orders.
 """
 from __future__ import print_function, division, absolute_import
-import math
 import bisect
 
 import numpy as np

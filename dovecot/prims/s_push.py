@@ -1,8 +1,6 @@
 from __future__ import print_function, division, absolute_import
 import random
 
-import numpy as np
-
 from ..ext.toolbox import dist
 
 from environments import Channel

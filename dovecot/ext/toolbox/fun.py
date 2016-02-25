@@ -1,4 +1,4 @@
-import math, collections, types, os, random
+import math, collections, types, random
 
 def flatten(l):
     """Flatten any imbrication of iterable collections"""
@@ -73,4 +73,3 @@ def roulette_wheel(proba):
         assert proba[i] >= 0, "all elements are not positive {}".format(proba)
         s += proba[i]
     return i
-

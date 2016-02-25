@@ -83,7 +83,7 @@ def connect(device_type   = 'USB2Serial',
                                   latency=latency,
                             enable_pyftdi=enable_pyftdi,
                            broadcast_ping=broadcast_ping)
-    except serialio.PortNotFoundError as e:
+    except serialio.PortNotFoundError:
         if verbose:
             print(FAIL + 'No standart port found. If your port has a funny '
                   'name, you might want to specify it explicetly.') # TODO: print device_type, serial_id, port

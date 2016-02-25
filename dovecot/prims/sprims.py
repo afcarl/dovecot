@@ -2,7 +2,6 @@
 Computing sensory primitives from raw data.
 """
 from __future__ import print_function, division, absolute_import
-import math
 
 
 sprims = {}

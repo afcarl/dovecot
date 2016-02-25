@@ -1,9 +1,9 @@
 from __future__ import print_function, division
-import os
 import math
 
 from ..ext.dynamics.fwdkin import fcls
 from .stem_bodytree import bt
+
 
 fs = fcls.FclSpace()
 for body in bt.bodies():

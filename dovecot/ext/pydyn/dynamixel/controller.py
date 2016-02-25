@@ -298,8 +298,6 @@ class DynamixelController(threading.Thread):
 
     def _handle_all_pst_requests(self, all_pst_requests):
         # Handling pst requests (if need be)
-        sync_pst = []
-        sync_st  = []
         pst_mids = []
         pst_valuess   = []
         st_mids = []
@@ -352,7 +350,7 @@ class DynamixelController(threading.Thread):
     def _handle_all_read_rq(self, all_read_rq):
         # handling the resquests
         for m, requests in zip(self.motors, all_read_rq):
-            for control, value in requests.items():
+            for control, _ in requests.items():
                 self.com.get(control, (m.id,))
 
 
