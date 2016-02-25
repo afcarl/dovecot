@@ -15,7 +15,7 @@ for slope in np.linspace(-400.0, 400.0, num=res):
         for center in np.linspace(0.0, 1.0, num=res):
             for width in np.linspace(0.0, 1.0, num=res):
                 #print center, offset, center, width
-                dmp = pydmp.DMP()
+                dmp = pydmp.DMP(1)
                 dmp.dmp.set_timesteps(120, 0.0, 2.0)
                 dmp.lwr_meta_params(1)
                 dmp.lwr_model_params(slopes = [slope], offsets = [offset], centers = [center], widths = [width])

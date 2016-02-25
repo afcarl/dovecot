@@ -63,7 +63,7 @@ class KinSerial(serialio.Serial):
             self.port.send(data)
         return len(data)
 
-    def read(self, size):
+    def read(self, size, tries=2):
         # if size > len(self._input_buffer):
         #     raise Warning('insufficient data in input buffer')
         data = self._input_buffer[:size]

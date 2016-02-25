@@ -85,11 +85,9 @@ class VRepCom(object):
                 self.setup_scene('solomarker')
 
     def __del__(self):
-        pass
         self.close(kill=True)
 
     def __exit__(self, etype, evalue, etraceback):
-        pass
         self.close(kill=True)
 
     def launch_sim(self):

@@ -129,7 +129,7 @@ class Motor(object):
         else:
             raise AttributeError(("'{}' assignement error. This attribute does not exist "
                                   "and new attributes cannot be defined on Motor "
-                                  "instances.").format(attr, attr))
+                                  "instances.").format(attr))
 
 
     # MARK Read/Write request
@@ -427,7 +427,7 @@ class Motor(object):
     def compliant_bytes(self):
         return 0 if self.torque_enable else 1
 
-    @compliant.setter
+    @compliant_bytes.setter
     def compliant_bytes(self, val):
         self.torque_enable_bytes = {0:1, 1:0}[val]
 

@@ -17,7 +17,7 @@ bins = [0 for _ in range(200)]
 n = 2
 for i in  range(1000):
     #print center, offset, center, width
-    dmp = pydmp.DMP()
+    dmp = pydmp.DMP(1)
     dmp.dmp.set_initial_state([0.0])
     dmp.dmp.set_attractor_state([0.0])
     dmp.dmp.set_timesteps(500, 0.0, 5.0)

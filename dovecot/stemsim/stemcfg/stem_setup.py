@@ -57,7 +57,7 @@ def set_status_return_level(ms, v):
 
 
 def complete_setup(ms, angle_limits):
-    set_angle_limits(ms)
-    set_compliance_margins(1.0)
-    set_compliance_slopes(16)
-    set_max_torque(100)
+    set_angle_limits(ms, angle_limits)
+    set_compliance_margins(ms, 1.0)
+    set_compliance_slopes(ms, 16)
+    set_max_torque(ms, 100)

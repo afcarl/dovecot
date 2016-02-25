@@ -122,7 +122,7 @@ def connect(device_type   = 'USB2Serial',
                               for m_id in motor_ids)))
 
     if verbose:
-        print ('{}Loading EEPROMs and RAMs...'.format(LOAD), end='\r'),
+        print('{}Loading EEPROMs and RAMs...'.format(LOAD), end='\r')
         sys.stdout.flush()
     ctrl.load_motors(motor_ids)
 

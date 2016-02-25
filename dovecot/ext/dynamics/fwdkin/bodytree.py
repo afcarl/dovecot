@@ -33,7 +33,7 @@ class FclBody(object):
 
 class Box(FclBody):
 
-    def __init__(self, size, meta=None, groups=[]):
+    def __init__(self, size, meta=None, groups=()):
         assert len(size) == 3
         self.size = tuple(size)
         self.meta = meta
@@ -100,4 +100,3 @@ class BodyTree(object):
             hm = hm_f(*angles)
             for f in frame_group:
                 f.update(d_angles, hm)
-

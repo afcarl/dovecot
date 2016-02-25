@@ -49,5 +49,5 @@ class KinEnvironment(sim_env.SimulationEnvironment):
         meta['log']['raw_sensors'] = raw_sensors
         return raw_sensors
 
-    def close(self):
+    def close(self, kill=True):
         pass

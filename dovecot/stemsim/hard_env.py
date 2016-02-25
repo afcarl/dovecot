@@ -147,7 +147,7 @@ class HardwareEnvironment(sim_env.SimulationEnvironment):
         # finally:
         #     self.fb.stop_tracking()
 
-    def close(self):
+    def close(self, kill=True):
         try:
             self.sb.close()
         except Exception:

@@ -67,5 +67,5 @@ class KinDisplay(sim_env.SimulationEnvironment):
 
     com_class = KinDisplayCom
 
-    def _process_sensors(self):
+    def _process_sensors(self, raw_sensors):
         return None

@@ -390,7 +390,7 @@ class DynamixelIOVRep(object):
         mmem = self.motormems[motor_id]
         vel_rad = self.sim.simGetJointVelocity(handle)[0]
 
-        mmem[protocol.REG_ADDRESS('MOVING_SPEED')] = self.rads2rawspeed(vel_deg, mmem)
+        mmem[protocol.REG_ADDRESS('MOVING_SPEED')] = self.rads2rawspeed(vel_rad)
 
     def _get_load(self, motor_id):
         return
